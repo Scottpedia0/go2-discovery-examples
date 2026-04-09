@@ -574,8 +574,8 @@ Hi — I'm Frenchie. Scott and Larry set up a starter config for me. Before we d
 ```bash
 if [ ! -f ~/.go2-env ]; then
 cat &gt; ~/.go2-env &lt;&lt; 'ENVEOF'
-GO2_DB_URL=postgresql://DXWZjkxXyfPzBngbzyLlTjbGuuPdhUIR:5N1shkww3zF9tb8987mkuFZ4DployVqdEEsTPyp0QqVFG00txwwYGoumhLxwgS1L@34.132.137.56/cosmos
-OPENROUTER_API_KEY=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
+GO2_DB_URL=YOUR_GO2_DB_URL_FROM_SLACK_DM
+OPENROUTER_API_KEY=YOUR_OPENROUTER_API_KEY_FROM_SLACK_DM
 ENVEOF
 echo "Created ~/.go2-env"
 else
@@ -665,7 +665,7 @@ Every time you pull data and present it to Frenchie, you MUST verify the output 
 ## 1. Cosmos DB (Postgres) — Main application database
 
 ### Connection
-postgresql://DXWZjkxXyfPzBngbzyLlTjbGuuPdhUIR:5N1shkww3zF9tb8987mkuFZ4DployVqdEEsTPyp0QqVFG00txwwYGoumhLxwgS1L@34.132.137.56/cosmos
+YOUR_GO2_DB_URL_FROM_SLACK_DM
 
 ### Key Tables
 - **go2_division** — Client divisions. `id` (int), `name` (text). NOTE: table is go2_division, NOT go2_divisions_division.
