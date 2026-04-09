@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 · Frenchie Onboarding</title>
+<style>
+:root { --cream:#FAF9F6; --ink:#1C1917; --ink-muted:#78716C; --teal:#0F766E; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; }
+#gate { display:flex; align-items:center; justify-content:center; min-height:100vh; flex-direction:column; gap:20px; }
+#gate.hidden { display:none; }
+#gate h1 { font-size:24px; font-weight:600; color:var(--teal); }
+#gate p { color:var(--ink-muted); font-size:14px; }
+#gate input { border:1px solid #d6d3d1; border-radius:8px; padding:12px 16px; font-size:16px; width:260px; text-align:center; outline:none; background:white; }
+#gate input:focus { border-color:var(--teal); }
+#gate button { background:var(--teal); color:white; border:none; padding:10px 32px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+#gate .err { color:#dc2626; font-size:13px; min-height:20px; }
+#content { display:none; }
+#content.visible { display:block; }
+</style>
+</head>
+<body>
+<div id="gate">
+<h1>Go2 Onboarding Brief</h1>
+<p>Enter the password to continue.</p>
+<input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')check()">
+<button onclick="check()">Continue</button>
+<div class="err" id="err"></div>
+</div>
+<div id="content">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --cream: #FAF9F6;
+    --paper: #F4F2ED;
+    --ink: #1C1917;
+    --ink-secondary: #44403C;
+    --ink-muted: #78716C;
+    --ink-faint: #A8A29E;
+    --teal: #0F766E;
+    --teal-soft: #CCFBF1;
+    --rule-line: rgba(28,25,23,0.06);
+    --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  }
+
+  .page {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 80px 28px 100px;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 48px 20px 64px; }
+  }
+
+  .letterhead {
+    padding-bottom: 48px;
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--rule-line);
+  }
+
+  .letterhead .from-line {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 32px;
+  }
+
+  .letterhead h1 {
+    font-family: var(--serif);
+    font-size: clamp(38px, 7vw, 56px);
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .letterhead .date-line {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-muted);
+  }
+
+  .letterhead .context {
+    margin-top: 28px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .letterhead .context-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .letterhead .context-item .val {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .letterhead .context-item .label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .section {
+    margin-bottom: 64px;
+  }
+
+  .section-heading {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 28px;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(26px, 4vw, 32px);
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 12px;
+    margin-top: 40px;
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--ink-secondary);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .section-break {
+    width: 40px;
+    height: 1px;
+    background: var(--rule-line);
+    margin: 64px 0;
+  }
+
+  .rules {
+    margin: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--rule-line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .rule {
+    background: white;
+    padding: 18px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+  }
+
+  .rule-n {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--teal);
+    flex-shrink: 0;
+    line-height: 1.4;
+  }
+
+  .rule-body strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .rule-body span {
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  .aside {
+    border-left: 2px solid var(--teal);
+    padding: 16px 20px;
+    margin: 24px 0;
+    background: rgba(15,118,110,0.03);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .aside p {
+    margin-bottom: 0;
+    font-size: 14px;
+    color: var(--ink-secondary);
+    line-height: 1.7;
+  }
+
+  .aside strong {
+    color: var(--ink);
+  }
+
+  .stats {
+    margin: 32px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 1px;
+    background: var(--rule-line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .stat {
+    background: white;
+    padding: 24px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat .val {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .stat .label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    line-height: 1.4;
+  }
+
+  .setup-step {
+    margin: 28px 0;
+    padding: 24px;
+    background: white;
+    border: 1px solid var(--rule-line);
+    border-radius: 10px;
+  }
+
+  .setup-step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .setup-step-n {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--teal);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15,118,110,0.06);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .setup-step-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .setup-step p {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .agenda {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--rule-line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .agenda-item {
+    background: white;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .agenda-n {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--teal);
+    flex-shrink: 0;
+  }
+
+  .agenda-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .agenda-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .agenda-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
+  .paste-block {
+    background: #1C1917;
+    border-radius: 10px;
+    padding: 18px 20px;
+    padding-right: 80px;
+    margin: 12px 0;
+    position: relative;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: #D6D3D1;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .paste-block::-webkit-scrollbar { width: 4px; }
+  .paste-block::-webkit-scrollbar-track { background: transparent; }
+  .paste-block::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+  .copy-btn {
+    position: sticky;
+    float: right;
+    top: 0;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--sans);
+    z-index: 2;
+    letter-spacing: 0.3px;
+  }
+  .copy-btn:hover {
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+  }
+  .copy-btn.copied {
+    background: rgba(15,118,110,0.25);
+    border-color: rgba(15,118,110,0.4);
+    color: #5EEAD4;
+  }
+  .copy-btn .copy-icon { display: inline; }
+  .copy-btn .check-icon { display: none; }
+  .copy-btn.copied .copy-icon { display: none; }
+  .copy-btn.copied .check-icon { display: inline; }
+
+  .help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--rule-line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+
+  .help-item {
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .help-item strong {
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .help-item span {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
+  .footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer span {
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+
+<div class="page">
+
+  <!-- LETTERHEAD -->
+  <header class="letterhead">
+    <div class="from-line">Go2 &middot; Onboarding Brief</div>
+    <h1>Frenchie Evangelista</h1>
+    <div class="date-line">April 9, 2026</div>
+  </header>
+
+  <!-- WHAT WE SET UP -->
+  <section class="section">
+    <div class="section-heading">What We Set Up</div>
+
+    <p>Frenchie &mdash; on our call yesterday, Scott walked through how AI automation works at Go2: Markdown files, MCPs, skills, triggers, Agent MDs. Here is the short version of what all that means for you.</p>
+
+    <ul style="list-style:none;padding:0;margin:16px 0;">
+      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">You have Claude Code on your Mac</strong> &mdash; it is an AI that can write code, query databases, build tools, and automate workflows</li>
+      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">We pre-loaded it with access to Go2's production database</strong> &mdash; every team member's sessions, reports, worklogs, and behavioral data</li>
+      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">We gave it 5 skills</strong> &mdash; data access, operational discovery, output verification, daily monitoring automations, and a support scraper</li>
+      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">When you describe what you want in plain language, it figures out how to build it</strong> &mdash; you do not need to know how to code</li>
+    </ul>
+
+    <p>The same skill you use to run an engagement team &mdash; knowing what needs to happen and being able to explain it clearly &mdash; is the same skill that makes this system work.</p>
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- THREE RULES -->
+  <section class="section">
+    <div class="section-heading">Three Rules</div>
+
+    <h2>Before you start building anything</h2>
+
+    <div class="rules">
+      <div class="rule">
+        <span class="rule-n">1</span>
+        <div class="rule-body">
+          <strong>Start with your own tasks first</strong>
+          <span>Automate what you do every day before touching the team's workflows. Your daily work is the proving ground &mdash; if it saves you real time, then you bring it to your engagement leads.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n">2</span>
+        <div class="rule-body">
+          <strong>Don't trust AI output without checking</strong>
+          <span>The verify skill uses a second AI model to catch mistakes. Use it. AI is bad at auditing its own work &mdash; the same way people are. Always run verification on anything that matters.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n">3</span>
+        <div class="rule-body">
+          <strong>When you're stuck, just describe what you want</strong>
+          <span>You handle the what, Claude handles the how. If you can explain it to a new hire, you can explain it to this system.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- WHAT YOU HAVE -->
+  <section class="section">
+    <div class="section-heading">What You Have</div>
+
+    <h2>Everything loaded and ready</h2>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="val">14</span>
+        <span class="label">Team members accessible</span>
+      </div>
+      <div class="stat">
+        <span class="val">6 mo</span>
+        <span class="label">Operational history</span>
+      </div>
+      <div class="stat">
+        <span class="val">5</span>
+        <span class="label">Pre-loaded skills</span>
+      </div>
+      <div class="stat">
+        <span class="val">2</span>
+        <span class="label">Monitors ready</span>
+      </div>
+      <div class="stat">
+        <span class="val">&infin;</span>
+        <span class="label">Direct line to Scott + Larry</span>
+      </div>
+    </div>
+
+    <p>The five skills cover <strong>data access</strong> (querying Go2's Postgres and BigQuery databases), <strong>operational discovery</strong> (profiling team members and accounts), <strong>output verification</strong> (using a second AI model to audit results), <strong>daily monitoring automations</strong> (a weekday session breathing monitor and a nightly remission/decline check), and a <strong>daily support scraper</strong>.</p>
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- GET STARTED -->
+  <section class="section">
+    <div class="section-heading">Get Started</div>
+
+    <!-- STEP 1 -->
+    <div class="setup-step">
+      <div class="setup-step-header">
+        <span class="setup-step-n">1</span>
+        <span class="setup-step-title">Open Claude Code on your Mac</span>
+      </div>
+      <p>Launch the Claude Code application. If you have not purchased the $200/month Claude Pro plan yet, that is the first thing to do &mdash; the system requires it to run.</p>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="setup-step">
+      <div class="setup-step-header">
+        <span class="setup-step-n">2</span>
+        <span class="setup-step-title">Connect your apps</span>
+      </div>
+      <p>In Claude Code, go to <strong>Settings &gt; Connectors</strong>. Enable <strong>Google Drive</strong>, <strong>Gmail</strong>, <strong>Calendar</strong>, and <strong>Chrome</strong>. These take 30 seconds each and give Claude direct access to your Google apps. Sign in with your go2.io Google account when prompted.</p>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="setup-step">
+      <div class="setup-step-header">
+        <span class="setup-step-n">3</span>
+        <span class="setup-step-title">Paste the starter prompt</span>
+      </div>
+      <p>Copy the entire block below and paste it into Claude Code. You do not need to understand everything in here &mdash; the system does. Just paste it and follow along.</p>
+
+      <div class="paste-block">
+<button class="copy-btn" onclick="copyBlock(this)"><span class="copy-icon">Copy</span><span class="check-icon">Copied</span></button>
+Hi Frenchie — I'm your Claude Code instance. Scott and Larry set me up with access to Go2's production database, your team's data, and skills to help you run discoveries, monitor your team, and automate your work.
+
+Let me run a quick check to make sure everything is connected.
+
+**Step 1: Check configuration**
+- Verify that ~/.claude/CLAUDE.md exists and contains Frenchie's identity
+- Verify that ~/.claude/skills/ contains: go2-data-access.md, operational-discovery.md, verify-output.md, engage-automations.md, daily-support-scraper.md
+- Report what's there and what's missing
+
+**Step 2: Test database connectivity**
+- Connect to the Cosmos Postgres database using the connection string in the data access skill
+- Run: SELECT COUNT(*) FROM go2_staff WHERE is_active = true AND division_id = 19883
+- Report the result (this is how many active Engage team members are in the system)
+
+**Step 3: Test BigQuery access**
+- Try running: bq --project_id=cosmos-331917 query --nouse_legacy_sql --format=csv "SELECT COUNT(*) as total FROM cosmos-331917.go2_data_warehouse.rpt_agent_bi_session WHERE DATE(start_time) = DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)"
+- If this works, report how many sessions were recorded yesterday
+- If this fails, that's okay. Just tell me: "BigQuery isn't set up yet — that's a quick one-time setup Scott can help with. Everything else works."
+
+**Step 4: Report results and offer options**
+
+After running those checks, tell me what worked and what didn't. Be honest — some things might need debugging and that's normal. Then ask what I want to do:
+
+a. **Show me my team's status right now** — Pull today's SOD/EOD reports and session data for the Engage division (19883). Show who's filed reports today, who hasn't, and any flags. This works with just the Cosmos database.
+
+b. **Run a discovery on one of my client accounts** — I'll tell you which client, and you'll run the full operational discovery pipeline to produce a report and tools.
+
+c. **Set up my daily monitoring automations** — Configure the session breathing monitor (weekday mornings) and the remission/decline monitor (daily at 11pm PHT) to run automatically and send summaries on Slack.
+
+d. **Help me with something else** — I'll describe what I need and you figure out how to do it.
+
+Whenever you want to come back to these options, just say "menu." And if you ever get stuck, just describe what you want in plain language — I'll figure out how to build it.</div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="setup-step">
+      <div class="setup-step-header">
+        <span class="setup-step-n">4</span>
+        <span class="setup-step-title">Pick what you want to do first</span>
+      </div>
+      <p>After the system checks pass, it will give you four options. Start wherever feels most useful. Most people start with option <strong>A</strong> &mdash; seeing their team's current status &mdash; because it gives you something real to look at immediately.</p>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="setup-step">
+      <div class="setup-step-header">
+        <span class="setup-step-n">5</span>
+        <span class="setup-step-title">Try things. Break things. Ask questions.</span>
+      </div>
+      <p>There is no way to break the production data &mdash; your access is read-only on the database side. Experiment freely. If something does not work, describe what happened in the Slack thread and either Larry or Scott will sort it out.</p>
+    </div>
+
+    <div class="aside">
+      <p><strong>Some of this will need debugging &mdash; that's normal.</strong> The BigQuery connection might need setup, and some automations will take a few tries to get right. But as long as the Gmail connector works, the system automatically sends Scott a daily report of anything that broke. You don't have to remember to ask for help &mdash; it surfaces your problems automatically.</p>
+    </div>
+  </section>
+
+  <div class="aside">
+    <p><strong>Heads up:</strong> Some of this will need debugging &mdash; that's normal. BigQuery might need a one-time setup, and some automations will take a few tries to configure. But as long as the Gmail connector works, the system automatically sends Scott a daily report of anything that didn't work. You don't have to remember to ask for help &mdash; it surfaces your problems automatically.</p>
+  </div>
+
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- WHAT'S COMING NEXT -->
+  <section class="section">
+    <div class="section-heading">What's Coming Next</div>
+
+    <h2>On the roadmap for you</h2>
+
+    <div class="agenda">
+      <div class="agenda-item">
+        <span class="agenda-n">1</span>
+        <div class="agenda-body">
+          <span class="agenda-label">Open Router access</span>
+          <span class="agenda-desc">Multiple AI models for independent verification &mdash; use a different frontier model to audit Claude's work</span>
+        </div>
+      </div>
+      <div class="agenda-item">
+        <span class="agenda-n">2</span>
+        <div class="agenda-body">
+          <span class="agenda-label">Client discovery runs</span>
+          <span class="agenda-desc">The same analysis we did on Engage, but for your client accounts</span>
+        </div>
+      </div>
+      <div class="agenda-item">
+        <span class="agenda-n">3</span>
+        <div class="agenda-body">
+          <span class="agenda-label">NotebookLM knowledge base</span>
+          <span class="agenda-desc">All your training materials and best practices in one searchable AI assistant</span>
+        </div>
+      </div>
+      <div class="agenda-item">
+        <span class="agenda-n">4</span>
+        <div class="agenda-body">
+          <span class="agenda-label">Gemini Gems</span>
+          <span class="agenda-desc">Shared AI assistants your whole team can use without needing their own Claude setup</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- GET HELP -->
+  <section class="section">
+    <div class="section-heading">Get Help</div>
+
+    <h2>Three ways to get unstuck</h2>
+
+    <div class="help-grid">
+      <div class="help-item">
+        <strong>Slack group DM</strong>
+        <span>Message the Scott + Frenchie + Larry thread. Fastest way to get async answers.</span>
+      </div>
+      <div class="help-item">
+        <strong>larry.moran.bot</strong>
+        <span>When Scott's machine is on, Larry can answer questions and run tasks directly.</span>
+      </div>
+      <div class="help-item">
+        <strong>Claude Code itself</strong>
+        <span>Describe what you want. It will either build it or tell you what it needs from you.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- ASIDE: THE MONEY -->
+  <section class="section">
+    <div class="aside">
+      <p><strong>A note on where things stand.</strong> Scott mentioned on the call that Go2 is in a tight cash position and he is working on closing investment. That is real and it would be dishonest to pretend otherwise. But here is what is also real: the technology we have been building is now the path forward. It is cheaper than the problems it solves. It does not require a large team to operate. You are the first person to get it because you are the most important one to get it right. The goal over the next two weeks is simple &mdash; prove that this system saves you real time doing real work. Everything else follows from that.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>Scott Moran &middot; Go2 &middot; s@go2.io</span>
+    <span style="font-size:13px;color:var(--ink-faint);">Prepared by Larry</span>
+  </footer>
+
+</div>
+
+<script>
+function copyBlock(btn) {
+  const block = btn.parentElement;
+  const text = block.innerText
+    .replace('Copy', '')
+    .replace('Copied', '')
+    .trim();
+
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+
+
+</div>
+<script>
+function check(){
+var p=document.getElementById('pw').value;
+if(p==='engage2026'){
+document.getElementById('gate').className='hidden';
+document.getElementById('content').className='visible';
+}else{
+document.getElementById('err').textContent='Incorrect password.';
+}
+}
+</script>
+</body>
+</html>
