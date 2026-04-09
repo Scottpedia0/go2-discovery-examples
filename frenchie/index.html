@@ -952,6 +952,52 @@ Before presenting results, verify this output through Open Router (use the verif
 
   <div class="section-break"></div>
 
+  <!-- SESSION GOVERNOR -->
+  <section class="section">
+    <div class="section-heading">Your Built-In QA Partner</div>
+
+    <h2>Something we engineered that you get for free</h2>
+
+    <p>When you run something big &mdash; an audit, a report, a data pull &mdash; your Claude Code automatically deploys a second AI that watches in real time. We call it a <strong>session governor</strong>.</p>
+
+    <p>Think of it like a proofreader watching over your shoulder while you work. It catches problems <em>as they happen</em>, not after the whole thing is done.</p>
+
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-body">
+          <strong>Catches errors early</strong>
+          <span>If Claude queries the wrong table, misreads a number, or makes a claim the data doesn't support &mdash; the governor flags it before it compounds into the final output.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>Prevents drift</strong>
+          <span>If Claude starts going off-track (answering a different question than what you asked), the governor pulls it back.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>Keeps state</strong>
+          <span>If your session gets interrupted or loses context, the governor has a record of what was happening. Say "what was I working on?" and it resumes.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>Challenges overconfidence</strong>
+          <span>If Claude says "I'm sure this is correct" without evidence, the governor pushes back. AI is bad at doubting itself &mdash; the governor does the doubting.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="aside">
+      <p><strong>How it happened:</strong> Scott's team built this (internally called AIEA &mdash; AI Executive Assistant) after finding that AI errors compound over long sessions. A wrong table name in step 1 corrupts everything downstream. The governor is a cheaper second model (Sonnet) running alongside your main session that catches 80%+ of issues before they reach you. You don't need to do anything &mdash; it deploys automatically when you run data-heavy operations. If it doesn't, just say "deploy a session governor."</p>
+    </div>
+
+    <p style="font-size:14px;color:var(--ink-muted);margin-top:16px;">Session logs are saved to <code style="font-family:var(--mono);font-size:13px;background:rgba(15,118,110,0.06);padding:2px 6px;border-radius:3px;">~/Documents/go2-work/session-logs/</code> so you always have a record of what was done and can pick up where you left off.</p>
+  </section>
+
+  <div class="section-break"></div>
+
   <!-- REFERENCE: THE CALL -->
   <section class="section">
     <div class="section-heading">Reference</div>
