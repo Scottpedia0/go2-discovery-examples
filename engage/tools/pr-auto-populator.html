@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR Form Auto-Populator | Go2 Engage</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d0d0d;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #111;
+    border-bottom: 1px solid #222;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.2px; }
+  header .subtitle { font-size: 11px; color: #555; margin-top: 2px; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-orange { background: #1f1006; color: #e67e22; border: 1px solid #3d2010; }
+  .badge-green  { background: #0a1f12; color: #2ecc71; border: 1px solid #1a4028; }
+  .badge-blue   { background: #0a1220; color: #3498db; border: 1px solid #1a2a3d; }
+  .badge-red    { background: #1a0a0a; color: #e74c3c; border: 1px solid #3d1515; }
+  .badge-gray   { background: #1a1a1a; color: #666; border: 1px solid #2a2a2a; }
+  .badge-purple { background: #150a1f; color: #9b59b6; border: 1px solid #2a1540; }
+
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .stat { text-align: center; }
+  .stat-val { font-size: 18px; font-weight: 700; color: #fff; }
+  .stat-label { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.8px; }
+
+  .tabs {
+    display: flex;
+    background: #111;
+    border-bottom: 1px solid #222;
+    padding: 0 24px;
+    gap: 0;
+  }
+  .tab {
+    padding: 10px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tab:hover { color: #888; }
+  .tab.active { color: #e67e22; border-bottom-color: #e67e22; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 24px;
+  }
+
+  .panel {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .panel-header {
+    padding: 12px 16px;
+    background: #161616;
+    border-bottom: 1px solid #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .panel-body { padding: 16px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 5px;
+  }
+
+  .field { margin-bottom: 14px; }
+
+  input[type="text"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    border-radius: 5px;
+    color: #e0e0e0;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, select:focus, textarea:focus { border-color: #e67e22; }
+  textarea { resize: vertical; }
+
+  .btn {
+    padding: 8px 16px;
+    border: 1px solid #2a2a2a;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.2px;
+    background: #1a1a1a;
+    color: #888;
+  }
+  .btn:hover { border-color: #444; color: #ccc; }
+
+  .btn-primary {
+    background: #e67e22;
+    border-color: #e67e22;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #d35400; border-color: #d35400; }
+
+  .btn-green {
+    background: #0a1f12;
+    border-color: #1a4028;
+    color: #2ecc71;
+  }
+  .btn-green:hover { background: #0d2818; border-color: #2ecc71; }
+
+  .btn-danger {
+    background: #1a1a1a;
+    color: #555;
+    border-color: #2a2a2a;
+  }
+  .btn-danger:hover { border-color: #c0392b; color: #e74c3c; }
+
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
+
+  .btn-copy {
+    background: #0a1220;
+    border-color: #1a2a3d;
+    color: #3498db;
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+  .btn-copy:hover { border-color: #3498db; background: #0d1825; }
+  .btn-copy.copied { background: #0a1f12; border-color: #1a4028; color: #2ecc71; }
+
+  .template-area {
+    min-height: 120px;
+    font-size: 12px;
+    line-height: 1.6;
+    font-family: "SF Mono", "Fira Code", monospace;
+  }
+
+  /* Roster table */
+  .roster-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .roster-table th {
+    font-size: 10px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #222;
+    background: #161616;
+  }
+  .roster-table td {
+    padding: 8px 10px;
+    font-size: 13px;
+    border-bottom: 1px solid #1a1a1a;
+    vertical-align: middle;
+  }
+  .roster-table tr:hover td { background: #161616; }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .dot-none { background: #333; }
+  .dot-pending { background: #e67e22; }
+  .dot-done { background: #2ecc71; }
+  .dot-overdue { background: #e74c3c; }
+
+  /* Output cards */
+  .output-card {
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .output-card-header {
+    padding: 10px 14px;
+    background: #141414;
+    border-bottom: 1px solid #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .output-card-header h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ddd;
+  }
+  .output-card-body {
+    padding: 12px 14px;
+  }
+  .output-card-body pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #bbb;
+    font-family: "SF Mono", "Fira Code", monospace;
+  }
+
+  .msg-type-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-right: 8px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  .actions-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #1a4028;
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .help-text {
+    font-size: 11px;
+    color: #444;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .tm-section {
+    border: 1px solid #222;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .tm-section-header {
+    background: #161616;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+  }
+  .tm-section-header:hover { background: #1a1a1a; }
+  .tm-section-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .tm-section-body { padding: 16px; }
+
+  .tracker-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .tracker-row:last-child { border-bottom: none; }
+  .tracker-name {
+    font-weight: 600;
+    color: #ddd;
+    min-width: 140px;
+  }
+  .tracker-status {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+  }
+  .tracker-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #888;
+  }
+
+  .checkbox-styled {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #333;
+    border-radius: 3px;
+    background: #0d0d0d;
+    cursor: pointer;
+    position: relative;
+  }
+  .checkbox-styled:checked {
+    background: #0a1f12;
+    border-color: #2ecc71;
+  }
+  .checkbox-styled:checked::after {
+    content: "\2713";
+    position: absolute;
+    top: -1px;
+    left: 2px;
+    color: #2ecc71;
+    font-size: 12px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: #444;
+  }
+  .empty-state h3 { font-size: 15px; color: #555; margin-bottom: 8px; }
+  .empty-state p { font-size: 12px; line-height: 1.6; }
+
+  .review-period-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #161616;
+    border-bottom: 1px solid #222;
+  }
+
+  @media (max-width: 900px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>PR Form Auto-Populator</h1>
+    <div class="subtitle">Go2 Engage -- Batch Performance Review Processing</div>
+  </div>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat"><div class="stat-val" id="statTotal">0</div><div class="stat-label">TMs</div></div>
+    <div class="stat"><div class="stat-val" id="statSelf">0</div><div class="stat-label">Self-Assess</div></div>
+    <div class="stat"><div class="stat-val" id="statPartner">0</div><div class="stat-label">Partner Input</div></div>
+    <div class="stat"><div class="stat-val" id="statWriteup">0</div><div class="stat-label">Write-ups</div></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="roster">Roster</div>
+  <div class="tab" data-tab="generate">Batch Generate</div>
+  <div class="tab" data-tab="tracker">Tracker</div>
+  <div class="tab" data-tab="followup">Follow-ups</div>
+  <div class="tab" data-tab="templates">Templates</div>
+</div>
+
+<!-- TAB: ROSTER -->
+<div class="tab-content active" id="tab-roster">
+  <div class="layout">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">TM Roster</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm" onclick="loadSampleData()">Load Sample Data</button>
+          <button class="btn btn-sm btn-danger" onclick="clearRoster()">Clear</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Paste Roster (Tab or Comma Separated)</label>
+          <textarea id="rosterInput" class="template-area" rows="10" placeholder="Name, Role, Partner/Client, Partner POC, Start Date, EM Assigned
+Coco Itol, Customer Support Rep, Bluestone Lane, Kerri S., 2024-06-15, Alex Dela Rosa
+Ardie Lazaga, Customer Support Rep, Bluestone Lane, Kerri S., 2024-03-10, Alex Dela Rosa
+..."></textarea>
+          <div class="help-text">
+            Columns: Name | Role | Partner/Client | Partner POC | Start Date | EM Assigned<br>
+            Accepts tab-separated (from Google Sheets) or comma-separated.
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="parseRoster()">Import Roster</button>
+      </div>
+    </div>
+
+    <div class="panel" id="rosterPanel" style="display:none;">
+      <div class="panel-header">
+        <span class="panel-title">Imported Roster</span>
+        <span class="badge badge-blue" id="rosterCount">0 TMs</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="roster-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Partner</th>
+              <th>Partner POC</th>
+              <th>Start Date</th>
+              <th>EM</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rosterBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: BATCH GENERATE -->
+<div class="tab-content" id="tab-generate">
+  <div class="layout">
+    <div class="panel" id="noRosterMsg" style="display:none;">
+      <div class="panel-body">
+        <div class="empty-state">
+          <h3>No Roster Loaded</h3>
+          <p>Import a TM roster in the Roster tab first.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-period-bar" id="reviewPeriodBar">
+      <label style="margin-bottom:0;margin-right:4px;">Review Period:</label>
+      <input type="text" id="reviewPeriod" style="width:200px;" placeholder="Q1 2026" value="Q1 2026">
+      <label style="margin-bottom:0;margin-left:16px;margin-right:4px;">Deadline:</label>
+      <input type="date" id="reviewDeadline" style="width:160px;">
+      <div style="flex:1;"></div>
+      <button class="btn btn-primary" onclick="generateAll()">Generate All Messages</button>
+    </div>
+
+    <div id="batchOutput"></div>
+  </div>
+</div>
+
+<!-- TAB: TRACKER -->
+<div class="tab-content" id="tab-tracker">
+  <div class="layout">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">PR Completion Tracker</span>
+        <div style="display:flex;gap:8px;">
+          <span class="badge badge-green" id="trackerComplete">0 Complete</span>
+          <span class="badge badge-orange" id="trackerPending">0 Pending</span>
+        </div>
+      </div>
+      <div class="panel-body" id="trackerBody">
+        <div class="empty-state">
+          <h3>No TMs Tracked</h3>
+          <p>Import a roster and generate messages to start tracking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: FOLLOW-UPS -->
+<div class="tab-content" id="tab-followup">
+  <div class="layout">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Follow-up Messages</span>
+        <button class="btn btn-sm btn-primary" onclick="generateFollowups()">Generate Follow-ups for Missing</button>
+      </div>
+      <div class="panel-body" id="followupBody">
+        <div class="empty-state">
+          <h3>No Follow-ups Needed</h3>
+          <p>Mark items as pending in the Tracker tab, then generate follow-up messages here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: TEMPLATES -->
+<div class="tab-content" id="tab-templates">
+  <div class="layout">
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Self-Assessment Slack Message</span>
+          <button class="btn btn-sm" onclick="resetTemplate('self')">Reset</button>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Template</label>
+            <textarea id="tmplSelf" class="template-area" rows="12"></textarea>
+            <div class="help-text">Variables: {{name}}, {{role}}, {{partner}}, {{period}}, {{deadline}}, {{em}}</div>
+          </div>
+          <button class="btn btn-green btn-sm" onclick="saveTemplates()">Save Templates</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Partner Input Request</span>
+          <button class="btn btn-sm" onclick="resetTemplate('partner')">Reset</button>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Template</label>
+            <textarea id="tmplPartner" class="template-area" rows="12"></textarea>
+            <div class="help-text">Variables: {{name}}, {{role}}, {{partner}}, {{partner_poc}}, {{period}}, {{deadline}}, {{em}}, {{start_date}}</div>
+          </div>
+          <button class="btn btn-green btn-sm" onclick="saveTemplates()">Save Templates</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">PR Write-Up Template</span>
+          <button class="btn btn-sm" onclick="resetTemplate('writeup')">Reset</button>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Template</label>
+            <textarea id="tmplWriteup" class="template-area" rows="16"></textarea>
+            <div class="help-text">Variables: {{name}}, {{role}}, {{partner}}, {{partner_poc}}, {{period}}, {{deadline}}, {{em}}, {{start_date}}, {{tenure}}</div>
+          </div>
+          <button class="btn btn-green btn-sm" onclick="saveTemplates()">Save Templates</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Follow-Up: Self-Assessment</span>
+          <button class="btn btn-sm" onclick="resetTemplate('followSelf')">Reset</button>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Template</label>
+            <textarea id="tmplFollowSelf" class="template-area" rows="8"></textarea>
+            <div class="help-text">Variables: {{name}}, {{period}}, {{deadline}}</div>
+          </div>
+          <button class="btn btn-green btn-sm" onclick="saveTemplates()">Save Templates</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Follow-Up: Partner Input</span>
+          <button class="btn btn-sm" onclick="resetTemplate('followPartner')">Reset</button>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Template</label>
+            <textarea id="tmplFollowPartner" class="template-area" rows="8"></textarea>
+            <div class="help-text">Variables: {{name}}, {{partner_poc}}, {{partner}}, {{period}}, {{deadline}}</div>
+          </div>
+          <button class="btn btn-green btn-sm" onclick="saveTemplates()">Save Templates</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== STATE =====================
+let roster = [];
+let tracking = {};  // { "Name": { selfAssess: bool, partnerInput: bool, writeupDone: bool } }
+
+const STORAGE_KEYS = {
+  roster: 'pr-populator-roster',
+  tracking: 'pr-populator-tracking',
+  templates: 'pr-populator-templates',
+  reviewPeriod: 'pr-populator-period',
+  reviewDeadline: 'pr-populator-deadline'
+};
+
+// ===================== DEFAULT TEMPLATES =====================
+const DEFAULTS = {
+  self: `Hi {{name}}! :wave:
+
+It's performance review time for {{period}}. As part of our PR process, I'd like you to complete a self-assessment.
+
+Please take some time to reflect on:
+- Your key accomplishments this period
+- Challenges you faced and how you handled them
+- Areas where you feel you've grown
+- Goals or skills you'd like to develop next
+- Any support you need from me or the team
+
+Please send your self-assessment to me by *{{deadline}}*. If you have any questions about what to include, don't hesitate to reach out.
+
+Thanks!
+{{em}}`,
+
+  partner: `Hi {{partner_poc}}! :wave:
+
+Hope you're doing well! We're conducting performance reviews for {{period}} and I wanted to reach out regarding *{{name}}* ({{role}}) who has been supporting {{partner}}.
+
+Could you share some feedback on {{name}}'s performance? Specifically:
+- How has {{name}} been performing in their role?
+- Any standout contributions or wins?
+- Areas for improvement or growth opportunities?
+- How has the communication and collaboration been?
+- Overall satisfaction with their support (1-5 scale)?
+
+Your input is really valuable for their development. Could you get this back to me by *{{deadline}}*?
+
+Thank you so much!
+{{em}}`,
+
+  writeup: `PERFORMANCE REVIEW - {{period}}
+-------------------------------------
+
+Team Member: {{name}}
+Role: {{role}}
+Partner/Client: {{partner}}
+Partner POC: {{partner_poc}}
+Start Date: {{start_date}}
+Tenure: {{tenure}}
+EM: {{em}}
+Review Period: {{period}}
+
+-------------------------------------
+1. OVERALL PERFORMANCE SUMMARY
+-------------------------------------
+[Summary of TM performance during the review period]
+
+
+-------------------------------------
+2. KEY ACCOMPLISHMENTS
+-------------------------------------
+- [Accomplishment 1]
+- [Accomplishment 2]
+- [Accomplishment 3]
+
+
+-------------------------------------
+3. PARTNER FEEDBACK SUMMARY
+-------------------------------------
+Partner POC: {{partner_poc}}
+Overall Satisfaction: [1-5]
+Key Feedback:
+- [Point 1]
+- [Point 2]
+
+
+-------------------------------------
+4. AREAS OF STRENGTH
+-------------------------------------
+- [Strength 1]
+- [Strength 2]
+
+
+-------------------------------------
+5. AREAS FOR DEVELOPMENT
+-------------------------------------
+- [Area 1]
+- [Area 2]
+
+
+-------------------------------------
+6. GOALS FOR NEXT PERIOD
+-------------------------------------
+- [Goal 1]
+- [Goal 2]
+
+
+-------------------------------------
+7. EM NOTES / ACTION ITEMS
+-------------------------------------
+- [Note or action item]
+
+
+-------------------------------------
+8. SELF-ASSESSMENT SUMMARY
+-------------------------------------
+[Summarize key points from TM self-assessment]
+
+
+-------------------------------------
+9. OVERALL RATING
+-------------------------------------
+Rating: [Exceeds / Meets / Below Expectations]
+Recommendation: [Continue / Improvement Plan / Recognition]`,
+
+  followSelf: `Hi {{name}} :wave:
+
+Just a friendly reminder -- I haven't received your self-assessment for the {{period}} performance review yet. The deadline is *{{deadline}}*.
+
+Could you please prioritize this? Let me know if you need any help or have questions about what to include.
+
+Thanks!`,
+
+  followPartner: `Hi {{partner_poc}} :wave:
+
+Just following up on the feedback request for *{{name}}* at {{partner}} for our {{period}} performance review. The deadline is *{{deadline}}*.
+
+I know you're busy -- even brief notes on their performance would be really helpful. Just a few bullet points on how they've been doing would be great.
+
+Thank you!`
+};
+
+// ===================== SAMPLE DATA =====================
+const SAMPLE_ROSTER = `Coco Itol, Customer Support Rep, Bluestone Lane, Kerri S., 2024-06-15, Alex Dela Rosa
+Ardie Lazaga, Customer Support Rep, Bluestone Lane, Kerri S., 2024-03-10, Alex Dela Rosa
+Abby Mercado, Customer Support Rep, Bluestone Lane, Kerri S., 2024-08-20, Alex Dela Rosa
+Karima Santos, Customer Support Rep, TCL, Mike R., 2024-01-22, Alex Dela Rosa
+Rhea Medoza, Customer Support Rep, TCL, Mike R., 2024-04-05, Alex Dela Rosa
+Curt Villanueva, Customer Support Rep, TCL, Mike R., 2024-09-12, Alex Dela Rosa
+Kevin Reyes, Customer Support Rep, TCL, Mike R., 2025-01-08, Alex Dela Rosa
+Cid Revilloza, Customer Support Rep, Cushion Lab, Sarah T., 2024-07-01, Alex Dela Rosa
+Leo Bautista, Customer Support Rep, WNRS, Dani L., 2024-11-15, Alex Dela Rosa
+Sam dela Cruz, Customer Support Rep, Wine Enthusiast, Pat M., 2025-02-03, Alex Dela Rosa
+MJ Cortez, Customer Support Rep, Dezi, Jen K., 2024-05-20, Alex Dela Rosa
+Miggy Torres, Customer Support Rep, Skillibrium, Ryan B., 2024-10-01, Alex Dela Rosa`;
+
+// ===================== INIT =====================
+function init() {
+  loadState();
+  loadTemplates();
+  setupTabs();
+  renderRoster();
+  updateStats();
+  setDeadlineDefault();
+}
+
+function setDeadlineDefault() {
+  const saved = localStorage.getItem(STORAGE_KEYS.reviewDeadline);
+  if (saved) {
+    document.getElementById('reviewDeadline').value = saved;
+  } else {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    document.getElementById('reviewDeadline').value = d.toISOString().split('T')[0];
+  }
+  const savedPeriod = localStorage.getItem(STORAGE_KEYS.reviewPeriod);
+  if (savedPeriod) document.getElementById('reviewPeriod').value = savedPeriod;
+}
+
+function loadState() {
+  try {
+    const r = localStorage.getItem(STORAGE_KEYS.roster);
+    if (r) roster = JSON.parse(r);
+    const t = localStorage.getItem(STORAGE_KEYS.tracking);
+    if (t) tracking = JSON.parse(t);
+  } catch(e) { console.error('State load error', e); }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEYS.roster, JSON.stringify(roster));
+  localStorage.setItem(STORAGE_KEYS.tracking, JSON.stringify(tracking));
+  localStorage.setItem(STORAGE_KEYS.reviewPeriod, document.getElementById('reviewPeriod').value);
+  localStorage.setItem(STORAGE_KEYS.reviewDeadline, document.getElementById('reviewDeadline').value);
+}
+
+function loadTemplates() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.templates);
+    const tmpls = saved ? JSON.parse(saved) : DEFAULTS;
+    document.getElementById('tmplSelf').value = tmpls.self || DEFAULTS.self;
+    document.getElementById('tmplPartner').value = tmpls.partner || DEFAULTS.partner;
+    document.getElementById('tmplWriteup').value = tmpls.writeup || DEFAULTS.writeup;
+    document.getElementById('tmplFollowSelf').value = tmpls.followSelf || DEFAULTS.followSelf;
+    document.getElementById('tmplFollowPartner').value = tmpls.followPartner || DEFAULTS.followPartner;
+  } catch(e) {
+    Object.keys(DEFAULTS).forEach(k => {
+      const el = document.getElementById('tmpl' + k.charAt(0).toUpperCase() + k.slice(1));
+      if (el) el.value = DEFAULTS[k];
+    });
+  }
+}
+
+function saveTemplates() {
+  const tmpls = {
+    self: document.getElementById('tmplSelf').value,
+    partner: document.getElementById('tmplPartner').value,
+    writeup: document.getElementById('tmplWriteup').value,
+    followSelf: document.getElementById('tmplFollowSelf').value,
+    followPartner: document.getElementById('tmplFollowPartner').value
+  };
+  localStorage.setItem(STORAGE_KEYS.templates, JSON.stringify(tmpls));
+  toast('Templates saved');
+}
+
+function resetTemplate(key) {
+  const map = { self: 'tmplSelf', partner: 'tmplPartner', writeup: 'tmplWriteup', followSelf: 'tmplFollowSelf', followPartner: 'tmplFollowPartner' };
+  document.getElementById(map[key]).value = DEFAULTS[key];
+  saveTemplates();
+  toast('Template reset to default');
+}
+
+// ===================== TABS =====================
+function setupTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+// ===================== ROSTER =====================
+function parseRoster() {
+  const raw = document.getElementById('rosterInput').value.trim();
+  if (!raw) return toast('Paste roster data first');
+
+  const lines = raw.split('\n').filter(l => l.trim());
+  const parsed = [];
+
+  for (const line of lines) {
+    // Skip header line
+    if (line.toLowerCase().includes('name') && line.toLowerCase().includes('role')) continue;
+
+    const sep = line.includes('\t') ? '\t' : ',';
+    const parts = line.split(sep).map(s => s.trim());
+    if (parts.length < 2) continue;
+
+    const tm = {
+      name: parts[0] || '',
+      role: parts[1] || 'Customer Support Rep',
+      partner: parts[2] || '',
+      partnerPoc: parts[3] || '',
+      startDate: parts[4] || '',
+      em: parts[5] || ''
+    };
+    parsed.push(tm);
+
+    // Init tracking if new
+    if (!tracking[tm.name]) {
+      tracking[tm.name] = { selfAssess: false, partnerInput: false, writeupDone: false };
+    }
+  }
+
+  roster = parsed;
+  saveState();
+  renderRoster();
+  updateStats();
+  toast(parsed.length + ' TMs imported');
+}
+
+function renderRoster() {
+  const panel = document.getElementById('rosterPanel');
+  const body = document.getElementById('rosterBody');
+  const count = document.getElementById('rosterCount');
+
+  if (roster.length === 0) {
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'block';
+  count.textContent = roster.length + ' TMs';
+
+  body.innerHTML = roster.map((tm, i) => `
+    <tr>
+      <td style="font-weight:600;color:#fff;">${esc(tm.name)}</td>
+      <td>${esc(tm.role)}</td>
+      <td><span class="badge badge-blue">${esc(tm.partner)}</span></td>
+      <td>${esc(tm.partnerPoc)}</td>
+      <td style="color:#666;">${esc(tm.startDate)}</td>
+      <td>${esc(tm.em)}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="removeTM(${i})">X</button></td>
+    </tr>
+  `).join('');
+}
+
+function removeTM(idx) {
+  const name = roster[idx].name;
+  roster.splice(idx, 1);
+  delete tracking[name];
+  saveState();
+  renderRoster();
+  updateStats();
+}
+
+function clearRoster() {
+  if (!confirm('Clear all roster data and tracking?')) return;
+  roster = [];
+  tracking = {};
+  saveState();
+  renderRoster();
+  updateStats();
+  document.getElementById('rosterInput').value = '';
+  document.getElementById('batchOutput').innerHTML = '';
+  toast('Roster cleared');
+}
+
+function loadSampleData() {
+  document.getElementById('rosterInput').value = SAMPLE_ROSTER;
+  parseRoster();
+}
+
+// ===================== BATCH GENERATE =====================
+function generateAll() {
+  if (roster.length === 0) {
+    document.getElementById('noRosterMsg').style.display = 'block';
+    return;
+  }
+  document.getElementById('noRosterMsg').style.display = 'none';
+
+  const period = document.getElementById('reviewPeriod').value || 'Q1 2026';
+  const deadline = formatDate(document.getElementById('reviewDeadline').value);
+  saveState();
+
+  const output = document.getElementById('batchOutput');
+  let html = '';
+
+  roster.forEach((tm, i) => {
+    const vars = buildVars(tm, period, deadline);
+
+    const selfMsg = applyTemplate(document.getElementById('tmplSelf').value, vars);
+    const partnerMsg = applyTemplate(document.getElementById('tmplPartner').value, vars);
+    const writeup = applyTemplate(document.getElementById('tmplWriteup').value, vars);
+
+    html += `
+      <div class="tm-section">
+        <div class="tm-section-header" onclick="toggleSection(this)">
+          <h3>
+            <span class="status-dot ${getStatusDot(tm.name)}"></span>
+            ${esc(tm.name)}
+            <span style="font-weight:400;color:#555;font-size:12px;margin-left:8px;">${esc(tm.partner)} / ${esc(tm.role)}</span>
+          </h3>
+          <div style="display:flex;gap:6px;">
+            ${trackBadge(tm.name, 'selfAssess', 'Self')}
+            ${trackBadge(tm.name, 'partnerInput', 'Partner')}
+            ${trackBadge(tm.name, 'writeupDone', 'Write-up')}
+          </div>
+        </div>
+        <div class="tm-section-body">
+          <div class="grid-3">
+            <div class="output-card">
+              <div class="output-card-header">
+                <div>
+                  <span class="msg-type-label" style="color:#3498db;">SLACK</span>
+                  <h4 style="display:inline;">Self-Assessment Request</h4>
+                </div>
+                <button class="btn-copy" onclick="copyText(this, 'self-${i}')">Copy</button>
+              </div>
+              <div class="output-card-body">
+                <pre id="self-${i}">${esc(selfMsg)}</pre>
+              </div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div>
+                  <span class="msg-type-label" style="color:#9b59b6;">SLACK</span>
+                  <h4 style="display:inline;">Partner Input Request</h4>
+                </div>
+                <button class="btn-copy" onclick="copyText(this, 'partner-${i}')">Copy</button>
+              </div>
+              <div class="output-card-body">
+                <pre id="partner-${i}">${esc(partnerMsg)}</pre>
+              </div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div>
+                  <span class="msg-type-label" style="color:#e67e22;">DOC</span>
+                  <h4 style="display:inline;">PR Write-Up</h4>
+                </div>
+                <button class="btn-copy" onclick="copyText(this, 'writeup-${i}')">Copy</button>
+              </div>
+              <div class="output-card-body">
+                <pre id="writeup-${i}">${esc(writeup)}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  output.innerHTML = html;
+  toast('Generated messages for ' + roster.length + ' TMs');
+}
+
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function buildVars(tm, period, deadline) {
+  const tenure = calcTenure(tm.startDate);
+  return {
+    name: tm.name,
+    role: tm.role,
+    partner: tm.partner,
+    partner_poc: tm.partnerPoc,
+    start_date: tm.startDate,
+    em: tm.em,
+    period: period,
+    deadline: deadline,
+    tenure: tenure
+  };
+}
+
+function applyTemplate(template, vars) {
+  let result = template;
+  for (const [key, val] of Object.entries(vars)) {
+    result = result.replace(new RegExp('\\{\\{' + key + '\\}\\}', 'g'), val);
+  }
+  return result;
+}
+
+function calcTenure(startDate) {
+  if (!startDate) return 'N/A';
+  try {
+    const start = new Date(startDate);
+    const now = new Date();
+    const months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+    if (months < 1) return 'Less than 1 month';
+    if (months < 12) return months + ' months';
+    const years = Math.floor(months / 12);
+    const rem = months % 12;
+    return years + ' year' + (years > 1 ? 's' : '') + (rem > 0 ? ', ' + rem + ' month' + (rem > 1 ? 's' : '') : '');
+  } catch(e) { return 'N/A'; }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return 'TBD';
+  try {
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  } catch(e) { return dateStr; }
+}
+
+function getStatusDot(name) {
+  const t = tracking[name];
+  if (!t) return 'dot-none';
+  if (t.selfAssess && t.partnerInput && t.writeupDone) return 'dot-done';
+  if (t.selfAssess || t.partnerInput || t.writeupDone) return 'dot-pending';
+  return 'dot-none';
+}
+
+function trackBadge(name, field, label) {
+  const t = tracking[name];
+  const done = t && t[field];
+  return `<span class="badge ${done ? 'badge-green' : 'badge-gray'}">${label}</span>`;
+}
+
+// ===================== TRACKER =====================
+function renderTracker() {
+  const body = document.getElementById('trackerBody');
+  if (roster.length === 0) {
+    body.innerHTML = '<div class="empty-state"><h3>No TMs Tracked</h3><p>Import a roster first.</p></div>';
+    return;
+  }
+
+  let complete = 0;
+  let pending = 0;
+
+  let html = '';
+  roster.forEach(tm => {
+    const t = tracking[tm.name] || { selfAssess: false, partnerInput: false, writeupDone: false };
+    const allDone = t.selfAssess && t.partnerInput && t.writeupDone;
+    if (allDone) complete++; else pending++;
+
+    html += `
+      <div class="tracker-row">
+        <div class="tracker-name">
+          <span class="status-dot ${allDone ? 'dot-done' : (t.selfAssess || t.partnerInput ? 'dot-pending' : 'dot-none')}"></span>
+          ${esc(tm.name)}
+        </div>
+        <div style="color:#555;font-size:12px;min-width:100px;">${esc(tm.partner)}</div>
+        <div class="tracker-status">
+          <label class="tracker-item" style="cursor:pointer;">
+            <input type="checkbox" class="checkbox-styled" ${t.selfAssess ? 'checked' : ''} onchange="updateTracking('${esc(tm.name)}', 'selfAssess', this.checked)">
+            Self-Assessment
+          </label>
+          <label class="tracker-item" style="cursor:pointer;">
+            <input type="checkbox" class="checkbox-styled" ${t.partnerInput ? 'checked' : ''} onchange="updateTracking('${esc(tm.name)}', 'partnerInput', this.checked)">
+            Partner Input
+          </label>
+          <label class="tracker-item" style="cursor:pointer;">
+            <input type="checkbox" class="checkbox-styled" ${t.writeupDone ? 'checked' : ''} onchange="updateTracking('${esc(tm.name)}', 'writeupDone', this.checked)">
+            Write-Up Done
+          </label>
+        </div>
+      </div>
+    `;
+  });
+
+  body.innerHTML = html;
+  document.getElementById('trackerComplete').textContent = complete + ' Complete';
+  document.getElementById('trackerPending').textContent = pending + ' Pending';
+}
+
+function updateTracking(name, field, value) {
+  if (!tracking[name]) tracking[name] = { selfAssess: false, partnerInput: false, writeupDone: false };
+  tracking[name][field] = value;
+  saveState();
+  updateStats();
+  renderTracker();
+}
+
+// ===================== FOLLOW-UPS =====================
+function generateFollowups() {
+  const body = document.getElementById('followupBody');
+  if (roster.length === 0) {
+    body.innerHTML = '<div class="empty-state"><h3>No Roster</h3><p>Import a roster first.</p></div>';
+    return;
+  }
+
+  const period = document.getElementById('reviewPeriod').value || 'Q1 2026';
+  const deadline = formatDate(document.getElementById('reviewDeadline').value);
+
+  const missingSelf = [];
+  const missingPartner = [];
+
+  roster.forEach(tm => {
+    const t = tracking[tm.name] || { selfAssess: false, partnerInput: false, writeupDone: false };
+    if (!t.selfAssess) missingSelf.push(tm);
+    if (!t.partnerInput) missingPartner.push(tm);
+  });
+
+  if (missingSelf.length === 0 && missingPartner.length === 0) {
+    body.innerHTML = '<div class="empty-state"><h3>All Clear</h3><p>All self-assessments and partner inputs have been received.</p></div>';
+    return;
+  }
+
+  let html = '';
+
+  if (missingSelf.length > 0) {
+    html += `<h3 style="font-size:13px;color:#e67e22;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">Missing Self-Assessments (${missingSelf.length})</h3>`;
+    missingSelf.forEach((tm, i) => {
+      const vars = buildVars(tm, period, deadline);
+      const msg = applyTemplate(document.getElementById('tmplFollowSelf').value, vars);
+      html += `
+        <div class="output-card">
+          <div class="output-card-header">
+            <h4>${esc(tm.name)} <span style="color:#555;font-weight:400;font-size:11px;">${esc(tm.partner)}</span></h4>
+            <button class="btn-copy" onclick="copyText(this, 'fu-self-${i}')">Copy</button>
+          </div>
+          <div class="output-card-body">
+            <pre id="fu-self-${i}">${esc(msg)}</pre>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  if (missingPartner.length > 0) {
+    html += `<h3 style="font-size:13px;color:#9b59b6;margin:20px 0 12px;text-transform:uppercase;letter-spacing:0.5px;">Missing Partner Input (${missingPartner.length})</h3>`;
+
+    // Group by partner POC
+    const grouped = {};
+    missingPartner.forEach(tm => {
+      const poc = tm.partnerPoc || 'Unknown';
+      if (!grouped[poc]) grouped[poc] = [];
+      grouped[poc].push(tm);
+    });
+
+    Object.entries(grouped).forEach(([poc, tms]) => {
+      tms.forEach((tm, i) => {
+        const vars = buildVars(tm, period, deadline);
+        const msg = applyTemplate(document.getElementById('tmplFollowPartner').value, vars);
+        html += `
+          <div class="output-card">
+            <div class="output-card-header">
+              <h4>${esc(poc)} <span style="color:#555;font-weight:400;font-size:11px;">re: ${esc(tm.name)} @ ${esc(tm.partner)}</span></h4>
+              <button class="btn-copy" onclick="copyText(this, 'fu-partner-${poc}-${i}')">Copy</button>
+            </div>
+            <div class="output-card-body">
+              <pre id="fu-partner-${poc}-${i}">${esc(msg)}</pre>
+            </div>
+          </div>
+        `;
+      });
+    });
+  }
+
+  body.innerHTML = html;
+  toast('Generated ' + (missingSelf.length + missingPartner.length) + ' follow-up messages');
+}
+
+// ===================== STATS =====================
+function updateStats() {
+  document.getElementById('statTotal').textContent = roster.length;
+
+  let selfCount = 0, partnerCount = 0, writeupCount = 0;
+  roster.forEach(tm => {
+    const t = tracking[tm.name];
+    if (t) {
+      if (t.selfAssess) selfCount++;
+      if (t.partnerInput) partnerCount++;
+      if (t.writeupDone) writeupCount++;
+    }
+  });
+
+  document.getElementById('statSelf').textContent = selfCount + '/' + roster.length;
+  document.getElementById('statPartner').textContent = partnerCount + '/' + roster.length;
+  document.getElementById('statWriteup').textContent = writeupCount + '/' + roster.length;
+
+  // Also update tracker if visible
+  renderTracker();
+}
+
+// ===================== CLIPBOARD =====================
+function copyText(btn, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// ===================== UTILS =====================
+function esc(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===================== BOOT =====================
+init();
+</script>
+</body>
+</html>

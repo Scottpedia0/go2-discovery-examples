@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BW Compliance Tracker — Go2 Engage</title>
+<style>
+:root {
+  --bg: #09090b;
+  --bg2: #18181b;
+  --bg3: #27272a;
+  --border: #3f3f46;
+  --text: #e4e4e7;
+  --text2: #a1a1aa;
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --orange: #fb923c;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --cyan: #22d3ee;
+  --radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+a { color:var(--accent2); text-decoration:none; }
+
+/* Header */
+.header { background:var(--bg2); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.header h1 { font-size:18px; font-weight:600; }
+.header h1 span { color:var(--accent2); }
+.header-right { display:flex; gap:12px; align-items:center; }
+.header-meta { font-size:12px; color:var(--text2); }
+
+/* Tabs */
+.tabs { display:flex; background:var(--bg2); border-bottom:1px solid var(--border); padding:0 24px; overflow-x:auto; }
+.tab { padding:12px 20px; cursor:pointer; font-size:13px; font-weight:500; color:var(--text2); border-bottom:2px solid transparent; white-space:nowrap; transition:all .2s; user-select:none; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--accent2); border-bottom-color:var(--accent); }
+
+/* Layout */
+.main { padding:24px; max-width:1440px; margin:0 auto; }
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* Cards */
+.card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+.card h2 { font-size:15px; font-weight:600; margin-bottom:12px; }
+.card h3 { font-size:12px; font-weight:600; margin-bottom:8px; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+
+/* Grid */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.grid-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; }
+@media(max-width:1000px) { .grid-3,.grid-4,.grid-5 { grid-template-columns:1fr 1fr; } }
+@media(max-width:700px) { .grid-2,.grid-3,.grid-4,.grid-5 { grid-template-columns:1fr; } }
+
+/* Stats */
+.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
+.stat-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; }
+.stat-value { font-size:28px; font-weight:700; }
+.stat-sub { font-size:12px; color:var(--text2); margin-top:2px; }
+
+/* Forms */
+input, select, textarea { background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:var(--radius); font-size:13px; width:100%; outline:none; transition:border-color .2s; }
+input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+label { font-size:12px; color:var(--text2); display:block; margin-bottom:4px; }
+.form-row { display:flex; gap:12px; margin-bottom:12px; align-items:flex-end; }
+.form-row > div { flex:1; }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:var(--radius); font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--bg3); color:var(--text); transition:all .15s; white-space:nowrap; }
+.btn:hover { border-color:var(--accent); }
+.btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn-primary:hover { opacity:.9; }
+.btn-danger { background:var(--red); border-color:var(--red); color:#fff; font-size:12px; padding:4px 10px; }
+.btn-danger:hover { opacity:.85; }
+.btn-sm { padding:5px 10px; font-size:12px; }
+
+/* Tables */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { text-align:left; padding:10px 12px; border-bottom:2px solid var(--border); color:var(--text2); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px; cursor:pointer; user-select:none; white-space:nowrap; }
+th:hover { color:var(--text); }
+th.sorted-asc::after { content:" \25B2"; font-size:10px; }
+th.sorted-desc::after { content:" \25BC"; font-size:10px; }
+td { padding:8px 12px; border-bottom:1px solid var(--border); }
+tr:hover td { background:var(--bg3); }
+
+/* Tags */
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:500; }
+.tag-green { background:rgba(52,211,153,0.15); color:var(--green); }
+.tag-red { background:rgba(248,113,113,0.15); color:var(--red); }
+.tag-yellow { background:rgba(251,191,36,0.15); color:var(--yellow); }
+.tag-blue { background:rgba(96,165,250,0.15); color:var(--blue); }
+.tag-purple { background:rgba(167,139,250,0.15); color:var(--purple); }
+.tag-orange { background:rgba(251,146,60,0.15); color:var(--orange); }
+
+/* Progress bars */
+.progress-bar { background:var(--bg3); border-radius:4px; height:8px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:4px; transition:width .3s; }
+
+/* Chart canvas */
+.chart-box { position:relative; height:280px; margin-top:12px; }
+
+/* Modal */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; justify-content:center; align-items:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:24px; width:90%; max-width:560px; max-height:85vh; overflow-y:auto; }
+.modal h2 { margin-bottom:16px; font-size:16px; }
+
+/* Exemption text box */
+.exemption-box { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; font-family:'SF Mono',Monaco,'Courier New',monospace; font-size:12px; line-height:1.6; white-space:pre-wrap; color:var(--text); margin-top:8px; position:relative; }
+.copy-btn { position:absolute; top:8px; right:8px; background:var(--accent); border:none; color:#fff; padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer; }
+.copy-btn:hover { opacity:.85; }
+
+/* Toast */
+.toast { position:fixed; bottom:24px; right:24px; background:var(--bg2); border:1px solid var(--green); border-radius:var(--radius); padding:12px 20px; font-size:13px; z-index:300; transform:translateY(100px); opacity:0; transition:all .3s; }
+.toast.show { transform:translateY(0); opacity:1; }
+
+/* Misc */
+.mt-12 { margin-top:12px; }
+.mt-16 { margin-top:16px; }
+.mb-8 { margin-bottom:8px; }
+.mb-16 { margin-bottom:16px; }
+.flex-between { display:flex; justify-content:space-between; align-items:center; }
+.text-muted { color:var(--text2); font-size:12px; }
+.text-green { color:var(--green); }
+.text-red { color:var(--red); }
+.text-yellow { color:var(--yellow); }
+.text-orange { color:var(--orange); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>BW</span> Compliance Tracker</h1>
+  <div class="header-right">
+    <span class="header-meta" id="cycleLabel"></span>
+    <button class="btn btn-sm" onclick="resetAllData()">Reset Data</button>
+  </div>
+</div>
+
+<div class="tabs" id="tabBar">
+  <div class="tab active" data-tab="dashboard">Dashboard</div>
+  <div class="tab" data-tab="reschedule">Log Reschedule</div>
+  <div class="tab" data-tab="queue">Reschedule Queue</div>
+  <div class="tab" data-tab="trends">Trends</div>
+  <div class="tab" data-tab="roster">EM Roster</div>
+</div>
+
+<div class="main">
+
+<!-- ==================== DASHBOARD ==================== -->
+<div class="panel active" id="panel-dashboard">
+
+  <div class="grid-5 mb-16" id="topStats">
+    <div class="stat-card">
+      <div class="stat-label">Active EMs</div>
+      <div class="stat-value" id="statActiveEMs">12</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Cycle Completion</div>
+      <div class="stat-value text-green" id="statCycleCompletion">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Reschedules This Cycle</div>
+      <div class="stat-value text-yellow" id="statReschedules">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending Exemptions</div>
+      <div class="stat-value text-orange" id="statPendingExemptions">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Est. Hours Lost</div>
+      <div class="stat-value text-red" id="statHoursLost">--</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="flex-between mb-8">
+      <h2>EM Compliance — Current Cycle</h2>
+      <select id="sortDashboard" style="width:auto;">
+        <option value="name">Sort: Name</option>
+        <option value="pct-asc">Sort: Completion % (Low to High)</option>
+        <option value="pct-desc">Sort: Completion % (High to Low)</option>
+        <option value="behind">Sort: Most Behind</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table id="dashTable">
+        <thead>
+          <tr>
+            <th>EM</th>
+            <th>Accounts</th>
+            <th>Target BWs</th>
+            <th>Completed</th>
+            <th>Rescheduled</th>
+            <th>Exemptions</th>
+            <th>Completion %</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="dashBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Reschedules by Reason (This Cycle)</h2>
+      <div class="chart-box"><canvas id="reasonPieChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>EMs Behind Schedule</h2>
+      <div id="behindList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LOG RESCHEDULE ==================== -->
+<div class="panel" id="panel-reschedule">
+  <div class="card" style="max-width:700px;">
+    <h2>Log a BW Reschedule</h2>
+    <p class="text-muted mb-16">Record a rescheduled BW session. An exemption text will be auto-generated for pasting into Go2.</p>
+
+    <div class="form-row">
+      <div>
+        <label>Engagement Manager</label>
+        <select id="logEM"></select>
+      </div>
+      <div>
+        <label>Teammate (TM)</label>
+        <input type="text" id="logTM" placeholder="e.g. Abby, Coco, Rhea...">
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Original Date</label>
+        <input type="date" id="logOrigDate">
+      </div>
+      <div>
+        <label>Rescheduled To (optional)</label>
+        <input type="date" id="logNewDate">
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Reason</label>
+        <select id="logReason">
+          <option value="">Select reason...</option>
+          <option value="TM PTO">TM PTO / Rest Day</option>
+          <option value="TM Illness">TM Illness</option>
+          <option value="TM No-Show">TM No-Show / Failed to Join</option>
+          <option value="TM Workload">TM Workload / Busy</option>
+          <option value="Power Outage">Power Outage / Internet Issue</option>
+          <option value="Typhoon">Typhoon / Natural Disaster</option>
+          <option value="Partner Unavailable">Partner Travel / Unavailable</option>
+          <option value="EM Illness">EM Illness</option>
+          <option value="Coverage Gap">Coverage Gap</option>
+          <option value="Timezone Issue">Timezone Mismatch</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Partner / Account</label>
+        <input type="text" id="logAccount" placeholder="e.g. Popmenu, Aramsco...">
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label>Notes (optional)</label>
+      <textarea id="logNotes" rows="2" placeholder="Additional context..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="submitReschedule()">Log Reschedule & Generate Exemption</button>
+
+    <div id="exemptionOutput" style="display:none;" class="mt-16">
+      <h3>Auto-Generated Exemption Text</h3>
+      <div class="exemption-box" id="exemptionText">
+        <button class="copy-btn" onclick="copyExemption()">Copy</button>
+        <span id="exemptionContent"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== RESCHEDULE QUEUE ==================== -->
+<div class="panel" id="panel-queue">
+  <div class="card">
+    <div class="flex-between mb-8">
+      <h2>Reschedule Queue</h2>
+      <div style="display:flex; gap:8px;">
+        <select id="queueFilterEM" style="width:auto;" onchange="renderQueue()">
+          <option value="">All EMs</option>
+        </select>
+        <select id="queueFilterReason" style="width:auto;" onchange="renderQueue()">
+          <option value="">All Reasons</option>
+        </select>
+        <select id="queueFilterStatus" style="width:auto;" onchange="renderQueue()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="exemption_filed">Exemption Filed</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>EM</th>
+            <th>TM</th>
+            <th>Account</th>
+            <th>Reason</th>
+            <th>Rescheduled To</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="queueBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TRENDS ==================== -->
+<div class="panel" id="panel-trends">
+  <div class="grid-2 mb-16">
+    <div class="stat-card">
+      <div class="stat-label">Avg Reschedules / Week (Team)</div>
+      <div class="stat-value text-yellow" id="statAvgWeekly">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Reason This Month</div>
+      <div class="stat-value text-orange" id="statTopReason">--</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Weekly Reschedules by Reason</h2>
+    <div class="chart-box" style="height:320px;"><canvas id="weeklyTrendChart"></canvas></div>
+  </div>
+  <div class="grid-2 mt-16">
+    <div class="card">
+      <h2>Reschedules by EM</h2>
+      <div class="chart-box"><canvas id="emBarChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Reason Breakdown (All Time)</h2>
+      <div class="chart-box"><canvas id="reasonDoughnutChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== EM ROSTER ==================== -->
+<div class="panel" id="panel-roster">
+  <div class="card">
+    <h2>Engage Team Roster</h2>
+    <p class="text-muted mb-16">14 team members. 12 active EMs conducting biweekly 1:1 sessions. Bev Campos (Lead) and Frenchie Evangelista (Head) manage oversight.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Primary Accounts</th>
+            <th>Est. TM Count</th>
+            <th>BW Target / Cycle</th>
+            <th>Shift (PHT)</th>
+          </tr>
+        </thead>
+        <tbody id="rosterBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA MODEL
+// ============================================================
+
+const EM_DATA = [
+  { name: "Yani Pace-Balanon", role: "EM", accounts: ["Popmenu", "NetFoundry CS", "Emerge", "Springrates", "Dental App", "Broadvoice"], tmCount: 15, bwTarget: 8, shift: "20:00-05:00", squad: "Mayhem" },
+  { name: "Pao Hernaez", role: "EM", accounts: ["Wine CS", "Popmenu", "Gorgias"], tmCount: 14, bwTarget: 7, shift: "22:00-07:00", squad: "" },
+  { name: "Jeruz Fin", role: "EM", accounts: ["Comfort Keepers", "IPPC Tech", "Ex Nihilo"], tmCount: 10, bwTarget: 5, shift: "23:00-08:00", squad: "" },
+  { name: "Patrick Andaya", role: "EM", accounts: ["BOI", "Broadvoice", "MKD", "Cubby Beds", "Urbia", "Bluebird"], tmCount: 14, bwTarget: 7, shift: "22:00-12:00", squad: "" },
+  { name: "Alex Dela Rosa", role: "EM", accounts: ["TCL", "Bluestone"], tmCount: 10, bwTarget: 5, shift: "14:00-02:00", squad: "RIOT" },
+  { name: "JP Reyes", role: "EM", accounts: ["Freebee", "K2", "Upwards"], tmCount: 12, bwTarget: 6, shift: "23:00-11:00", squad: "" },
+  { name: "BC Manalaysay", role: "EM", accounts: ["Aramsco", "Popmenu CS", "Chefmod", "North Star Strategies"], tmCount: 15, bwTarget: 8, shift: "23:00-09:00", squad: "" },
+  { name: "Emman Deseo", role: "EM", accounts: ["BOI", "Beckers", "WSL", "USAC", "Civica"], tmCount: 12, bwTarget: 6, shift: "21:00-09:00", squad: "" },
+  { name: "Harlon Canillas", role: "EM", accounts: ["MD Capital", "Popmenu", "Bonafide", "Mindbloom"], tmCount: 12, bwTarget: 6, shift: "21:00-07:00", squad: "" },
+  { name: "Bea Costelo", role: "EM", accounts: ["PPS", "Voxie", "Bublish", "TA3"], tmCount: 8, bwTarget: 4, shift: "21:00-09:00", squad: "" },
+  { name: "JB Bhowmick", role: "EM", accounts: ["Grapevine", "Cognito", "Weecare"], tmCount: 5, bwTarget: 3, shift: "21:00-06:30 IST", squad: "RIOT" },
+  { name: "Javi Joseph", role: "Lead/EM", accounts: ["TCL", "Wine", "SBS"], tmCount: 10, bwTarget: 5, shift: "19:00-06:00", squad: "RIOT Lead" },
+  { name: "Bev Campos", role: "Lead", accounts: [], tmCount: 0, bwTarget: 0, shift: "20:00-09:00", squad: "" },
+  { name: "Frenchie Evangelista", role: "Head", accounts: [], tmCount: 0, bwTarget: 0, shift: "16:00-05:00", squad: "" }
+];
+
+const REASONS = ["TM PTO", "TM Illness", "TM No-Show", "TM Workload", "Power Outage", "Typhoon", "Partner Unavailable", "EM Illness", "Coverage Gap", "Timezone Issue", "Other"];
+
+const REASON_COLORS = {
+  "TM PTO": "#60a5fa",
+  "TM Illness": "#f87171",
+  "TM No-Show": "#fbbf24",
+  "TM Workload": "#fb923c",
+  "Power Outage": "#a78bfa",
+  "Typhoon": "#22d3ee",
+  "Partner Unavailable": "#34d399",
+  "EM Illness": "#f472b6",
+  "Coverage Gap": "#94a3b8",
+  "Timezone Issue": "#e879f9",
+  "Other": "#71717a"
+};
+
+// ============================================================
+// STATE / PERSISTENCE
+// ============================================================
+
+const STORAGE_KEY = "bw_compliance_tracker";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function getDefaultState() {
+  // Generate sample data for current cycle
+  const now = new Date();
+  const reschedules = [];
+  const completions = {};
+
+  // Generate sample completions per EM
+  EM_DATA.forEach(em => {
+    if (em.bwTarget === 0) return;
+    const base = Math.floor(em.bwTarget * (0.55 + Math.random() * 0.4));
+    completions[em.name] = Math.min(base, em.bwTarget);
+  });
+
+  // Sample reschedule data (past 6 weeks)
+  const sampleReschedules = [
+    { em: "Yani Pace-Balanon", tm: "Abby", account: "Popmenu", reason: "TM PTO", daysAgo: 2, status: "pending" },
+    { em: "Yani Pace-Balanon", tm: "Coco", account: "NetFoundry CS", reason: "Power Outage", daysAgo: 5, status: "exemption_filed" },
+    { em: "Yani Pace-Balanon", tm: "Mark", account: "Emerge", reason: "TM No-Show", daysAgo: 8, status: "resolved" },
+    { em: "Yani Pace-Balanon", tm: "Luis", account: "Springrates", reason: "TM Workload", daysAgo: 12, status: "resolved" },
+    { em: "Pao Hernaez", tm: "Jed", account: "Wine CS", reason: "TM Workload", daysAgo: 1, status: "pending" },
+    { em: "Pao Hernaez", tm: "Kris", account: "Popmenu", reason: "TM PTO", daysAgo: 4, status: "exemption_filed" },
+    { em: "Pao Hernaez", tm: "Nina", account: "Gorgias", reason: "Partner Unavailable", daysAgo: 9, status: "resolved" },
+    { em: "Pao Hernaez", tm: "Ria", account: "Wine CS", reason: "TM Illness", daysAgo: 15, status: "resolved" },
+    { em: "Jeruz Fin", tm: "Carlo", account: "Comfort Keepers", reason: "TM Illness", daysAgo: 3, status: "pending" },
+    { em: "Jeruz Fin", tm: "Dex", account: "IPPC Tech", reason: "Typhoon", daysAgo: 7, status: "exemption_filed" },
+    { em: "Jeruz Fin", tm: "Mae", account: "Ex Nihilo", reason: "Power Outage", daysAgo: 14, status: "resolved" },
+    { em: "Patrick Andaya", tm: "Sam", account: "BOI", reason: "TM No-Show", daysAgo: 2, status: "pending" },
+    { em: "Patrick Andaya", tm: "Tina", account: "Broadvoice", reason: "TM Workload", daysAgo: 6, status: "exemption_filed" },
+    { em: "Patrick Andaya", tm: "Vic", account: "MKD", reason: "TM PTO", daysAgo: 10, status: "resolved" },
+    { em: "Patrick Andaya", tm: "Ben", account: "Cubby Beds", reason: "TM No-Show", daysAgo: 16, status: "resolved" },
+    { em: "Alex Dela Rosa", tm: "Rhea", account: "TCL", reason: "TM No-Show", daysAgo: 3, status: "pending" },
+    { em: "Alex Dela Rosa", tm: "Coco", account: "Bluestone", reason: "Power Outage", daysAgo: 11, status: "resolved" },
+    { em: "JP Reyes", tm: "Tala", account: "Freebee", reason: "TM PTO", daysAgo: 4, status: "exemption_filed" },
+    { em: "JP Reyes", tm: "Enzo", account: "K2", reason: "TM Illness", daysAgo: 13, status: "resolved" },
+    { em: "JP Reyes", tm: "Mika", account: "Upwards", reason: "Partner Unavailable", daysAgo: 18, status: "resolved" },
+    { em: "BC Manalaysay", tm: "Dan", account: "Aramsco", reason: "Partner Unavailable", daysAgo: 1, status: "pending" },
+    { em: "BC Manalaysay", tm: "Grace", account: "Popmenu CS", reason: "TM PTO", daysAgo: 7, status: "exemption_filed" },
+    { em: "BC Manalaysay", tm: "Ivan", account: "Chefmod", reason: "Timezone Issue", daysAgo: 20, status: "resolved" },
+    { em: "Emman Deseo", tm: "Renz", account: "BOI", reason: "TM Illness", daysAgo: 6, status: "exemption_filed" },
+    { em: "Emman Deseo", tm: "Joy", account: "Beckers", reason: "TM No-Show", daysAgo: 19, status: "resolved" },
+    { em: "Harlon Canillas", tm: "Talha", account: "MD Capital", reason: "Timezone Issue", daysAgo: 2, status: "pending" },
+    { em: "Harlon Canillas", tm: "Pia", account: "Bonafide", reason: "TM PTO", daysAgo: 8, status: "exemption_filed" },
+    { em: "Harlon Canillas", tm: "Ace", account: "Mindbloom", reason: "TM No-Show", daysAgo: 17, status: "resolved" },
+    { em: "Bea Costelo", tm: "Josh", account: "PPS", reason: "TM No-Show", daysAgo: 5, status: "pending" },
+    { em: "Bea Costelo", tm: "Zee", account: "Voxie", reason: "TM PTO", daysAgo: 22, status: "resolved" },
+    { em: "JB Bhowmick", tm: "Marj", account: "Grapevine", reason: "TM Illness", daysAgo: 10, status: "resolved" },
+    { em: "Javi Joseph", tm: "Ana", account: "TCL", reason: "TM No-Show", daysAgo: 3, status: "pending" },
+    { em: "Javi Joseph", tm: "Nengi", account: "Wine", reason: "TM Workload", daysAgo: 9, status: "exemption_filed" },
+    { em: "Javi Joseph", tm: "Lenny", account: "SBS", reason: "TM PTO", daysAgo: 21, status: "resolved" },
+    // Additional sample data for trend density
+    { em: "Yani Pace-Balanon", tm: "Gia", account: "Dental App", reason: "TM Workload", daysAgo: 25, status: "resolved" },
+    { em: "Yani Pace-Balanon", tm: "Abby", account: "Popmenu", reason: "TM PTO", daysAgo: 30, status: "resolved" },
+    { em: "Yani Pace-Balanon", tm: "Coco", account: "NetFoundry CS", reason: "TM Illness", daysAgo: 35, status: "resolved" },
+    { em: "Patrick Andaya", tm: "Sam", account: "BOI", reason: "TM No-Show", daysAgo: 28, status: "resolved" },
+    { em: "Patrick Andaya", tm: "Tina", account: "Broadvoice", reason: "TM Workload", daysAgo: 33, status: "resolved" },
+    { em: "Pao Hernaez", tm: "Jed", account: "Wine CS", reason: "TM PTO", daysAgo: 26, status: "resolved" },
+    { em: "Pao Hernaez", tm: "Kris", account: "Popmenu", reason: "Partner Unavailable", daysAgo: 32, status: "resolved" },
+    { em: "Alex Dela Rosa", tm: "Coco", account: "Bluestone", reason: "Power Outage", daysAgo: 27, status: "resolved" },
+    { em: "Jeruz Fin", tm: "Mae", account: "Ex Nihilo", reason: "Typhoon", daysAgo: 29, status: "resolved" },
+    { em: "Harlon Canillas", tm: "Talha", account: "MD Capital", reason: "Timezone Issue", daysAgo: 31, status: "resolved" },
+    { em: "BC Manalaysay", tm: "Grace", account: "Aramsco", reason: "Partner Unavailable", daysAgo: 34, status: "resolved" },
+    { em: "JP Reyes", tm: "Tala", account: "Freebee", reason: "TM PTO", daysAgo: 36, status: "resolved" },
+    { em: "Emman Deseo", tm: "Joy", account: "WSL", reason: "TM Workload", daysAgo: 37, status: "resolved" },
+  ];
+
+  sampleReschedules.forEach((s, i) => {
+    const origDate = new Date(now);
+    origDate.setDate(origDate.getDate() - s.daysAgo);
+    const newDate = new Date(origDate);
+    newDate.setDate(newDate.getDate() + Math.floor(Math.random() * 3) + 1);
+    reschedules.push({
+      id: "sample-" + i,
+      em: s.em,
+      tm: s.tm,
+      account: s.account,
+      reason: s.reason,
+      origDate: origDate.toISOString().split("T")[0],
+      newDate: newDate.toISOString().split("T")[0],
+      notes: "",
+      status: s.status,
+      createdAt: origDate.toISOString()
+    });
+  });
+
+  return { reschedules, completions, version: 1 };
+}
+
+let state = loadState() || getDefaultState();
+if (!state.version) { state = getDefaultState(); saveState(); }
+
+// ============================================================
+// CYCLE LOGIC
+// ============================================================
+
+function getCurrentCycle() {
+  const now = new Date();
+  // Biweekly cycle: 2-week periods. Anchor: Jan 1 of current year
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const daysSinceYearStart = Math.floor((now - yearStart) / 86400000);
+  const cycleNumber = Math.floor(daysSinceYearStart / 14) + 1;
+  const cycleStart = new Date(yearStart);
+  cycleStart.setDate(cycleStart.getDate() + (cycleNumber - 1) * 14);
+  const cycleEnd = new Date(cycleStart);
+  cycleEnd.setDate(cycleEnd.getDate() + 13);
+  return {
+    number: cycleNumber,
+    start: cycleStart,
+    end: cycleEnd,
+    label: `Cycle ${cycleNumber} (${fmtDate(cycleStart)} - ${fmtDate(cycleEnd)})`
+  };
+}
+
+function fmtDate(d) {
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function fmtDateISO(d) {
+  return d.toISOString().split("T")[0];
+}
+
+// ============================================================
+// TABS
+// ============================================================
+
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
+    if (tab.dataset.tab === "trends") renderTrends();
+  });
+});
+
+// ============================================================
+// RENDERING
+// ============================================================
+
+function getActiveEMs() {
+  return EM_DATA.filter(em => em.bwTarget > 0);
+}
+
+function getCycleReschedules() {
+  const cycle = getCurrentCycle();
+  const start = fmtDateISO(cycle.start);
+  const end = fmtDateISO(cycle.end);
+  return state.reschedules.filter(r => r.origDate >= start && r.origDate <= end);
+}
+
+function renderDashboard() {
+  const cycle = getCurrentCycle();
+  document.getElementById("cycleLabel").textContent = cycle.label;
+
+  const activeEMs = getActiveEMs();
+  const cycleReschedules = getCycleReschedules();
+  const allReschedules = state.reschedules;
+
+  // Top stats
+  let totalTarget = 0, totalCompleted = 0;
+  activeEMs.forEach(em => {
+    totalTarget += em.bwTarget;
+    totalCompleted += (state.completions[em.name] || 0);
+  });
+  const pct = totalTarget > 0 ? Math.round((totalCompleted / totalTarget) * 100) : 0;
+  const pendingExemptions = allReschedules.filter(r => r.status === "pending").length;
+  const hoursLost = (cycleReschedules.length * 0.33).toFixed(1); // ~20min per reschedule
+
+  document.getElementById("statCycleCompletion").textContent = pct + "%";
+  document.getElementById("statReschedules").textContent = cycleReschedules.length;
+  document.getElementById("statPendingExemptions").textContent = pendingExemptions;
+  document.getElementById("statHoursLost").textContent = hoursLost + "h";
+
+  // EM table
+  const sortKey = document.getElementById("sortDashboard").value;
+  let rows = activeEMs.map(em => {
+    const completed = state.completions[em.name] || 0;
+    const emReschedules = cycleReschedules.filter(r => r.em === em.name).length;
+    const emExemptions = allReschedules.filter(r => r.em === em.name && r.status === "exemption_filed").length;
+    const compPct = em.bwTarget > 0 ? Math.round((completed / em.bwTarget) * 100) : 0;
+    const behind = em.bwTarget - completed;
+    return { ...em, completed, emReschedules, emExemptions, compPct, behind };
+  });
+
+  if (sortKey === "pct-asc") rows.sort((a, b) => a.compPct - b.compPct);
+  else if (sortKey === "pct-desc") rows.sort((a, b) => b.compPct - a.compPct);
+  else if (sortKey === "behind") rows.sort((a, b) => b.behind - a.behind);
+  else rows.sort((a, b) => a.name.localeCompare(b.name));
+
+  const tbody = document.getElementById("dashBody");
+  tbody.innerHTML = rows.map(r => {
+    let statusTag = "";
+    if (r.compPct >= 90) statusTag = `<span class="tag tag-green">On Track</span>`;
+    else if (r.compPct >= 70) statusTag = `<span class="tag tag-yellow">At Risk</span>`;
+    else statusTag = `<span class="tag tag-red">Behind</span>`;
+
+    const barColor = r.compPct >= 90 ? "var(--green)" : r.compPct >= 70 ? "var(--yellow)" : "var(--red)";
+
+    return `<tr>
+      <td><strong>${r.name}</strong><br><span class="text-muted">${r.squad ? r.squad : r.role}</span></td>
+      <td class="text-muted">${r.accounts.slice(0, 3).join(", ")}${r.accounts.length > 3 ? "..." : ""}</td>
+      <td>${r.bwTarget}</td>
+      <td>${r.completed}</td>
+      <td>${r.emReschedules}</td>
+      <td>${r.emExemptions}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:${r.compPct}%;background:${barColor};"></div></div>
+          <span style="font-weight:600;color:${barColor};">${r.compPct}%</span>
+        </div>
+      </td>
+      <td>${statusTag}</td>
+    </tr>`;
+  }).join("");
+
+  // Behind list
+  const behindEMs = rows.filter(r => r.compPct < 90).sort((a, b) => a.compPct - b.compPct);
+  const behindList = document.getElementById("behindList");
+  if (behindEMs.length === 0) {
+    behindList.innerHTML = `<p class="text-muted" style="padding:20px;text-align:center;">All EMs are on track this cycle.</p>`;
+  } else {
+    behindList.innerHTML = behindEMs.map(em => {
+      const color = em.compPct < 70 ? "var(--red)" : "var(--yellow)";
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div>
+          <strong>${em.name}</strong>
+          <div class="text-muted">${em.behind} BW${em.behind !== 1 ? "s" : ""} behind target</div>
+        </div>
+        <span style="font-size:20px;font-weight:700;color:${color};">${em.compPct}%</span>
+      </div>`;
+    }).join("");
+  }
+
+  // Reason pie chart
+  renderReasonPie(cycleReschedules);
+}
+
+function renderQueue() {
+  const emFilter = document.getElementById("queueFilterEM").value;
+  const reasonFilter = document.getElementById("queueFilterReason").value;
+  const statusFilter = document.getElementById("queueFilterStatus").value;
+
+  let items = [...state.reschedules].sort((a, b) => b.origDate.localeCompare(a.origDate));
+  if (emFilter) items = items.filter(r => r.em === emFilter);
+  if (reasonFilter) items = items.filter(r => r.reason === reasonFilter);
+  if (statusFilter) items = items.filter(r => r.status === statusFilter);
+
+  const tbody = document.getElementById("queueBody");
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;" class="text-muted">No reschedules found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = items.map(r => {
+    let statusTag = "";
+    if (r.status === "pending") statusTag = `<span class="tag tag-yellow">Pending</span>`;
+    else if (r.status === "exemption_filed") statusTag = `<span class="tag tag-blue">Exemption Filed</span>`;
+    else statusTag = `<span class="tag tag-green">Resolved</span>`;
+
+    const reasonColor = REASON_COLORS[r.reason] || "#71717a";
+
+    return `<tr>
+      <td>${r.origDate}</td>
+      <td><strong>${r.em}</strong></td>
+      <td>${r.tm}</td>
+      <td class="text-muted">${r.account || "-"}</td>
+      <td><span class="tag" style="background:${reasonColor}22;color:${reasonColor};">${r.reason}</span></td>
+      <td>${r.newDate || "-"}</td>
+      <td>${statusTag}</td>
+      <td>
+        ${r.status === "pending" ? `<button class="btn btn-sm" onclick="markExemption('${r.id}')">File Exemption</button>` : ""}
+        ${r.status === "exemption_filed" ? `<button class="btn btn-sm" onclick="markResolved('${r.id}')">Resolve</button>` : ""}
+        <button class="btn btn-danger" onclick="deleteReschedule('${r.id}')" title="Delete">X</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function renderRoster() {
+  const tbody = document.getElementById("rosterBody");
+  tbody.innerHTML = EM_DATA.map(em => {
+    let roleTag = "";
+    if (em.role === "Head") roleTag = `<span class="tag tag-purple">Head of Engage</span>`;
+    else if (em.role === "Lead") roleTag = `<span class="tag tag-blue">Lead</span>`;
+    else if (em.role === "Lead/EM") roleTag = `<span class="tag tag-blue">Lead / EM</span>`;
+    else roleTag = `<span class="tag tag-green">EM</span>`;
+
+    return `<tr>
+      <td><strong>${em.name}</strong>${em.squad ? `<br><span class="text-muted">${em.squad}</span>` : ""}</td>
+      <td>${roleTag}</td>
+      <td>${em.accounts.length > 0 ? em.accounts.join(", ") : '<span class="text-muted">Oversight only</span>'}</td>
+      <td>${em.tmCount || "-"}</td>
+      <td>${em.bwTarget || "-"}</td>
+      <td class="text-muted">${em.shift}</td>
+    </tr>`;
+  }).join("");
+}
+
+function populateFilters() {
+  // EM dropdowns
+  const emOptions = getActiveEMs().map(em => `<option value="${em.name}">${em.name}</option>`).join("");
+
+  document.getElementById("logEM").innerHTML = `<option value="">Select EM...</option>` + EM_DATA.filter(e => e.bwTarget > 0 || e.role === "Lead/EM").map(em => `<option value="${em.name}">${em.name}</option>`).join("");
+
+  document.getElementById("queueFilterEM").innerHTML = `<option value="">All EMs</option>` + emOptions;
+  document.getElementById("queueFilterReason").innerHTML = `<option value="">All Reasons</option>` + REASONS.map(r => `<option value="${r}">${r}</option>`).join("");
+
+  // Set default date
+  document.getElementById("logOrigDate").value = new Date().toISOString().split("T")[0];
+}
+
+// ============================================================
+// CHARTS (minimal canvas-based, no dependencies)
+// ============================================================
+
+let charts = {};
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id] = null; }
+}
+
+function renderReasonPie(reschedules) {
+  const canvas = document.getElementById("reasonPieChart");
+  const ctx = canvas.getContext("2d");
+  destroyChart("reasonPie");
+
+  const counts = {};
+  reschedules.forEach(r => { counts[r.reason] = (counts[r.reason] || 0) + 1; });
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+  if (entries.length === 0) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#a1a1aa";
+    ctx.font = "13px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("No reschedules this cycle", canvas.width / 2, canvas.height / 2);
+    return;
+  }
+
+  drawDoughnut(canvas, entries.map(e => e[1]), entries.map(e => REASON_COLORS[e[0]] || "#71717a"), entries.map(e => e[0]));
+  charts.reasonPie = true;
+}
+
+function drawDoughnut(canvas, values, colors, labels) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = rect.height + "px";
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  const total = values.reduce((a, b) => a + b, 0);
+  const cx = rect.width * 0.35, cy = rect.height / 2;
+  const outerR = Math.min(cx, cy) - 10;
+  const innerR = outerR * 0.55;
+
+  let startAngle = -Math.PI / 2;
+  const slices = [];
+
+  values.forEach((val, i) => {
+    const sliceAngle = (val / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
+    ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+    slices.push({ start: startAngle, angle: sliceAngle });
+    startAngle += sliceAngle;
+  });
+
+  // Center text
+  ctx.fillStyle = "#e4e4e7";
+  ctx.font = "bold 24px -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(total, cx, cy - 8);
+  ctx.font = "11px -apple-system, sans-serif";
+  ctx.fillStyle = "#a1a1aa";
+  ctx.fillText("reschedules", cx, cy + 12);
+
+  // Legend
+  const legendX = rect.width * 0.65;
+  let legendY = 16;
+  ctx.textAlign = "left";
+  labels.forEach((label, i) => {
+    ctx.fillStyle = colors[i];
+    ctx.fillRect(legendX, legendY, 10, 10);
+    ctx.fillStyle = "#e4e4e7";
+    ctx.font = "12px -apple-system, sans-serif";
+    ctx.fillText(`${label} (${values[i]})`, legendX + 16, legendY + 9);
+    legendY += 22;
+  });
+}
+
+function renderTrends() {
+  renderWeeklyTrend();
+  renderEMBar();
+  renderReasonDoughnutAll();
+}
+
+function renderWeeklyTrend() {
+  const canvas = document.getElementById("weeklyTrendChart");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = rect.height + "px";
+  ctx.scale(dpr, dpr);
+
+  // Group reschedules by week
+  const weeks = {};
+  const now = new Date();
+  for (let i = 7; i >= 0; i--) {
+    const weekStart = new Date(now);
+    weekStart.setDate(weekStart.getDate() - (i * 7) - now.getDay());
+    const key = weekStart.toISOString().split("T")[0];
+    weeks[key] = {};
+    REASONS.forEach(r => weeks[key][r] = 0);
+  }
+
+  const weekKeys = Object.keys(weeks).sort();
+
+  state.reschedules.forEach(r => {
+    const d = new Date(r.origDate);
+    const weekStart = new Date(d);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const key = weekStart.toISOString().split("T")[0];
+    if (weeks[key] && weeks[key][r.reason] !== undefined) {
+      weeks[key][r.reason]++;
+    }
+  });
+
+  // Find active reasons
+  const activeReasons = REASONS.filter(reason =>
+    weekKeys.some(wk => weeks[wk][reason] > 0)
+  );
+
+  if (activeReasons.length === 0) {
+    ctx.fillStyle = "#a1a1aa";
+    ctx.font = "13px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("No trend data yet", rect.width / 2, rect.height / 2);
+    return;
+  }
+
+  // Stacked bar chart
+  const padding = { top: 20, right: 180, bottom: 50, left: 40 };
+  const chartW = rect.width - padding.left - padding.right;
+  const chartH = rect.height - padding.top - padding.bottom;
+  const barW = Math.min(chartW / weekKeys.length * 0.7, 50);
+  const gap = chartW / weekKeys.length;
+
+  // Find max stack
+  let maxStack = 0;
+  weekKeys.forEach(wk => {
+    let total = 0;
+    activeReasons.forEach(r => total += weeks[wk][r]);
+    if (total > maxStack) maxStack = total;
+  });
+  if (maxStack === 0) maxStack = 1;
+
+  // Grid lines
+  ctx.strokeStyle = "#3f3f46";
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding.top + chartH - (chartH / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(padding.left + chartW, y);
+    ctx.stroke();
+    ctx.fillStyle = "#a1a1aa";
+    ctx.font = "10px -apple-system, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(Math.round(maxStack / 4 * i), padding.left - 6, y + 4);
+  }
+
+  // Bars
+  weekKeys.forEach((wk, wi) => {
+    const x = padding.left + wi * gap + (gap - barW) / 2;
+    let yOffset = 0;
+    activeReasons.forEach(reason => {
+      const val = weeks[wk][reason];
+      if (val === 0) return;
+      const barH = (val / maxStack) * chartH;
+      const y = padding.top + chartH - yOffset - barH;
+      ctx.fillStyle = REASON_COLORS[reason];
+      ctx.beginPath();
+      ctx.roundRect(x, y, barW, barH, [2, 2, 0, 0]);
+      ctx.fill();
+      yOffset += barH;
+    });
+
+    // Week label
+    const d = new Date(wk);
+    ctx.fillStyle = "#a1a1aa";
+    ctx.font = "10px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), x + barW / 2, padding.top + chartH + 16);
+  });
+
+  // Legend
+  let ly = padding.top;
+  const lx = rect.width - padding.right + 16;
+  ctx.textAlign = "left";
+  activeReasons.forEach(reason => {
+    ctx.fillStyle = REASON_COLORS[reason];
+    ctx.fillRect(lx, ly, 10, 10);
+    ctx.fillStyle = "#e4e4e7";
+    ctx.font = "11px -apple-system, sans-serif";
+    ctx.fillText(reason, lx + 16, ly + 9);
+    ly += 20;
+  });
+
+  // Update stats
+  const totalReschedules = state.reschedules.length;
+  const weekCount = weekKeys.length || 1;
+  document.getElementById("statAvgWeekly").textContent = (totalReschedules / weekCount).toFixed(1);
+
+  const reasonCounts = {};
+  state.reschedules.forEach(r => { reasonCounts[r.reason] = (reasonCounts[r.reason] || 0) + 1; });
+  const topReason = Object.entries(reasonCounts).sort((a, b) => b[1] - a[1])[0];
+  document.getElementById("statTopReason").textContent = topReason ? topReason[0] : "-";
+}
+
+function renderEMBar() {
+  const canvas = document.getElementById("emBarChart");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = rect.height + "px";
+  ctx.scale(dpr, dpr);
+
+  const counts = {};
+  state.reschedules.forEach(r => { counts[r.em] = (counts[r.em] || 0) + 1; });
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+  if (entries.length === 0) return;
+
+  const padding = { top: 10, right: 20, bottom: 20, left: 140 };
+  const chartW = rect.width - padding.left - padding.right;
+  const chartH = rect.height - padding.top - padding.bottom;
+  const barH = Math.min(chartH / entries.length * 0.7, 22);
+  const gap = chartH / entries.length;
+  const maxVal = entries[0][1];
+
+  entries.forEach(([name, count], i) => {
+    const y = padding.top + i * gap + (gap - barH) / 2;
+    const w = (count / maxVal) * chartW;
+
+    // Name
+    ctx.fillStyle = "#e4e4e7";
+    ctx.font = "11px -apple-system, sans-serif";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    const shortName = name.split(" ")[0];
+    ctx.fillText(shortName, padding.left - 8, y + barH / 2);
+
+    // Bar
+    ctx.fillStyle = count > 5 ? "var(--red)" : count > 3 ? "var(--yellow)" : "var(--green)";
+    ctx.fillStyle = count >= 6 ? "#f87171" : count >= 4 ? "#fbbf24" : "#34d399";
+    ctx.beginPath();
+    ctx.roundRect(padding.left, y, w, barH, [0, 4, 4, 0]);
+    ctx.fill();
+
+    // Count
+    ctx.fillStyle = "#e4e4e7";
+    ctx.textAlign = "left";
+    ctx.fillText(count, padding.left + w + 6, y + barH / 2);
+  });
+}
+
+function renderReasonDoughnutAll() {
+  const canvas = document.getElementById("reasonDoughnutChart");
+  const counts = {};
+  state.reschedules.forEach(r => { counts[r.reason] = (counts[r.reason] || 0) + 1; });
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+  if (entries.length === 0) return;
+
+  drawDoughnut(canvas, entries.map(e => e[1]), entries.map(e => REASON_COLORS[e[0]] || "#71717a"), entries.map(e => e[0]));
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+
+function submitReschedule() {
+  const em = document.getElementById("logEM").value;
+  const tm = document.getElementById("logTM").value.trim();
+  const origDate = document.getElementById("logOrigDate").value;
+  const newDate = document.getElementById("logNewDate").value;
+  const reason = document.getElementById("logReason").value;
+  const account = document.getElementById("logAccount").value.trim();
+  const notes = document.getElementById("logNotes").value.trim();
+
+  if (!em || !tm || !origDate || !reason) {
+    showToast("Please fill in EM, TM, Date, and Reason.");
+    return;
+  }
+
+  const id = "r-" + Date.now() + "-" + Math.random().toString(36).substr(2, 6);
+  const entry = {
+    id, em, tm, account, reason, origDate, newDate: newDate || "", notes,
+    status: "pending",
+    createdAt: new Date().toISOString()
+  };
+
+  state.reschedules.push(entry);
+  saveState();
+
+  // Generate exemption text
+  const exemptionText = generateExemption(entry);
+  document.getElementById("exemptionContent").textContent = exemptionText;
+  document.getElementById("exemptionOutput").style.display = "block";
+
+  showToast("Reschedule logged successfully.");
+  renderDashboard();
+  renderQueue();
+}
+
+function generateExemption(entry) {
+  const reasonMap = {
+    "TM PTO": `Teammate was on approved PTO/Rest Day and was unavailable for the scheduled BW session.`,
+    "TM Illness": `Teammate was unwell and unable to attend the scheduled BW session.`,
+    "TM No-Show": `Teammate did not join the scheduled BW session. EM waited the required time and TM was unresponsive.`,
+    "TM Workload": `Teammate requested to reschedule due to workload demands that conflicted with the BW time slot.`,
+    "Power Outage": `Teammate experienced a power outage or internet connectivity issue that prevented attendance.`,
+    "Typhoon": `A weather event (typhoon/natural disaster) affected the teammate's area, preventing session attendance.`,
+    "Partner Unavailable": `The BW session could not proceed due to partner-side scheduling conflict or travel.`,
+    "EM Illness": `Engagement Manager was unwell and unable to conduct the scheduled BW session.`,
+    "Coverage Gap": `BW could not be completed due to coverage requirements that took priority during the scheduled time.`,
+    "Timezone Issue": `Session could not be conducted as scheduled due to timezone coordination challenges.`,
+    "Other": `BW session was rescheduled due to unforeseen circumstances.`
+  };
+
+  const reasonText = reasonMap[entry.reason] || reasonMap["Other"];
+  const reschedLine = entry.newDate ? `\nRescheduled to: ${entry.newDate}` : `\nReschedule: Pending confirmation with TM.`;
+
+  return `BW EXEMPTION REQUEST
+EM: ${entry.em}
+TM: ${entry.tm}${entry.account ? `\nAccount: ${entry.account}` : ""}
+Original Date: ${entry.origDate}${reschedLine}
+Reason: ${entry.reason}
+
+${reasonText}${entry.notes ? `\n\nAdditional Notes: ${entry.notes}` : ""}
+
+Filed: ${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`;
+}
+
+function copyExemption() {
+  const text = document.getElementById("exemptionContent").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("Exemption text copied to clipboard.");
+  });
+}
+
+function markExemption(id) {
+  const entry = state.reschedules.find(r => r.id === id);
+  if (entry) {
+    entry.status = "exemption_filed";
+    saveState();
+    renderQueue();
+    renderDashboard();
+    showToast("Marked as exemption filed.");
+  }
+}
+
+function markResolved(id) {
+  const entry = state.reschedules.find(r => r.id === id);
+  if (entry) {
+    entry.status = "resolved";
+    // Also increment completion for this EM
+    if (state.completions[entry.em] !== undefined) {
+      const emData = EM_DATA.find(e => e.name === entry.em);
+      if (emData && state.completions[entry.em] < emData.bwTarget) {
+        state.completions[entry.em]++;
+      }
+    }
+    saveState();
+    renderQueue();
+    renderDashboard();
+    showToast("Marked as resolved. BW completion updated.");
+  }
+}
+
+function deleteReschedule(id) {
+  state.reschedules = state.reschedules.filter(r => r.id !== id);
+  saveState();
+  renderQueue();
+  renderDashboard();
+  showToast("Reschedule entry deleted.");
+}
+
+function resetAllData() {
+  if (confirm("Reset all data to sample defaults? This will clear all logged reschedules.")) {
+    state = getDefaultState();
+    saveState();
+    renderAll();
+    showToast("Data reset to defaults.");
+  }
+}
+
+// ============================================================
+// SORT HANDLER
+// ============================================================
+
+document.getElementById("sortDashboard").addEventListener("change", renderDashboard);
+
+// ============================================================
+// TOAST
+// ============================================================
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+function renderAll() {
+  populateFilters();
+  renderDashboard();
+  renderQueue();
+  renderRoster();
+}
+
+renderAll();
+</script>
+</body>
+</html>

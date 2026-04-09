@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Villa &amp; House Capacity Report | Go2 Internal</title>
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #111113;
+  --bg-card-hover: #18181b;
+  --bg-input: #1a1a1d;
+  --border: #2a2a2e;
+  --border-light: #333338;
+  --text: #e4e4e7;
+  --text-dim: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #5eead4;
+  --accent-dim: #2dd4bf;
+  --accent-bg: rgba(94,234,212,0.08);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.12);
+  --yellow: #facc15;
+  --yellow-bg: rgba(250,204,21,0.12);
+  --orange: #fb923c;
+  --orange-bg: rgba(251,146,60,0.12);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.12);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167,139,250,0.12);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+/* Nav */
+nav {
+  position:fixed; top:0; left:0; width:260px; height:100vh;
+  background: #08080a; border-right:1px solid var(--border);
+  overflow-y:auto; z-index:100; padding:24px 0;
+  scrollbar-width:thin; scrollbar-color: var(--border) transparent;
+}
+nav::-webkit-scrollbar { width:4px; }
+nav::-webkit-scrollbar-thumb { background: var(--border); border-radius:2px; }
+nav .nav-header {
+  padding:0 20px 16px; border-bottom:1px solid var(--border); margin-bottom:12px;
+}
+nav .nav-header h1 { font-size:15px; font-weight:700; color:var(--accent); letter-spacing:-0.3px; }
+nav .nav-header p { font-size:11px; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.5px; }
+nav .nav-section { padding:8px 20px 4px; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); font-weight:600; }
+nav a {
+  display:block; padding:6px 20px; color:var(--text-dim); text-decoration:none;
+  font-size:13px; transition:all 0.15s;
+}
+nav a:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+nav a.active { color:var(--accent); background:var(--accent-bg); }
+
+/* Main */
+main { margin-left:260px; padding:40px 48px 80px; max-width:1200px; }
+
+h2 {
+  font-size:26px; font-weight:700; color:var(--text); letter-spacing:-0.5px;
+  margin:48px 0 16px; padding-top:24px; border-top:1px solid var(--border);
+}
+h2:first-of-type { border-top:none; margin-top:0; }
+h3 { font-size:18px; font-weight:600; color:var(--text); margin:32px 0 12px; }
+h4 { font-size:15px; font-weight:600; color:var(--accent); margin:24px 0 8px; }
+p { margin:8px 0; color:var(--text-dim); }
+strong { color:var(--text); }
+
+/* Cards */
+.card {
+  background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+  padding:24px; margin:16px 0;
+}
+.card-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:16px; margin:16px 0;
+}
+.metric-card {
+  background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+  padding:20px 24px;
+}
+.metric-card .label { font-size:12px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); margin-bottom:8px; }
+.metric-card .value { font-size:32px; font-weight:700; letter-spacing:-1px; }
+.metric-card .sub { font-size:13px; color:var(--text-dim); margin-top:4px; }
+.metric-card.green .value { color:var(--green); }
+.metric-card.yellow .value { color:var(--yellow); }
+.metric-card.orange .value { color:var(--orange); }
+.metric-card.red .value { color:var(--red); }
+.metric-card.blue .value { color:var(--blue); }
+.metric-card.accent .value { color:var(--accent); }
+
+/* Tables */
+table { width:100%; border-collapse:collapse; margin:12px 0 24px; font-size:13px; }
+th {
+  text-align:left; padding:10px 12px; background:var(--bg-input);
+  color:var(--text-muted); font-size:11px; text-transform:uppercase;
+  letter-spacing:0.8px; font-weight:600; border-bottom:1px solid var(--border);
+}
+td {
+  padding:8px 12px; border-bottom:1px solid var(--border);
+  color:var(--text-dim); vertical-align:top;
+}
+tr:hover td { background:rgba(255,255,255,0.02); }
+.num { text-align:right; font-family:var(--mono); font-size:13px; }
+.good { color:var(--green); }
+.warn { color:var(--yellow); }
+.danger { color:var(--red); }
+.neutral { color:var(--text-dim); }
+.highlight { color:var(--accent); font-weight:600; }
+
+/* Badges */
+.badge {
+  display:inline-block; padding:3px 10px; border-radius:6px;
+  font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;
+}
+.badge-green { background:var(--green-bg); color:var(--green); }
+.badge-yellow { background:var(--yellow-bg); color:var(--yellow); }
+.badge-orange { background:var(--orange-bg); color:var(--orange); }
+.badge-red { background:var(--red-bg); color:var(--red); }
+.badge-blue { background:var(--blue-bg); color:var(--blue); }
+.badge-purple { background:var(--purple-bg); color:var(--purple); }
+
+/* Verdict box */
+.verdict {
+  border-radius:10px; padding:16px 20px; margin:12px 0;
+  font-size:14px; line-height:1.6;
+}
+.verdict-green { background:var(--green-bg); border:1px solid rgba(74,222,128,0.2); }
+.verdict-yellow { background:var(--yellow-bg); border:1px solid rgba(250,204,21,0.2); }
+.verdict-orange { background:var(--orange-bg); border:1px solid rgba(251,146,60,0.2); }
+.verdict-red { background:var(--red-bg); border:1px solid rgba(248,113,113,0.2); }
+
+/* Bar charts */
+.bar-row { display:flex; align-items:center; gap:12px; margin:4px 0; }
+.bar-label { width:100px; font-size:12px; color:var(--text-dim); text-align:right; flex-shrink:0; }
+.bar-track { flex:1; height:20px; background:var(--bg-input); border-radius:4px; overflow:hidden; position:relative; }
+.bar-fill { height:100%; border-radius:4px; transition:width 0.5s; }
+.bar-value { width:60px; font-size:12px; font-family:var(--mono); color:var(--text-dim); flex-shrink:0; }
+.bar-fill.green { background:var(--green); }
+.bar-fill.yellow { background:var(--yellow); }
+.bar-fill.orange { background:var(--orange); }
+.bar-fill.red { background:var(--red); }
+.bar-fill.blue { background:var(--blue); }
+.bar-fill.accent { background:var(--accent); }
+
+/* Callout */
+.callout {
+  background:var(--bg-card); border-left:3px solid var(--accent);
+  padding:16px 20px; margin:16px 0; border-radius:0 8px 8px 0;
+  font-size:14px; color:var(--text-dim);
+}
+.callout strong { color:var(--accent); }
+.callout.callout-red { border-left-color:var(--red); }
+.callout.callout-red strong { color:var(--red); }
+.callout.callout-yellow { border-left-color:var(--yellow); }
+.callout.callout-yellow strong { color:var(--yellow); }
+
+/* Person section */
+.person-header {
+  display:flex; align-items:center; gap:16px; margin:32px 0 16px;
+  padding:16px 20px; background:var(--bg-card); border:1px solid var(--border);
+  border-radius:12px;
+}
+.person-avatar {
+  width:48px; height:48px; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:20px; font-weight:700; color:#000;
+}
+.person-info h3 { margin:0; font-size:16px; }
+.person-info p { margin:2px 0 0; font-size:13px; color:var(--text-muted); }
+
+/* Tabs */
+.tab-container { margin:16px 0; }
+.tab-buttons { display:flex; gap:4px; border-bottom:1px solid var(--border); padding-bottom:0; }
+.tab-btn {
+  padding:8px 16px; background:none; border:none; color:var(--text-muted);
+  font-size:13px; cursor:pointer; border-bottom:2px solid transparent;
+  margin-bottom:-1px; transition:all 0.15s;
+}
+.tab-btn:hover { color:var(--text-dim); }
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab-content { display:none; padding:16px 0; }
+.tab-content.active { display:block; }
+
+/* Responsive */
+@media (max-width:900px) {
+  nav { display:none; }
+  main { margin-left:0; padding:24px 16px; }
+  .card-grid { grid-template-columns:1fr; }
+}
+@media print {
+  nav { display:none; }
+  main { margin-left:0; }
+  .card, .metric-card, .verdict { break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-header">
+    <h1>Capacity Report</h1>
+    <p>Villa &amp; House | Internal</p>
+  </div>
+  <div class="nav-section">Overview</div>
+  <a href="#exec">Executive Summary</a>
+  <a href="#team-snapshot">Team Snapshot</a>
+  <div class="nav-section">People</div>
+  <a href="#beng">Beng Atencio</a>
+  <a href="#jp">JP Maquilang</a>
+  <a href="#eric">Eric Pamintuan</a>
+  <div class="nav-section">Analysis</div>
+  <a href="#integrity">Integrity Check</a>
+  <a href="#workload">Workload Distribution</a>
+  <a href="#red-flags">Red Flags</a>
+  <a href="#capacity">Capacity Planning</a>
+</nav>
+
+<main>
+
+<!-- ====== EXECUTIVE SUMMARY ====== -->
+<h2 id="exec">Executive Summary</h2>
+
+<div class="card" style="border-color:var(--accent); background:linear-gradient(135deg, rgba(94,234,212,0.04), var(--bg-card));">
+  <p style="font-size:16px; line-height:1.7; color:var(--text);">
+    <strong>Bottom line for Frenchie:</strong> This team is working hard, working honestly, and is approaching the breaking point. Telemetry shows all three members consistently active throughout their shifts with near-zero idle time and negligible non-work app usage. Nobody is stealing time. The real problem is the opposite: workload has grown 46% in 6 months with zero headcount change, and the only cross-functional team member (JP) is being pulled in two directions. Eric's claims caseload grew 76% in 6 months and he is the only person showing real sentiment variation -- his burnout risk is the highest. Beng is a machine but provides zero process visibility. If any one person leaves or gets sick for a week, the team partially breaks. If Villa and House grows 20%, this team breaks hard.
+  </p>
+</div>
+
+<div class="card-grid">
+  <div class="metric-card green">
+    <div class="label">Beng Atencio</div>
+    <div class="value">99.8%</div>
+    <div class="sub">Effective utilization (active/span) -- 30-day telemetry</div>
+  </div>
+  <div class="metric-card green">
+    <div class="label">JP Maquilang</div>
+    <div class="value">99.7%</div>
+    <div class="sub">Effective utilization (active/span) -- 30-day telemetry</div>
+  </div>
+  <div class="metric-card green">
+    <div class="label">Eric Pamintuan</div>
+    <div class="value">99.7%</div>
+    <div class="sub">Effective utilization (active/span) -- 30-day telemetry</div>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>How to read these numbers:</strong> "Effective utilization" = tracked active application time divided by total session span. A 99%+ number means the telemetry shows virtually zero gaps in tracked activity during their shifts. These are not self-reported -- this is machine-captured app focus data from Go2. The 1-hour gap between session hours and worklog hours across all three people is accounted for by the lunch break and Go2/Manifest overhead that falls outside task worklogs.
+</div>
+
+<!-- ====== TEAM SNAPSHOT ====== -->
+<h2 id="team-snapshot">Team Snapshot: 6-Month Numbers</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th class="num">Beng Atencio</th>
+      <th class="num">JP Maquilang</th>
+      <th class="num">Eric Pamintuan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Role</td>
+      <td>Order Processor (E.P.A.C.S.)</td>
+      <td>Hybrid Orders + Claims</td>
+      <td>Claims Specialist</td>
+    </tr>
+    <tr>
+      <td>6-Month Worklog Hours</td>
+      <td class="num">746.7h</td>
+      <td class="num">790.5h</td>
+      <td class="num">749.2h</td>
+    </tr>
+    <tr>
+      <td>6-Month Session Hours</td>
+      <td class="num">845.9h</td>
+      <td class="num">894.2h</td>
+      <td class="num">877.5h</td>
+    </tr>
+    <tr>
+      <td>Scheduled Hours (8h x work days)</td>
+      <td class="num">832h</td>
+      <td class="num">888h</td>
+      <td class="num">888h</td>
+    </tr>
+    <tr>
+      <td>Worklog % of Scheduled</td>
+      <td class="num">89.8%</td>
+      <td class="num">89.0%</td>
+      <td class="num highlight">84.4%</td>
+    </tr>
+    <tr>
+      <td>Session % of Scheduled</td>
+      <td class="num good">101.7%</td>
+      <td class="num good">100.7%</td>
+      <td class="num">98.8%</td>
+    </tr>
+    <tr>
+      <td>Session-Worklog Gap</td>
+      <td class="num">99.2h (breaks/Go2)</td>
+      <td class="num">103.7h (breaks/Go2)</td>
+      <td class="num warn">128.4h (breaks/Go2)</td>
+    </tr>
+    <tr>
+      <td>Avg Daily Active (30d telemetry)</td>
+      <td class="num">8.08h</td>
+      <td class="num">7.82h</td>
+      <td class="num">8.00h</td>
+    </tr>
+    <tr>
+      <td>Avg Daily Gap &gt;1min (30d)</td>
+      <td class="num good">6 min</td>
+      <td class="num">35 min</td>
+      <td class="num">13 min</td>
+    </tr>
+    <tr>
+      <td>Work Days (6 months)</td>
+      <td class="num">104</td>
+      <td class="num">111</td>
+      <td class="num">111</td>
+    </tr>
+    <tr>
+      <td>Task Split</td>
+      <td>99.9% EPACS</td>
+      <td>77% EPACS / 23% Claims</td>
+      <td>99.6% Claims</td>
+    </tr>
+    <tr>
+      <td>Monthly Hours Trend (Oct-Mar)</td>
+      <td class="num warn">108.6 &rarr; 151.3h (+39%)</td>
+      <td class="num warn">115.4 &rarr; 159.5h (+38%)</td>
+      <td class="num danger">85.8 &rarr; 141.0h (+64%)</td>
+    </tr>
+    <tr>
+      <td>Non-Work App Time (30d)</td>
+      <td class="num good">~0 min</td>
+      <td class="num good">0 min</td>
+      <td class="num good">6.5 min total</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout callout-yellow">
+  <strong>Key distinction:</strong> Worklog hours represent time actively tagged to a task (EPACS, Claims). Session hours represent total time the Go2 agent was active. The 10-15% gap is accounted for by: (1) 1-hour lunch break, (2) Go2/Manifest overhead (SOD/EOD filing), (3) micro-transitions between tasks. This gap is consistent across all three people and is a normal feature of the tracking system, not an anomaly.
+</div>
+
+
+<!-- ====== BENG ATENCIO ====== -->
+<h2 id="beng">Beng Atencio</h2>
+
+<div class="person-header">
+  <div class="person-avatar" style="background:var(--green);">BA</div>
+  <div class="person-info">
+    <h3>Beng Atencio</h3>
+    <p>Lead Order Processor (E.P.A.C.S.) &bull; Hired Aug 2022 &bull; 746.7h / 6 months</p>
+  </div>
+  <span class="badge badge-green" style="margin-left:auto;">AT CAPACITY</span>
+</div>
+
+<h3>Hours Breakdown</h3>
+<div class="card-grid">
+  <div class="metric-card accent">
+    <div class="label">Scheduled Hours</div>
+    <div class="value">832h</div>
+    <div class="sub">104 work days x 8h (08:00-16:00 ET)</div>
+  </div>
+  <div class="metric-card blue">
+    <div class="label">Worklog-Reported</div>
+    <div class="value">746.7h</div>
+    <div class="sub">89.8% of scheduled -- lunch/Go2 overhead excluded</div>
+  </div>
+  <div class="metric-card green">
+    <div class="label">System-Tracked Sessions</div>
+    <div class="value">845.9h</div>
+    <div class="sub">101.7% of scheduled -- she works her full shift</div>
+  </div>
+</div>
+
+<h3>Gap Analysis (30-Day Telemetry)</h3>
+
+<div class="card">
+  <p><strong>Summary:</strong> Beng has the tightest activity pattern on the team. Over 17 tracked days, her average daily gap time (events over 1 minute) is <strong>6 minutes</strong>. She averages 2.9 gaps per day in the 1-5 minute range and almost zero in any higher bracket. This is remarkably low -- it means she is virtually never idle during her shift outside of her scheduled 1-hour lunch break.</p>
+</div>
+
+<h4>Gap Distribution (Average Per Day)</h4>
+<div class="bar-row"><div class="bar-label">1-5 min</div><div class="bar-track"><div class="bar-fill green" style="width:29%"></div></div><div class="bar-value">2.9/day</div></div>
+<div class="bar-row"><div class="bar-label">5-15 min</div><div class="bar-track"><div class="bar-fill yellow" style="width:1%"></div></div><div class="bar-value">0.1/day</div></div>
+<div class="bar-row"><div class="bar-label">15-30 min</div><div class="bar-track"><div class="bar-fill orange" style="width:0%"></div></div><div class="bar-value">0.0/day</div></div>
+<div class="bar-row"><div class="bar-label">30-60 min</div><div class="bar-track"><div class="bar-fill red" style="width:0%"></div></div><div class="bar-value">0.0/day</div></div>
+<div class="bar-row"><div class="bar-label">60+ min</div><div class="bar-track"><div class="bar-fill red" style="width:0%"></div></div><div class="bar-value">0.0/day</div></div>
+
+<h4>Daily Breakdown (Mar 10 - Apr 7, 2026)</h4>
+<table>
+  <thead>
+    <tr><th>Date</th><th>Day</th><th class="num">Start</th><th class="num">End</th><th class="num">Span</th><th class="num">Active</th><th class="num">Gaps</th><th class="num">Util%</th><th class="num">1-5m</th><th class="num">5-15m</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Mar 10</td><td>Tue</td><td class="num">11:54</td><td class="num">19:55</td><td class="num">8.01h</td><td class="num">8.02h</td><td class="num good">2m</td><td class="num good">100%</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td>Mar 11</td><td>Wed</td><td class="num">11:54</td><td class="num">19:56</td><td class="num">8.03h</td><td class="num">8.04h</td><td class="num good">9m</td><td class="num good">100%</td><td class="num">4</td><td class="num">0</td></tr>
+    <tr><td>Mar 12</td><td>Thu</td><td class="num">11:55</td><td class="num">19:57</td><td class="num">8.04h</td><td class="num">8.04h</td><td class="num good">10m</td><td class="num good">100%</td><td class="num">4</td><td class="num">0</td></tr>
+    <tr><td>Mar 13</td><td>Fri</td><td class="num">11:54</td><td class="num">19:58</td><td class="num">8.06h</td><td class="num">8.07h</td><td class="num good">9m</td><td class="num good">100%</td><td class="num">2</td><td class="num">1</td></tr>
+    <tr><td>Mar 16</td><td>Mon</td><td class="num">11:54</td><td class="num">19:59</td><td class="num">8.08h</td><td class="num">8.10h</td><td class="num good">4m</td><td class="num good">100%</td><td class="num">4</td><td class="num">0</td></tr>
+    <tr><td>Mar 17</td><td>Tue</td><td class="num">11:54</td><td class="num">19:58</td><td class="num">8.06h</td><td class="num">8.08h</td><td class="num good">2m</td><td class="num good">100%</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td>Mar 18</td><td>Wed</td><td class="num">11:54</td><td class="num">19:59</td><td class="num">8.08h</td><td class="num">8.09h</td><td class="num good">7m</td><td class="num good">100%</td><td class="num">3</td><td class="num">0</td></tr>
+    <tr><td>Mar 19</td><td>Thu</td><td class="num">11:54</td><td class="num">19:56</td><td class="num">8.02h</td><td class="num">8.04h</td><td class="num good">7m</td><td class="num good">100%</td><td class="num">5</td><td class="num">0</td></tr>
+    <tr><td>Mar 20</td><td>Fri</td><td class="num">11:55</td><td class="num">20:04</td><td class="num">8.16h</td><td class="num">8.17h</td><td class="num good">0m</td><td class="num good">100%</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Mar 23</td><td>Mon</td><td class="num">11:56</td><td class="num">20:01</td><td class="num">8.08h</td><td class="num">8.10h</td><td class="num good">1m</td><td class="num good">100%</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td>Mar 24</td><td>Tue</td><td class="num">11:54</td><td class="num">20:02</td><td class="num">8.14h</td><td class="num">8.15h</td><td class="num">26m</td><td class="num good">100%</td><td class="num">7</td><td class="num">1</td></tr>
+    <tr><td>Mar 25</td><td>Wed</td><td class="num">11:54</td><td class="num">20:01</td><td class="num">8.11h</td><td class="num">8.13h</td><td class="num good">2m</td><td class="num good">100%</td><td class="num">2</td><td class="num">0</td></tr>
+    <tr><td>Mar 26</td><td>Thu</td><td class="num">11:55</td><td class="num">20:02</td><td class="num">8.11h</td><td class="num">8.12h</td><td class="num good">13m</td><td class="num good">100%</td><td class="num">8</td><td class="num">0</td></tr>
+    <tr><td>Mar 27</td><td>Fri</td><td class="num">11:54</td><td class="num">19:57</td><td class="num">8.04h</td><td class="num">8.05h</td><td class="num good">1m</td><td class="num good">100%</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td>Mar 30</td><td>Mon</td><td class="num">11:54</td><td class="num">19:58</td><td class="num">8.06h</td><td class="num">8.08h</td><td class="num good">3m</td><td class="num good">100%</td><td class="num">3</td><td class="num">0</td></tr>
+    <tr><td>Apr 6</td><td>Mon</td><td class="num">11:55</td><td class="num">19:59</td><td class="num">8.08h</td><td class="num">8.11h</td><td class="num good">7m</td><td class="num good">100%</td><td class="num">3</td><td class="num">0</td></tr>
+    <tr><td>Apr 7</td><td>Tue</td><td class="num">11:54</td><td class="num">19:56</td><td class="num">8.03h</td><td class="num">8.04h</td><td class="num good">1m</td><td class="num good">100%</td><td class="num">1</td><td class="num">0</td></tr>
+  </tbody>
+</table>
+
+<h3>Rush Indicators</h3>
+<div class="card">
+  <p><strong>Order throughput is declining, not rushing.</strong> Beng's daily order count dropped from 10.1/day (Oct) to 6.5/day (Mar) -- a 36% decrease -- while her hours increased 39%. This means each order is taking more time, not less. No evidence of rushing or quality cutting. The shift could indicate orders becoming more complex, or more time spent on non-entry tasks (shipping, tracking, communication).</p>
+</div>
+
+<h3>Fatigue Indicators</h3>
+<div class="card">
+  <p><strong>No degradation detected.</strong> Gap time does not increase toward end of shift. Her hourly activity pattern is flat from hour 12 through hour 19 UTC. The 19:00 hour shows slightly more gap time (0.54h total across 17 days) but this coincides with end-of-day wrap-up and EOD filing, not fatigue-driven disengagement.</p>
+</div>
+
+<div class="verdict verdict-green">
+  <strong>Verdict: AT CAPACITY.</strong> Beng is working her full 8 hours with near-zero downtime. She starts within a 3-minute window every day and ends with the same precision. She is the most metronomically consistent worker on this team. There is essentially no slack in her schedule to absorb additional work. The concern is not that she is underworked -- it is that she already has zero buffer.
+</div>
+
+
+<!-- ====== JP MAQUILANG ====== -->
+<h2 id="jp">JP Maquilang</h2>
+
+<div class="person-header">
+  <div class="person-avatar" style="background:var(--yellow);">JP</div>
+  <div class="person-info">
+    <h3>JP Maquilang</h3>
+    <p>Hybrid Orders + Claims &bull; Hired Dec 2022 &bull; 790.5h / 6 months</p>
+  </div>
+  <span class="badge badge-orange" style="margin-left:auto;">STRETCHED</span>
+</div>
+
+<h3>Hours Breakdown</h3>
+<div class="card-grid">
+  <div class="metric-card accent">
+    <div class="label">Scheduled Hours</div>
+    <div class="value">888h</div>
+    <div class="sub">111 work days x 8h (includes Fridays despite 4-day default schedule)</div>
+  </div>
+  <div class="metric-card blue">
+    <div class="label">Worklog-Reported</div>
+    <div class="value">790.5h</div>
+    <div class="sub">89.0% of scheduled -- lunch/Go2 overhead excluded</div>
+  </div>
+  <div class="metric-card green">
+    <div class="label">System-Tracked Sessions</div>
+    <div class="value">894.2h</div>
+    <div class="sub">100.7% of scheduled -- working full shifts</div>
+  </div>
+</div>
+
+<h3>Gap Analysis (30-Day Telemetry)</h3>
+
+<div class="card">
+  <p><strong>Summary:</strong> JP shows more gap time than Beng but still at healthy levels. His average daily gap is <strong>35 minutes</strong> (events over 1 minute), with most gaps in the 1-5 minute range (7.4/day). He averages about 0.7 gaps per day in the 5-15 minute range and occasional 60+ minute gaps. The 60+ minute gaps correspond to his lunch break period (clustered around 17:00 UTC / 1:00 AM PHT, which is his mid-shift break).</p>
+</div>
+
+<h4>Gap Distribution (Average Per Day)</h4>
+<div class="bar-row"><div class="bar-label">1-5 min</div><div class="bar-track"><div class="bar-fill green" style="width:74%"></div></div><div class="bar-value">7.4/day</div></div>
+<div class="bar-row"><div class="bar-label">5-15 min</div><div class="bar-track"><div class="bar-fill yellow" style="width:7%"></div></div><div class="bar-value">0.7/day</div></div>
+<div class="bar-row"><div class="bar-label">15-30 min</div><div class="bar-track"><div class="bar-fill orange" style="width:1%"></div></div><div class="bar-value">0.1/day</div></div>
+<div class="bar-row"><div class="bar-label">30-60 min</div><div class="bar-track"><div class="bar-fill orange" style="width:1%"></div></div><div class="bar-value">0.1/day</div></div>
+<div class="bar-row"><div class="bar-label">60+ min</div><div class="bar-track"><div class="bar-fill red" style="width:2%"></div></div><div class="bar-value">0.2/day</div></div>
+
+<h4>Key Insight: 17:00 UTC Break Gap</h4>
+<div class="card">
+  <p>JP's hourly pattern shows his highest gap concentration at 17:00 UTC (4.04 hours total across 19 days = 12.8 min avg). This is his mid-shift lunch break. The rest of his shift shows consistent 2-6 min average gap time per hour. <strong>The break gap is expected and healthy.</strong></p>
+</div>
+
+<h4>Daily Breakdown (Mar 10 - Apr 7, 2026)</h4>
+<table>
+  <thead>
+    <tr><th>Date</th><th>Day</th><th class="num">Start</th><th class="num">End</th><th class="num">Active</th><th class="num">Gaps</th><th class="num">Util%</th><th class="num">1-5m</th><th class="num">5-15m</th><th class="num">30+m</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Mar 10</td><td>Tue</td><td class="num">12:59</td><td class="num">21:03</td><td class="num">7.30h</td><td class="num warn">85m</td><td class="num">91%</td><td class="num">8</td><td class="num">1</td><td class="num warn">1</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 11</td><td>Wed</td><td class="num">12:52</td><td class="num">20:51</td><td class="num">7.99h</td><td class="num good">21m</td><td class="num good">100%</td><td class="num">8</td><td class="num">1</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 12</td><td>Thu</td><td class="num">12:51</td><td class="num">21:01</td><td class="num">8.19h</td><td class="num good">18m</td><td class="num good">100%</td><td class="num">8</td><td class="num">1</td><td class="num">0</td><td><span class="badge badge-purple">CLAIMS</span></td></tr>
+    <tr><td>Mar 13</td><td>Fri</td><td class="num">12:51</td><td class="num">21:01</td><td class="num">8.19h</td><td class="num good">25m</td><td class="num good">100%</td><td class="num">6</td><td class="num">2</td><td class="num">0</td><td><span class="badge badge-purple">CLAIMS</span></td></tr>
+    <tr><td>Mar 16</td><td>Mon</td><td class="num">13:02</td><td class="num">20:48</td><td class="num">7.78h</td><td class="num good">5m</td><td class="num good">100%</td><td class="num">3</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 17</td><td>Tue</td><td class="num">12:51</td><td class="num">21:05</td><td class="num">8.26h</td><td class="num good">13m</td><td class="num good">100%</td><td class="num">8</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 18</td><td>Wed</td><td class="num">12:54</td><td class="num">21:03</td><td class="num">8.18h</td><td class="num good">24m</td><td class="num good">100%</td><td class="num">9</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 19</td><td>Thu</td><td class="num">12:58</td><td class="num">21:02</td><td class="num">8.11h</td><td class="num warn">77m</td><td class="num good">100%</td><td class="num">7</td><td class="num">0</td><td class="num warn">1</td><td><span class="badge badge-purple">CLAIMS</span></td></tr>
+    <tr><td>Mar 20</td><td>Fri</td><td class="num">12:53</td><td class="num">20:58</td><td class="num">8.02h</td><td class="num good">23m</td><td class="num">99%</td><td class="num">3</td><td class="num">1</td><td class="num">0</td><td><span class="badge badge-purple">CLAIMS</span></td></tr>
+    <tr><td>Mar 23</td><td>Mon</td><td class="num">13:00</td><td class="num">20:54</td><td class="num">7.91h</td><td class="num good">34m</td><td class="num good">100%</td><td class="num">7</td><td class="num">3</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 25</td><td>Wed</td><td class="num">12:54</td><td class="num">21:03</td><td class="num">8.17h</td><td class="num good">19m</td><td class="num good">100%</td><td class="num">11</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 26</td><td>Thu</td><td class="num">12:53</td><td class="num">21:04</td><td class="num">8.21h</td><td class="num good">11m</td><td class="num good">100%</td><td class="num">7</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-purple">CLAIMS</span></td></tr>
+    <tr><td>Mar 27</td><td>Fri</td><td class="num">12:52</td><td class="num">20:43</td><td class="num">7.86h</td><td class="num good">17m</td><td class="num good">100%</td><td class="num">5</td><td class="num">1</td><td class="num">0</td><td><span class="badge badge-purple">CLAIMS</span></td></tr>
+    <tr><td>Mar 30</td><td>Mon</td><td class="num">12:55</td><td class="num">21:00</td><td class="num">8.09h</td><td class="num good">22m</td><td class="num good">100%</td><td class="num">4</td><td class="num">1</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Mar 31</td><td>Tue</td><td class="num">12:53</td><td class="num">21:01</td><td class="num">8.15h</td><td class="num good">30m</td><td class="num good">100%</td><td class="num">10</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Apr 1</td><td>Wed</td><td class="num">12:51</td><td class="num">21:00</td><td class="num">8.16h</td><td class="num warn">124m</td><td class="num good">100%</td><td class="num">13</td><td class="num">1</td><td class="num warn">2</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Apr 2</td><td>Thu</td><td class="num">12:53</td><td class="num">17:02</td><td class="num warn">4.17h</td><td class="num good">11m</td><td class="num good">100%</td><td class="num">4</td><td class="num">1</td><td class="num">0</td><td><span class="badge badge-purple">CLAIMS</span></td></tr>
+    <tr><td>Apr 6</td><td>Mon</td><td class="num">12:52</td><td class="num">20:55</td><td class="num">8.08h</td><td class="num warn">91m</td><td class="num good">100%</td><td class="num">12</td><td class="num">0</td><td class="num warn">1</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+    <tr><td>Apr 7</td><td>Tue</td><td class="num">12:58</td><td class="num">20:40</td><td class="num">7.73h</td><td class="num good">16m</td><td class="num good">100%</td><td class="num">7</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-blue">EPACS</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Day-Level Role Separation</h3>
+<div class="card">
+  <p><strong>Discovery:</strong> JP does NOT context-switch between EPACS and Claims during the day. He works full days in one role. The pattern in the 30-day window is structural: <strong>Mon-Wed = EPACS, Thu-Fri = Claims.</strong> This is a healthy separation that avoids context-switching costs, but it means his claims capacity is limited to 2 days per week.</p>
+</div>
+
+<h3>Rush / Fatigue Indicators</h3>
+<div class="card">
+  <p><strong>PC stability issues (Nov 2025 - Jan 2026):</strong> 30 worklog entries cite "pc issue," "pc restart," "pc keeps restarting." This caused 17 multi-session days (15% of work days). Unclear if resolved. This is IT infrastructure, not a person problem.</p>
+  <p style="margin-top:12px;"><strong>No fatigue pattern detected.</strong> Gap times do not systematically increase late in shift. Apr 1 shows the highest gap day (124 min) but this was Lent-related short week per his EOD report.</p>
+</div>
+
+<div class="verdict verdict-orange">
+  <strong>Verdict: STRETCHED.</strong> JP logs the most hours on the team (790.5h worklog, 894.2h session) and carries the only dual-role workload. His claims days grew from 0 in November to 8 per month in March, meaning Eric's overflow is landing on him. He has minimal slack and is the single point of failure for cross-functional coverage. He is not underperforming -- he is doing two jobs. The risk is not today; it is what happens when claims volume increases further.
+</div>
+
+
+<!-- ====== ERIC PAMINTUAN ====== -->
+<h2 id="eric">Eric Pamintuan</h2>
+
+<div class="person-header">
+  <div class="person-avatar" style="background:var(--orange);">EP</div>
+  <div class="person-info">
+    <h3>Eric Pamintuan</h3>
+    <p>Claims Specialist &bull; Hired Dec 2022 &bull; 749.2h / 6 months</p>
+  </div>
+  <span class="badge badge-orange" style="margin-left:auto;">APPROACHING LIMIT</span>
+</div>
+
+<h3>Hours Breakdown</h3>
+<div class="card-grid">
+  <div class="metric-card accent">
+    <div class="label">Scheduled Hours</div>
+    <div class="value">888h</div>
+    <div class="sub">111 work days x 8h (09:00-17:00 ET)</div>
+  </div>
+  <div class="metric-card blue">
+    <div class="label">Worklog-Reported</div>
+    <div class="value">749.2h</div>
+    <div class="sub">84.4% of scheduled -- lowest on team, see explanation below</div>
+  </div>
+  <div class="metric-card green">
+    <div class="label">System-Tracked Sessions</div>
+    <div class="value">877.5h</div>
+    <div class="sub">98.8% of scheduled -- fully present</div>
+  </div>
+</div>
+
+<div class="callout callout-yellow">
+  <strong>Why Eric's worklog % is lower:</strong> Eric has a 128.4h gap between session and worklog hours (vs ~100h for Beng/JP). This is because Eric spends more time in Go2 itself (107.9h over 6 months -- his Go2 usage is the highest) and Microsoft Teams (99.9h). His EOD reports are substantive and detailed (unlike Beng's "Same" entries), which means he spends more time on reporting and communication overhead that falls outside task worklogs. His session data confirms he is present and active -- the worklog gap is overhead, not absence.
+</div>
+
+<h3>Gap Analysis (30-Day Telemetry)</h3>
+
+<div class="card">
+  <p><strong>Summary:</strong> Eric averages <strong>13 minutes</strong> of gap time per day (events over 1 minute). He has 3.3 gaps per day in the 1-5 minute range and 0.7 in the 5-15 minute range. Zero gaps over 30 minutes in the entire 30-day window. This is tight, productive activity.</p>
+</div>
+
+<h4>Gap Distribution (Average Per Day)</h4>
+<div class="bar-row"><div class="bar-label">1-5 min</div><div class="bar-track"><div class="bar-fill green" style="width:33%"></div></div><div class="bar-value">3.3/day</div></div>
+<div class="bar-row"><div class="bar-label">5-15 min</div><div class="bar-track"><div class="bar-fill yellow" style="width:7%"></div></div><div class="bar-value">0.7/day</div></div>
+<div class="bar-row"><div class="bar-label">15-30 min</div><div class="bar-track"><div class="bar-fill orange" style="width:1%"></div></div><div class="bar-value">0.1/day</div></div>
+<div class="bar-row"><div class="bar-label">30-60 min</div><div class="bar-track"><div class="bar-fill red" style="width:0%"></div></div><div class="bar-value">0.0/day</div></div>
+<div class="bar-row"><div class="bar-label">60+ min</div><div class="bar-track"><div class="bar-fill red" style="width:0%"></div></div><div class="bar-value">0.0/day</div></div>
+
+<h4>Daily Breakdown (Mar 10 - Apr 7, 2026)</h4>
+<table>
+  <thead>
+    <tr><th>Date</th><th>Day</th><th class="num">Start</th><th class="num">End</th><th class="num">Active</th><th class="num">Gaps</th><th class="num">Util%</th><th class="num">1-5m</th><th class="num">5-15m</th><th class="num">15+m</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Mar 10</td><td>Tue</td><td class="num">12:51</td><td class="num">20:55</td><td class="num">8.01h</td><td class="num good">16m</td><td class="num">99%</td><td class="num">5</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Mar 11</td><td>Wed</td><td class="num">12:50</td><td class="num">20:52</td><td class="num">8.04h</td><td class="num good">22m</td><td class="num good">100%</td><td class="num">3</td><td class="num">2</td><td class="num">0</td></tr>
+    <tr><td>Mar 13</td><td>Fri</td><td class="num">12:50</td><td class="num">20:44</td><td class="num">7.91h</td><td class="num good">6m</td><td class="num good">100%</td><td class="num">3</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Mar 16</td><td>Mon</td><td class="num">12:50</td><td class="num">20:49</td><td class="num">7.99h</td><td class="num good">33m</td><td class="num good">100%</td><td class="num">8</td><td class="num">2</td><td class="num">0</td></tr>
+    <tr><td>Mar 17</td><td>Tue</td><td class="num">12:51</td><td class="num">20:49</td><td class="num">7.96h</td><td class="num good">7m</td><td class="num good">100%</td><td class="num">2</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Mar 18</td><td>Wed</td><td class="num">12:50</td><td class="num">20:46</td><td class="num">7.94h</td><td class="num good">21m</td><td class="num good">100%</td><td class="num">8</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td>Mar 19</td><td>Thu</td><td class="num">12:50</td><td class="num">21:01</td><td class="num">8.19h</td><td class="num good">13m</td><td class="num good">100%</td><td class="num">4</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td>Mar 20</td><td>Fri</td><td class="num">12:50</td><td class="num">20:54</td><td class="num">8.07h</td><td class="num good">5m</td><td class="num good">100%</td><td class="num">3</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Mar 23</td><td>Mon</td><td class="num">12:49</td><td class="num">20:48</td><td class="num">7.98h</td><td class="num good">23m</td><td class="num good">100%</td><td class="num">4</td><td class="num">2</td><td class="num">0</td></tr>
+    <tr><td>Mar 24</td><td>Tue</td><td class="num">12:50</td><td class="num">20:50</td><td class="num">8.01h</td><td class="num good">10m</td><td class="num good">100%</td><td class="num">5</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Mar 25</td><td>Wed</td><td class="num">12:50</td><td class="num">20:55</td><td class="num">7.83h</td><td class="num good">18m</td><td class="num">97%</td><td class="num">1</td><td class="num">0</td><td class="num">1</td></tr>
+    <tr><td>Mar 26</td><td>Thu</td><td class="num">12:50</td><td class="num">20:55</td><td class="num">7.98h</td><td class="num good">24m</td><td class="num">99%</td><td class="num">2</td><td class="num">3</td><td class="num">0</td></tr>
+    <tr><td>Mar 27</td><td>Fri</td><td class="num">12:50</td><td class="num">20:54</td><td class="num">8.08h</td><td class="num good">13m</td><td class="num good">100%</td><td class="num">2</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td>Mar 30</td><td>Mon</td><td class="num">12:49</td><td class="num">20:44</td><td class="num">7.91h</td><td class="num good">0m</td><td class="num good">100%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Mar 31</td><td>Tue</td><td class="num">12:50</td><td class="num">20:50</td><td class="num">8.02h</td><td class="num good">3m</td><td class="num good">100%</td><td class="num">2</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Apr 1</td><td>Wed</td><td class="num">12:49</td><td class="num">20:47</td><td class="num">7.97h</td><td class="num good">7m</td><td class="num good">100%</td><td class="num">3</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Apr 6</td><td>Mon</td><td class="num">12:50</td><td class="num">20:54</td><td class="num">8.08h</td><td class="num good">0m</td><td class="num good">100%</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Apr 7</td><td>Tue</td><td class="num">12:50</td><td class="num">20:49</td><td class="num">8.00h</td><td class="num good">9m</td><td class="num good">100%</td><td class="num">4</td><td class="num">0</td><td class="num">0</td></tr>
+  </tbody>
+</table>
+
+<h3>The Burnout Signal</h3>
+<div class="card" style="border-color:var(--orange);">
+  <p><strong>Eric is the only team member showing real emotional variation.</strong> His feeling scores: 3 (74 days), 2 (30 days), 1 (3 days). The other two are essentially flat-lined at 3. Eric is also the only one who has reported consecutive "no win" days (Jan 14-15). His monthly case volume grew 76% (199 to 351 cases/month from Oct to Mar). He is absorbing more work every month through more working days, not faster processing -- his per-day case rate (16.1 avg) is stable.</p>
+  <p style="margin-top:12px;">The math: at 16.1 cases/day and ~25 min per case, Eric has about 6.7 productive hours of pure case work per day. Add in Go2 overhead (~1h), Teams communication (~1h), and breaks (~1h), he is at capacity. There is no slack.</p>
+</div>
+
+<h3>Non-Work App Usage</h3>
+<div class="card">
+  <p><strong>Negligible.</strong> Spotify: 6.5 minutes total over 30 days. Steam Client: 0.1 minutes (background process, not active gaming). This is background music, not time theft.</p>
+</div>
+
+<div class="verdict verdict-orange">
+  <strong>Verdict: APPROACHING LIMIT.</strong> Eric is working 8 honest hours every day on pure claims processing. His caseload has grown 76% in 6 months and he is absorbing it by working more days, not by cutting corners. He is the only team member showing sentiment deterioration. His per-day case rate is stable at 16.1, meaning he cannot process faster -- if volume continues to grow, something has to give. He is not broken yet, but the trajectory is unsustainable without either automation or additional claims headcount.
+</div>
+
+
+<!-- ====== INTEGRITY CHECK ====== -->
+<h2 id="integrity">Time-Stealing / Integrity Check</h2>
+
+<div class="card" style="border-color:var(--green);">
+  <p style="font-size:16px; color:var(--green); font-weight:600; margin-bottom:8px;">Clean across the board.</p>
+  <p>This is the shortest section of this report because there is nothing to report. The data is unambiguous.</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Check</th><th>Beng</th><th>JP</th><th>Eric</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Large gaps during scheduled hours</td>
+      <td class="good">None. Avg 6 min/day gap.</td>
+      <td class="good">None beyond lunch break. Avg 35 min/day includes lunch.</td>
+      <td class="good">None. Avg 13 min/day gap.</td>
+    </tr>
+    <tr>
+      <td>Non-work websites/apps</td>
+      <td class="good">Zero. One product name matched "game" keyword -- it was a furniture product (Game Table).</td>
+      <td class="good">Zero non-work apps detected.</td>
+      <td class="good">6.5 min Spotify (background music) over 30 days. 0.1 min Steam (background process).</td>
+    </tr>
+    <tr>
+      <td>Clocking in with no activity</td>
+      <td class="good">Not observed. Activity starts within minutes of session start every day.</td>
+      <td class="good">Not observed. Minor PC-restart gaps (IT issue, not behavior).</td>
+      <td class="good">Not observed. Consistent activity from session start to end.</td>
+    </tr>
+    <tr>
+      <td>Worklog vs tracked hours discrepancy</td>
+      <td>99.2h gap = 57 min/day avg. Accounted for by 1h lunch + Go2 overhead.</td>
+      <td>103.7h gap = 56 min/day avg. Accounted for by lunch + Go2.</td>
+      <td>128.4h gap = 69 min/day avg. Higher but explained by heavier Go2/Teams overhead.</td>
+    </tr>
+    <tr>
+      <td>Social media, shopping, entertainment</td>
+      <td class="good">Zero</td>
+      <td class="good">Zero</td>
+      <td class="good">Zero (Spotify is music, not entertainment browsing)</td>
+    </tr>
+    <tr>
+      <td>Overall Integrity Assessment</td>
+      <td><span class="badge badge-green">CLEAN</span></td>
+      <td><span class="badge badge-green">CLEAN</span></td>
+      <td><span class="badge badge-green">CLEAN</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <strong>Context for Frenchie:</strong> These numbers are unusually clean for a remote team. 99%+ utilization across all three people, zero non-work browsing, and a worklog-session gap that is perfectly explained by documented overhead (lunch, Go2, transitions). If anything, this data suggests an over-monitored or highly conscientious team rather than one with integrity concerns.
+</div>
+
+
+<!-- ====== WORKLOAD DISTRIBUTION ====== -->
+<h2 id="workload">Workload Distribution &amp; Balance</h2>
+
+<h3>Work Distribution</h3>
+<div class="card">
+  <p><strong>The team is NOT evenly distributed.</strong> There are two completely isolated workstreams (Orders and Claims) connected by a single bridge person (JP). Beng and Eric never cross into each other's domain -- zero crossover in 6 months of data. JP carries the burden of covering both.</p>
+</div>
+
+<h4>Monthly Hours Trend (Oct 2025 - Mar 2026)</h4>
+<table>
+  <thead>
+    <tr><th>Month</th><th class="num">Beng</th><th class="num">JP</th><th class="num">Eric</th><th class="num">Team Total</th><th class="num">Growth</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Oct 2025</td><td class="num">108.6h</td><td class="num">115.4h</td><td class="num">85.8h</td><td class="num">309.8h</td><td class="num neutral">baseline</td></tr>
+    <tr><td>Nov 2025</td><td class="num">121.1h</td><td class="num">99.0h</td><td class="num">104.0h</td><td class="num">324.1h</td><td class="num">+5%</td></tr>
+    <tr><td>Dec 2025</td><td class="num">107.0h</td><td class="num">98.7h</td><td class="num">128.6h</td><td class="num">334.3h</td><td class="num">+8%</td></tr>
+    <tr><td>Jan 2026</td><td class="num">108.0h</td><td class="num">141.7h</td><td class="num">132.9h</td><td class="num">382.6h</td><td class="num warn">+24%</td></tr>
+    <tr><td>Feb 2026</td><td class="num">129.3h</td><td class="num">143.7h</td><td class="num">129.1h</td><td class="num">402.1h</td><td class="num warn">+30%</td></tr>
+    <tr><td>Mar 2026</td><td class="num highlight">151.3h</td><td class="num highlight">159.5h</td><td class="num highlight">141.0h</td><td class="num danger">451.8h</td><td class="num danger">+46%</td></tr>
+  </tbody>
+</table>
+
+<h4>JP's Claims Absorption Pattern</h4>
+<table>
+  <thead>
+    <tr><th>Month</th><th class="num">JP EPACS</th><th class="num">JP Claims</th><th class="num">Claims %</th><th>What happened</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Oct 2025</td><td class="num">66h</td><td class="num">49h</td><td class="num">43%</td><td>Heavy claims coverage (Cade was out)</td></tr>
+    <tr><td>Nov 2025</td><td class="num">99h</td><td class="num good">0h</td><td class="num">0%</td><td>Pure EPACS -- claims handled by Eric alone</td></tr>
+    <tr><td>Dec 2025</td><td class="num">97h</td><td class="num good">2h</td><td class="num">2%</td><td>Nearly pure EPACS</td></tr>
+    <tr><td>Jan 2026</td><td class="num">126h</td><td class="num">16h</td><td class="num">11%</td><td>Claims training with Cade begins</td></tr>
+    <tr><td>Feb 2026</td><td class="num">97h</td><td class="num warn">47h</td><td class="num warn">33%</td><td>Claims overflow pulling JP back in</td></tr>
+    <tr><td>Mar 2026</td><td class="num">100h</td><td class="num danger">60h</td><td class="num danger">37%</td><td>Significant claims workload -- 2 days/week</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-red">
+  <strong>The trajectory is clear:</strong> Claims volume is growing faster than one person (Eric) can handle. JP is being pulled deeper into claims each month. In October, JP did 49h of claims work. In March, he did 60h. If this trend continues, JP will spend half his time on claims by mid-2026, which means order processing capacity drops proportionally. There is no one else to absorb orders.
+</div>
+
+<h3>Who Has Slack?</h3>
+<table>
+  <thead>
+    <tr><th>Person</th><th>Available Slack</th><th>Reality</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Beng Atencio</td>
+      <td><span class="badge badge-red">NONE</span></td>
+      <td>99.8% utilization, 8.08h/day active, declining orders/day suggests complexity increasing, zero gaps available</td>
+    </tr>
+    <tr>
+      <td>JP Maquilang</td>
+      <td><span class="badge badge-red">NONE</span></td>
+      <td>Highest total hours on team (790.5h worklog), dual-role, already absorbing Eric's overflow. Technically the only flex point, but flex is already fully allocated.</td>
+    </tr>
+    <tr>
+      <td>Eric Pamintuan</td>
+      <td><span class="badge badge-red">NONE</span></td>
+      <td>99.7% utilization, caseload grew 76% in 6 months, only person showing sentiment variation, approaching burnout trajectory</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- ====== RED FLAGS ====== -->
+<h2 id="red-flags">Red Flags</h2>
+
+<div class="card" style="border-color:var(--red);">
+  <h4 style="color:var(--red); margin-top:0;">1. Zero Redundancy</h4>
+  <p>If Beng is out: JP absorbs orders, claims degrade. If Eric is out: JP absorbs some claims at 35% of Eric's throughput. <strong>If JP is out: the team splits into two islands with zero bridge.</strong> Beng cannot do claims. Eric cannot do orders. There is no fourth person. This is a 3-person team with the minimum viable staffing for a 2-function model.</p>
+</div>
+
+<div class="card" style="border-color:var(--red);">
+  <h4 style="color:var(--red); margin-top:0;">2. Eric's Burnout Trajectory</h4>
+  <p>Eric's caseload grew 76% in 6 months (199 to 351 cases/month). He is the only team member who ever rates feeling as "1" (3 times). He had consecutive "no win" days. His worklog hours grew from 85.8h to 141.0h per month. The system is extracting more from him every month. At some point, quality or attendance will break.</p>
+</div>
+
+<div class="card" style="border-color:var(--orange);">
+  <h4 style="color:var(--orange); margin-top:0;">3. Workload Growth Without Headcount Change</h4>
+  <p>Team hours grew 46% from Oct (309.8h) to Mar (451.8h). All three people are working more each month. This team lost a fourth member (Michelle Cayanan, June 2025) and never backfilled. Claims hours dropped 39% post-departure and the team has been slowly absorbing the gap. The absorption is now reaching limits.</p>
+</div>
+
+<div class="card" style="border-color:var(--orange);">
+  <h4 style="color:var(--orange); margin-top:0;">4. EOD Reporting -- Beng Provides Zero Signal</h4>
+  <p>Beng's EOD reports are identical every day: headline "Done [weekday]!", win "Same", concerns "Same", next shift "Same", feeling "3". 103 reports, zero variation. This is not necessarily a performance issue -- it may reflect a genuinely routine role -- but it means Go2's engagement coach has no visibility into Beng's actual state, workload pressure, or quality issues. The EOD system is capturing nothing useful from 33% of the team.</p>
+</div>
+
+<div class="card" style="border-color:var(--yellow);">
+  <h4 style="color:var(--yellow); margin-top:0;">5. Meeting/Training Infrastructure Collapsed</h4>
+  <p>Post-Michelle departure (June 2025): Meeting hours dropped 84% (4.5h/month to 0.7h). Training & Updates disappeared entirely. 1:1 with EM dropped 46%. The team stopped coordinating formally. There is no evidence of regular standups, team meetings, or structured knowledge sharing in the 6-month data window.</p>
+</div>
+
+<div class="card" style="border-color:var(--yellow);">
+  <h4 style="color:var(--yellow); margin-top:0;">6. Zero Cross-Training</h4>
+  <p>Beng and Eric have zero overlap in skills. Beng has never logged a claims hour. Eric has never logged an orders hour. In 6 months of 1,500+ combined hours, neither has touched the other's domain. If cross-training was ever planned post-Michelle, the data shows it never happened.</p>
+</div>
+
+<div class="card" style="border-color:var(--yellow);">
+  <h4 style="color:var(--yellow); margin-top:0;">7. "Need Help" Flag Is Dead</h4>
+  <p>Zero of 313 total EOD reports across all three people ever set "need_help" to yes. Either this team is genuinely self-sufficient, or the mechanism is socially inactive. Given Eric's documented workload pressure and sentiment variation, the latter seems more likely.</p>
+</div>
+
+
+<!-- ====== CAPACITY PLANNING ====== -->
+<h2 id="capacity">Capacity Planning Matrix</h2>
+
+<h3>Can This Team Take On More Work?</h3>
+<div class="verdict verdict-red">
+  <strong>No.</strong> All three people are at or above 99% tracked utilization. Monthly hours grew 46% in 6 months. There is zero slack on any person's calendar. The team cannot absorb additional workload without either degraded quality, extended hours (which are already growing), or someone burning out.
+</div>
+
+<h3>If Villa &amp; House Grows 20%</h3>
+<div class="card" style="border-color:var(--red);">
+  <h4 style="color:var(--red); margin-top:0;">What breaks first: Claims</h4>
+  <p>Eric is already processing 16.1 cases/day at ~25 min each. A 20% increase means ~19.3 cases/day. At his current rate, that requires 8+ hours of pure case work, plus 2+ hours of overhead (Go2, Teams, breaks). He would need to work 10+ hour days or cut case processing time by 20%. The former is unsustainable; the latter risks quality.</p>
+
+  <p style="margin-top:12px;"><strong>What actually happens:</strong> JP gets pulled into claims more. He goes from 2 claims days/week to 3. Orders processing drops proportionally. Beng cannot absorb JP's orders -- she is at 99.8% utilization. Orders start backing up. Customer experience degrades on both the orders and claims sides simultaneously.</p>
+</div>
+
+<h3>Staffing Recommendation</h3>
+<table>
+  <thead>
+    <tr><th>Scenario</th><th>Need</th><th>Priority</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Current state (maintain)</td>
+      <td>No immediate hire needed, but the team is at capacity with zero buffer. Any absence or volume spike creates degradation.</td>
+      <td><span class="badge badge-yellow">WATCH</span></td>
+    </tr>
+    <tr>
+      <td>Claims volume continues growing</td>
+      <td><strong>Add a junior claims processor.</strong> Eric needs support. JP should not be the permanent claims overflow valve -- it degrades both functions.</td>
+      <td><span class="badge badge-orange">SOON</span></td>
+    </tr>
+    <tr>
+      <td>V&H business grows 20%+</td>
+      <td><strong>Add both a claims processor AND an order processor.</strong> Or one strong hybrid who can bridge both. The team needs to go from 3 to 4-5 to handle growth.</td>
+      <td><span class="badge badge-red">URGENT if growth materializes</span></td>
+    </tr>
+    <tr>
+      <td>Risk mitigation (any scenario)</td>
+      <td><strong>Cross-train Beng on basic claims triage</strong> and <strong>Eric on basic order entry.</strong> Currently, losing JP means the team has zero cross-functional coverage. Even basic cross-training creates a survival buffer.</td>
+      <td><span class="badge badge-orange">HIGH</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Rebalancing Options</h3>
+<div class="card">
+  <h4 style="margin-top:0;">Option A: Formalize JP's Split</h4>
+  <p>JP's Mon-Wed EPACS / Thu-Fri Claims pattern is already organic. Formalize it and staff around it. This means accepting that orders have 3 people Mon-Wed and 2 on Thu-Fri, and claims have 2 people Thu-Fri and 1 Mon-Wed.</p>
+  <p><strong>Risk:</strong> This cements the coverage gaps rather than fixing them.</p>
+
+  <h4>Option B: Shift JP to Full-Time Claims, Hire EPACS Replacement</h4>
+  <p>JP already handles claims competently (5.6 cases/day vs Eric's 16.1). With full-time focus, JP could potentially reach 10-12 cases/day. Hire a new person to take JP's EPACS duties alongside Beng.</p>
+  <p><strong>Risk:</strong> Depends on new hire ramp time. Beng would need to train them.</p>
+
+  <h4>Option C: Automate First, Then Reassess</h4>
+  <p>The individual analyses identified ~96.5 hours/month of automatable work for Eric alone (template responses, carrier claim assembly, photo pipeline). Similar opportunities exist for Beng (shipping calculation, order data entry). Automation could reclaim 20-30% of each person's day, creating the slack that currently does not exist.</p>
+  <p><strong>Risk:</strong> Implementation timeline. Automation does not help today.</p>
+</div>
+
+<h3>The Bottom Line</h3>
+<div class="card" style="border-color:var(--accent); background:linear-gradient(135deg, rgba(94,234,212,0.04), var(--bg-card));">
+  <p style="font-size:15px; line-height:1.7; color:var(--text);">
+    <strong>For Frenchie:</strong> These three people are working hard, working honestly, and have no room left. The telemetry confirms it: 99%+ utilization, zero non-work activity, consistent attendance. The problem is not the people -- it is the math. A 3-person team lost its 4th member 10 months ago and workload has grown 46% since. They are absorbing it through longer hours and JP's dual-role flexibility, but that flexibility is now fully consumed. The next thing that goes wrong -- a sick week, a volume spike, a new client requirement -- will cause visible degradation. The engagement coach's priority should be (1) monitoring Eric for burnout, (2) pushing for cross-training between Beng and Eric, and (3) flagging to the client that this team is at maximum capacity with no buffer.
+  </p>
+</div>
+
+<div style="margin-top:48px; padding:24px 0; border-top:1px solid var(--border); color:var(--text-muted); font-size:12px;">
+  <p>Villa &amp; House Internal Capacity Report | Go2 | Generated 2026-04-08</p>
+  <p>Data sources: Go2 platform telemetry (sessions, worklogs, app/web tracking, keystroke monitoring, SOD/EOD reports, schedules, idle time)</p>
+  <p>Analysis period: Oct 13, 2025 - Apr 8, 2026 (6 months) | Granular gap analysis: Mar 10 - Apr 7, 2026 (30 days)</p>
+  <p>This report is for internal Go2 use only. Not for distribution to Villa &amp; House.</p>
+</div>
+
+</main>
+
+<script>
+// Simple nav highlighting
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.querySelectorAll('nav a').forEach(n => n.classList.remove('active'));
+    a.classList.add('active');
+  });
+});
+
+// Scroll spy
+const sections = document.querySelectorAll('h2[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

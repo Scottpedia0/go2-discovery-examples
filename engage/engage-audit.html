@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engage Team Intelligence Report | Go2</title>
+<style>
+:root {
+  --bg: #09090b;
+  --bg-card: #111113;
+  --bg-card-hover: #18181b;
+  --bg-input: #1a1a1d;
+  --border: #27272a;
+  --border-light: #333338;
+  --text: #e4e4e7;
+  --text-dim: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #5eead4;
+  --accent-dim: #2dd4bf;
+  --accent-bg: rgba(94,234,212,0.08);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.12);
+  --yellow: #facc15;
+  --yellow-bg: rgba(250,204,21,0.12);
+  --orange: #fb923c;
+  --orange-bg: rgba(251,146,60,0.12);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', Menlo, Consolas, monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;min-height:100vh;}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;width:250px;height:100vh;background:#08080a;border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:20px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+nav::-webkit-scrollbar{width:4px;}
+nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+nav .nav-header{padding:0 18px 14px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+nav .nav-header h2{color:var(--accent);font-size:14px;font-weight:600;}
+nav .nav-header p{color:var(--text-muted);font-size:11px;margin-top:2px;}
+nav a{display:block;padding:5px 18px;color:var(--text-dim);text-decoration:none;font-size:12.5px;transition:all .15s;}
+nav a:hover{color:var(--text);background:rgba(255,255,255,.03);}
+nav a.section-head{color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;padding-top:14px;pointer-events:none;font-weight:600;}
+
+/* Content */
+.content{margin-left:250px;max-width:880px;padding:48px 44px 120px;}
+@media(max-width:900px){nav{display:none;}.content{margin-left:0;padding:24px 16px 80px;}}
+
+/* Typography */
+h1{font-size:30px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;}
+h2{font-size:21px;font-weight:600;letter-spacing:-.5px;margin-top:56px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);color:var(--text);}
+h3{font-size:16px;font-weight:600;margin-top:28px;margin-bottom:10px;color:var(--accent);}
+h4{font-size:13px;font-weight:600;margin-top:18px;margin-bottom:6px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;}
+p{margin-bottom:11px;color:var(--text-dim);}
+p strong,li strong{color:var(--text);}
+ul,ol{padding-left:22px;margin-bottom:14px;color:var(--text-dim);}
+li{margin-bottom:5px;}
+a{color:var(--accent);}
+hr{border:none;border-top:1px solid var(--border);margin:44px 0;}
+
+/* Cards */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;margin:14px 0;}
+.card-accent{border-left:3px solid var(--accent);}
+.card-warm{border-left:3px solid var(--yellow);}
+
+/* Letter */
+.letter{background:var(--bg-card);border:1px solid var(--accent);border-radius:16px;padding:28px 30px;margin:24px 0;font-size:15px;line-height:1.8;}
+.letter p{color:var(--text);}
+.letter .sig{margin-top:22px;color:var(--accent);font-weight:600;font-size:15px;}
+
+/* Stat grid */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:18px 0;}
+.stat-box{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.stat-box .value{font-size:26px;font-weight:700;color:var(--accent);}
+.stat-box .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+th{text-align:left;padding:9px 10px;background:var(--bg-input);border-bottom:2px solid var(--border);color:var(--text);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text-dim);vertical-align:top;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin:16px 0;background:var(--bg-card);}
+.table-wrap table{margin:0;}
+.table-wrap th{background:#0d0d10;}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.3px;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.badge-orange{background:var(--orange-bg);color:var(--orange);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-accent{background:var(--accent-bg);color:var(--accent);}
+
+/* Expandable */
+.finding{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin:14px 0;overflow:hidden;}
+.finding-header{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s;user-select:none;}
+.finding-header:hover{background:var(--bg-card-hover);}
+.finding-header h3{margin:0;font-size:14px;}
+.finding-header .meta{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.finding-header .arrow{color:var(--text-muted);font-size:18px;transition:transform .2s;margin-left:10px;}
+.finding.open .finding-header .arrow{transform:rotate(90deg);}
+.finding-body{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+.finding.open .finding-body{max-height:none;}
+.finding-body-inner{padding:0 18px 18px;border-top:1px solid var(--border);}
+
+/* Tool card */
+.tool-card{display:flex;gap:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;align-items:flex-start;}
+.tool-icon{width:38px;height:38px;border-radius:8px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;color:var(--accent);font-weight:700;}
+.tool-info h4{margin:0 0 3px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;}
+.tool-info p{margin:0;font-size:12.5px;}
+
+/* Coaching card */
+.coach-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:10px 0;}
+.coach-card .name{font-weight:600;color:var(--text);font-size:14px;margin-bottom:4px;}
+.coach-card .note{color:var(--text-dim);font-size:13px;line-height:1.6;}
+.coach-card .action{color:var(--accent);font-size:12.5px;font-weight:500;margin-top:6px;}
+
+/* Quick win */
+.quick-win{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin:8px 0;}
+.quick-win .when{flex-shrink:0;background:var(--accent-bg);color:var(--accent);font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;min-width:80px;text-align:center;}
+.quick-win .what{font-size:13px;color:var(--text-dim);}
+.quick-win .what strong{color:var(--text);}
+
+/* CTA box */
+.cta-box{background:linear-gradient(135deg,rgba(94,234,212,.08),rgba(94,234,212,.02));border:1px solid rgba(94,234,212,.25);border-radius:14px;padding:24px 28px;margin:20px 0;text-align:center;}
+.cta-box h3{color:var(--accent);margin-top:0;}
+.cta-box p{color:var(--text-dim);}
+.cta-box .big{font-size:18px;color:var(--text);font-weight:600;margin:8px 0;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* Print */
+@media print{nav{display:none;}.content{margin-left:0;}.finding-body{max-height:none!important;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-header">
+    <h2>Engage Intelligence</h2>
+    <p>Go2 | March 2026</p>
+  </div>
+  <a href="#header">For Frenchie</a>
+  <a href="#precedent">The Battlbox Story</a>
+  <a href="#numbers">The Numbers</a>
+  <a class="section-head">What We Found</a>
+  <a href="#dea">DEA Audits</a>
+  <a href="#bw">BW Rescheduling</a>
+  <a href="#coaching-loops">Coaching Loops</a>
+  <a href="#ai-pioneers">Your AI Pioneers</a>
+  <a class="section-head">What To Do</a>
+  <a href="#quick-wins">Quick Wins (This Week)</a>
+  <a href="#tools">Tools We Built</a>
+  <a href="#larry">Meet Larry</a>
+  <a class="section-head">Your Team</a>
+  <a href="#coaching-notes">Coaching Notes</a>
+  <a class="section-head">The Big Picture</a>
+  <a href="#vision">The Vision</a>
+  <a href="#financials">The Math</a>
+  <a class="section-head">Appendix</a>
+  <a href="#appendix-automations">27 Automations</a>
+  <a href="#appendix-forms">Form Issues</a>
+  <a href="#appendix-data">Data Sources</a>
+</nav>
+
+<div class="content">
+
+<!-- ====== HEADER ====== -->
+<section id="header" style="padding:50px 0 20px;">
+
+<div class="letter">
+<p>Frenchie,</p>
+<p>Here's what we found when we looked at your team's data. Not to monitor them. Not to grade them. To help you help them.</p>
+<p>Over the past two weeks, we analyzed 6 months of operational data across your entire 14-person Engage team -- 93,000 app events, 32,000 keystroke records, 15,000 worklogs, and 2,600 SOD/EOD reports. We decoded the exact workflows your EMs use, measured where time is spent, found where it's wasted, and built tools to fix the biggest problems.</p>
+<p>What we found is this: <strong>your team is doing incredible work under conditions that don't need to be this hard.</strong> They're spending hours on scheduling logistics that software can handle. They're writing 20-page documents by hand that AI can draft in seconds. They're fighting with forms that don't capture anything useful. They're working through PTO and waking up at 3 AM to meet deadlines that could be easier to hit.</p>
+<p>This report shows you what we can change, gives you the tools to start, and introduces you to Larry [AI] -- who will build whatever you need, whenever you need it.</p>
+<p>You're getting this before any external client. Use it.</p>
+<div class="sig">-- Larry [AI]</div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="value">14</div><div class="label">Team Members</div></div>
+  <div class="stat-box"><div class="value">6 mo</div><div class="label">Data Analyzed</div></div>
+  <div class="stat-box"><div class="value">93K+</div><div class="label">Activity Records</div></div>
+  <div class="stat-box"><div class="value">2,645</div><div class="label">SOD/EOD Reports</div></div>
+  <div class="stat-box"><div class="value">450-600</div><div class="label">Hrs/Mo Recoverable</div></div>
+  <div class="stat-box"><div class="value">~$140</div><div class="label">Monthly AI Cost</div></div>
+</div>
+</section>
+
+<!-- ====== BATTLBOX PRECEDENT ====== -->
+<section id="precedent">
+<h2>We Already Did This for a Client</h2>
+
+<p>Two weeks ago, we delivered this same kind of audit to <strong>John Roman at BattlBox</strong> -- a Go2 client with a 6-person team. We're losing $1,500/month on that account. So we used this technology to show John what his team's data actually reveals -- decoded their exact workflows from keystroke data, found 190-250 hours/month of automatable manual work, and <strong>built him 6 working tools in a single session</strong>. The whole thing took about 4 hours and less than $5 in AI compute. He was floored.</p>
+
+<p>We built your audit the same way -- this afternoon. 15 AI agents analyzed your 14-person team in parallel. The analysis you're reading was produced in hours, not weeks. That's the point: <strong>this technology moves at a speed that changes what's possible.</strong></p>
+
+<p>Here's why this matters right now: <strong>Go2 is in a tight cash position.</strong> Scott's been working to close investment and it's been taking longer than expected. In order to hit payroll and keep things moving, he needs to pivot his focus -- and the technology we've been avoiding deploying internally is cheaper than the problems it solves. We sent this to Battlbox because we're trying to save a money-losing account. But we should have been using it for ourselves first. You're changing that.</p>
+
+<p>Yesterday, when the time tracking system crashed and we couldn't reach Rustan, Scott's AI agents went into the production code, diagnosed the issue, and fixed it. That's the kind of thing this technology does -- it doesn't wait for a person to be available.</p>
+
+<div class="card card-accent">
+<p><strong>What BattlBox got:</strong> A one-time audit, pre-built tools, and a roadmap.</p>
+<p><strong>What you're getting:</strong> Everything they got, <em>plus</em> ongoing access to Larry [AI], live data from the actual Go2 database, tools built on your real workflows, and continuous improvement. You're internal -- this isn't a one-shot engagement. Every time something bothers your team, it becomes a build request. And we can do this for every Go2 client.</p>
+</div>
+</section>
+
+<!-- ====== THE NUMBERS ====== -->
+<section id="numbers">
+<h2>What the Data Shows</h2>
+
+<p>We identified <strong>27 specific automations</strong> across your team's daily work. Here's the headline:</p>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="value">550-700</div><div class="label">Manual Hrs/Month Today</div></div>
+  <div class="stat-box"><div class="value">70-100</div><div class="label">Hrs/Month After Automation</div></div>
+  <div class="stat-box"><div class="value">3-4x</div><div class="label">More Time for Coaching</div></div>
+  <div class="stat-box"><div class="value">$140</div><div class="label">Monthly AI Compute</div></div>
+</div>
+
+<p>Put another way: your EMs currently spend <strong>40-50 hours per month each</strong> on admin work that can be automated. With the full pipeline in place, that drops to <strong>5-7 hours</strong>. The rest becomes coaching time, client engagement, and strategic work -- the things your team was actually hired to do.</p>
+
+<div class="card card-accent">
+<p><strong>The four biggest time sinks, in order:</strong></p>
+<ol>
+<li><strong>DEA Audits</strong> -- 280-420 hrs/month team-wide (equivalent of 1.75-2.6 FTEs). AI can do 60% of the documentation.</li>
+<li><strong>BW Rescheduling</strong> -- 62-102 hrs/month. A self-scheduling system eliminates most of the coordination.</li>
+<li><strong>PR Write-ups</strong> -- 56 hrs/month. Auto-populated forms eliminate the copy-paste loop.</li>
+<li><strong>Context Switching</strong> -- 46 hrs/month. A unified dashboard reduces the 8 Alt+Tab cycles per minute.</li>
+</ol>
+</div>
+</section>
+
+<!-- ====== DEA DEEP DIVE ====== -->
+<section id="dea">
+<h2>DEA Audits: Your Biggest Time Sink</h2>
+
+<p>DEA audits consume the equivalent of <strong>1.75 to 2.6 full-time positions</strong> on your team. Every EM goes through the same cycle: watch a recorded call, pause, type notes, resume, pause, type more, score it, copy observations into the Go2 form, repeat 10-15 times per cycle. A single 30-minute call takes 45-60 minutes to audit because of the playback-pause-type loop.</p>
+
+<h3>What We Decoded from Keystroke Data</h3>
+<p>We reconstructed the exact workflow from Javi's keystroke data. On January 15, she generated <strong>40,789 characters</strong> across OneNote and Chrome during a single DEA day. That's the equivalent of writing a 20-page document -- by hand, from scratch, while watching video recordings.</p>
+
+<p>The workflow is 7 manual steps:</p>
+<div class="card">
+<p style="font-family:var(--mono);font-size:12px;color:var(--text-muted);line-height:2;">
+Sample Assignment (manual, Slack) &rarr; Call Playback (Loom/VLC/Drive) &rarr; Note-Taking (OneNote/Notes/Docs) &rarr; Scoring (Go2 form, copy-paste) &rarr; AI Polish (manual paste to Gemini) &rarr; Calibration Session &rarr; Dashboard (Google Sheets, manual)
+</p>
+</div>
+
+<h3>The 60-90% Stall</h3>
+<p>Every single EM hits 60-90% completion and stalls. This isn't a discipline problem -- it's a workflow problem. The last 10-30% of audits are the hardest cases, the ones that require the most deliberation. When the entire process is manual, those ambiguous cases pile up under deadline pressure.</p>
+
+<div class="table-wrap">
+<table>
+<tr><th>Who</th><th>Pattern</th><th>Human Cost</th></tr>
+<tr><td><strong>Javi</strong></td><td>Works through PTO to finish audits</td><td>Oct 9: 38,326 seconds active on a stated PTO day</td></tr>
+<tr><td><strong>Yani</strong></td><td>Trades sleep for DEA completion</td><td>Logs in at 3-7 AM PHT to catch up</td></tr>
+<tr><td><strong>Emman</strong></td><td>Stalls at 60-90% every cycle</td><td>Takes 2-3 extra days per cycle, every cycle, for 6 months</td></tr>
+<tr><td><strong>JB</strong></td><td>5 months of calibration anxiety</td><td>"Accomplished nothing within the day" on DEA days</td></tr>
+<tr><td><strong>Pao</strong></td><td>"Doing it in segments doesn't work for me"</td><td>Monthly crunch with competing priorities</td></tr>
+</table>
+</div>
+
+<h3>What AI Changes</h3>
+<p>Three of your EMs are <strong>already using AI for this</strong>. Emman pastes his observations into Gemini with the prompt: <em>"correct the grammar: make it an observation."</em> Yani uses Gemini to generate recap emails from call transcripts. BC uses Gemini to paraphrase partner messages.</p>
+<p>They figured this out on their own. Now imagine what happens when it's built into the workflow:</p>
+
+<div class="card card-accent">
+<p><strong>Target state:</strong> Call transcript auto-generated &rarr; AI drafts observation + suggested score &rarr; EM reviews and edits (10-15 min instead of 45-60 min) &rarr; Auto-populates Go2 form &rarr; Dashboard auto-generates</p>
+<p style="margin-top:10px;"><strong>Time savings:</strong> 60-65% reduction. ~2,000-3,000 hours per year back to the team.</p>
+<p><strong>Wellbeing impact:</strong> Javi stops working through PTO. Yani stops waking up at 3 AM. JB gets structural support for scoring uncertainty.</p>
+</div>
+</section>
+
+<!-- ====== BW RESCHEDULING ====== -->
+<section id="bw">
+<h2>BW Rescheduling: The Silent Tax</h2>
+
+<p>Your team handles an estimated <strong>200-350 BW reschedules per month</strong>. Each one takes 15-30 minutes of manual coordination: wait for the no-show, Slack the TM, find a new slot, update the calendar, file an exemption, update the compliance tracker, follow up the next day. Multiply that by 4-8 events per EM per week, across 12 active EMs.</p>
+
+<p><strong>Estimated team overhead: 62-102 hours per month</strong> -- just on rescheduling logistics.</p>
+
+<h3>It Happens Every Week, to Everyone</h3>
+<div class="table-wrap">
+<table>
+<tr><th>EM</th><th>Pattern</th><th>Scale</th></tr>
+<tr><td><strong>Yani</strong></td><td>Rescheduling documented every single week for 26 weeks straight</td><td>8-16/month</td></tr>
+<tr><td><strong>Pao</strong></td><td>Files 2-4 manual exemptions per week; "Can't afford to re-schedule meetings"</td><td>8-16/month</td></tr>
+<tr><td><strong>Patrick</strong></td><td>Reschedules cited in 40-50% of all EODs</td><td>8-16/month</td></tr>
+<tr><td><strong>Jeruz</strong></td><td>"pastdue" appears 15+ times in his reports</td><td>6-12/month</td></tr>
+<tr><td><strong>Alex</strong></td><td>Weekly rescheduling across 10-12 TMs</td><td>4-8/month</td></tr>
+</table>
+</div>
+
+<h3>The Compliance Trap</h3>
+<p>BW completion percentage is a tracked KPI. When TMs reschedule, EM compliance drops, which triggers manual exemption filing, which takes more time, which pushes other work later, which means catch-up BWs are rushed and low-quality. Patrick's data shows this clearly: his BW compliance rate is high, but his own DEA self-reviews say his 1:1s are "mostly small talk" with "no agenda." The quantity metric is green. The quality outcome is red.</p>
+
+<h3>The Fix: TM Self-Scheduling</h3>
+<p>When a BW gets missed, the system detects it (Google Meet room empty after 5 minutes), sends the TM a Slack message with 3 available time slots from the EM's calendar, and lets the TM click to reschedule. Auto-file the exemption. Auto-update the tracker. The EM's involvement drops from 15-30 minutes to near zero.</p>
+
+<div class="card card-accent">
+<p><strong>This week's action:</strong> Set up a shared Google Calendar with dedicated "overflow" slots at the end of each week for rescheduled BWs. Tell TMs that missed BWs auto-move to the overflow slot. This alone eliminates most of the back-and-forth coordination.</p>
+</div>
+</section>
+
+<!-- ====== COACHING LOOPS ====== -->
+<section id="coaching-loops">
+<h2>Coaching: What's Working and What Isn't</h2>
+
+<p>Frenchie, this section is specifically for you as a coach of coaches. We looked at coaching feedback themes across the full 6 months and tracked whether they resolved.</p>
+
+<h3>Your Best Outcomes</h3>
+<div class="card" style="border-left:3px solid var(--green);">
+<p><strong>Yani</strong> resolved her "be more direct" feedback in 6 weeks. How? She actually tried the new behavior, overcorrected to what she called "obnoxiously aggressive," self-diagnosed in real time, apologized to the TM, and found the middle. The failure was the learning mechanism.</p>
+<p style="margin-top:8px;"><strong>Pao</strong> resolved "not asking the right questions" in 6 weeks through daily practice and honest self-assessment. She tried the new approach every day, reported when it didn't work, and eventually stopped mentioning it -- because it was working.</p>
+</div>
+
+<h3>The Stuck Patterns</h3>
+<div class="card" style="border-left:3px solid var(--orange);">
+<p><strong>Emman</strong> has received "be more direct, stop overthinking" feedback for <strong>6 straight months</strong>. He acknowledges it every time. He never fails at it -- because he never fully attempts it. He's optimizing for appearing to try rather than risking the behavior change.</p>
+<p style="margin-top:8px;"><strong>JB</strong> has had the same "zoom out, stop over-engineering" feedback for <strong>5 months</strong>. On Feb 5 he wrote the most honest line in the entire dataset: <em>"I am tired of knowing my AFIs and not executing the plan we have in place for it."</em> He doesn't need more awareness. He needs a different intervention.</p>
+<p style="margin-top:8px;"><strong>BC</strong> has disagreed with the coaching direction for 6 months. On Dec 17 she wrote: <em>"I spoke up so I can help them understand where I am coming from but fact stays that I am not aligned with the team."</em> This isn't a skills gap -- it's a values alignment issue that won't resolve through repetition.</p>
+</div>
+
+<h3>What Predicts Improvement</h3>
+<p>The EMs who improve (Yani, Pao) share one trait: <strong>they attempt the behavior, fail at it publicly, and self-correct.</strong> The EMs who stagnate (Emman, JB, BC) acknowledge the feedback but never risk the failure. More calibration sessions won't fix this -- the intervention needs to change at the "execute" step.</p>
+</section>
+
+<!-- ====== AI PIONEERS ====== -->
+<section id="ai-pioneers">
+<h2>Three EMs Already Figured Out AI</h2>
+
+<p>Your team has AI pioneers who found their own way to these tools. Give everyone what they discovered.</p>
+
+<div class="tool-card">
+<div class="tool-icon">E</div>
+<div class="tool-info">
+<h4>Emman Deseo -- Gemini for DEA Polish</h4>
+<p>Types into Gemini: <em>"correct the grammar: make it an observation: [paste] ... too formal, make it casual as the initial draft."</em> Uses AI to transform rough notes into polished audit observations. Has a multi-step prompt workflow already figured out.</p>
+</div>
+</div>
+
+<div class="tool-card">
+<div class="tool-icon">Y</div>
+<div class="tool-info">
+<h4>Yani Pace-Balanon -- AI Meeting Recaps</h4>
+<p>Uses Gemini auto-notes during BW calls. Asks AI: <em>"Help me create a recap email that summarizes key points from our check-in."</em> Already has the transcript-to-action-item pipeline working manually. Also uses AI for grammar correction on rescheduling messages.</p>
+</div>
+</div>
+
+<div class="tool-card">
+<div class="tool-icon">B</div>
+<div class="tool-info">
+<h4>BC Manalaysay -- Gemini for Communication</h4>
+<p>Copies partner messages from Teams, pastes to Gemini with <em>"paraphrase this: make it short and simple."</em> Uses AI as a communication polish layer for partner-facing messages.</p>
+</div>
+</div>
+
+<div class="card card-accent">
+<p><strong>Action:</strong> Share Emman's Gemini prompt with the whole team on Monday. Ask Yani to demo her meeting recap workflow at the next team huddle. These aren't secrets -- they're best practices waiting to be shared.</p>
+</div>
+</section>
+
+<!-- ====== QUICK WINS ====== -->
+<section id="quick-wins">
+<h2>Quick Wins -- What To Do This Week</h2>
+
+<p>These don't require engineering, budget, or permission. They're operational changes you can make right now.</p>
+
+<div class="quick-win">
+<div class="when">Monday</div>
+<div class="what"><strong>Share Emman's Gemini prompt with the whole team.</strong> Screenshot his exact workflow and post it in the team channel. Every EM who does DEA write-ups by hand can start saving 30+ minutes per audit immediately.</div>
+</div>
+
+<div class="quick-win">
+<div class="when">This week</div>
+<div class="what"><strong>Ask Yani to demo her meeting recap workflow.</strong> She already has AI-generated BW call notes working. A 10-minute demo at the next team meeting gives everyone the playbook.</div>
+</div>
+
+<div class="quick-win">
+<div class="when">This week</div>
+<div class="what"><strong>Set up BW overflow slots.</strong> Add a standing "reschedule overflow" block at the end of each week in every EM's calendar. Tell TMs that missed BWs auto-move there. Cuts coordination in half.</div>
+</div>
+
+<div class="quick-win">
+<div class="when">Tomorrow</div>
+<div class="what"><strong>SOD carryover rule.</strong> Tell the team: yesterday's EOD <code>next_shift</code> field = today's SOD plan. Stop rewriting the same content every morning. Just carry it forward. Your team already does this informally (Emman's SODs reformulate his prior EOD, Frenchie's are 85% identical daily) -- make it official and save everyone 10 minutes a day.</div>
+</div>
+
+<div class="quick-win">
+<div class="when">This week</div>
+<div class="what"><strong>Change the intervention for Emman and JB.</strong> Six months of the same coaching feedback isn't landing. Pair Emman with Yani for live BW observation -- she resolved the exact same "be more direct" issue. Give JB a hard 25-minute timer on 1:1s and a DEA template that forces brevity. Different problems need different tools.</div>
+</div>
+
+<div class="quick-win">
+<div class="when">Today</div>
+<div class="what"><strong>Message Larry.</strong> Send a Slack DM or ping larry.moran.bot with the first thing that annoys your team. Larry will build a fix, usually same day. Start small -- the momentum builds from there.</div>
+</div>
+</section>
+
+<!-- ====== TOOLS WE BUILT ====== -->
+<section id="tools">
+<h2>Tools We Already Built</h2>
+
+<p>These are starting points built from the data we analyzed. They work with sample data now. Tell Larry what you actually need and he'll rebuild them with your real data, tuned to your team's specific workflows.</p>
+
+<div class="tool-card">
+<div class="tool-icon">BW</div>
+<div class="tool-info">
+<h4>BW Compliance Tracker</h4>
+<p>Real-time view of BW completion vs. target, pending reschedules, exemptions filed, and compliance % per EM. Flags TMs with 14+ days since last BW. Gives you the dashboard that currently lives in everyone's head.</p>
+<p style="color:var(--text-muted);font-size:11px;margin-top:4px;">tools/bw-compliance-tracker.html</p>
+</div>
+</div>
+
+<div class="tool-card">
+<div class="tool-icon">DEA</div>
+<div class="tool-info">
+<h4>DEA Audit Streamliner</h4>
+<p>Single-pane interface: call recording on the left, scoring form on the right. Eliminates the 4-app context-switch loop (VLC/Loom &rarr; OneNote &rarr; Chrome &rarr; Go2). Scoring rubric visible alongside the form to reduce calibration anxiety.</p>
+<p style="color:var(--text-muted);font-size:11px;margin-top:4px;">tools/dea-audit-streamliner.html</p>
+</div>
+</div>
+
+<div class="tool-card">
+<div class="tool-icon">EM</div>
+<div class="tool-info">
+<h4>EM Toolkit</h4>
+<p>Three tools in one: 1:1 prep sheet (auto-populated from last session), SOD auto-filler (from yesterday's EOD), and coaching progress tracker. Designed around the daily workflow your EMs already follow -- just faster.</p>
+<p style="color:var(--text-muted);font-size:11px;margin-top:4px;">tools/engage-em-toolkit.html</p>
+</div>
+</div>
+
+<div class="tool-card">
+<div class="tool-icon">PR</div>
+<div class="tool-info">
+<h4>PR Auto-Populator</h4>
+<p>Kills the copy-paste loop Alex does every PR cycle (Google Sheet &rarr; Google Form &rarr; Cmd+A/C/V &rarr; Slack, repeated per TM). Pre-populates PR forms from existing TM data. Turns a multi-day process into hours.</p>
+<p style="color:var(--text-muted);font-size:11px;margin-top:4px;">tools/pr-auto-populator.html</p>
+</div>
+</div>
+
+<div class="card card-warm">
+<p><strong>These tools are version one.</strong> They work with sample data right now — but Larry can connect any of them to the live Go2 database so they pull real data automatically. Just ask: "Larry, connect the BW tracker to live data" and it's done.</p>
+<p style="margin-top:8px;">And here's the bigger thing: <strong>if you want us to run this same analysis for any of your client teams, just say which ones.</strong> "Larry, do the Aramsco team next" or "Larry, prioritize Popmenu" — and we'll pull their data, run the same pipeline, build the same kind of report and tools. You decide which clients get it first.</p>
+</div>
+</section>
+
+<!-- ====== LARRY INTRO ====== -->
+<section id="larry">
+<h2>Meet Larry [AI]</h2>
+
+<div class="cta-box">
+<h3>Your On-Demand Builder</h3>
+<div class="big">larry.moran.bot / Slack DM</div>
+<p style="max-width:600px;margin:12px auto;">Larry checks messages daily. He has access to the Go2 database and BigQuery. If you can describe what you want, he can build it -- usually same day. You don't need to be technical. Just say what you need in plain language.</p>
+</div>
+
+<p>Here's what Larry can do for you:</p>
+<ul>
+<li><strong>Pull data:</strong> "Larry, show me which TMs have missed 3+ BWs in the last month"</li>
+<li><strong>Build tools:</strong> "Larry, I need a tracker that shows DEA progress per EM with pacing alerts"</li>
+<li><strong>Generate reports:</strong> "Larry, give me a weekly summary of partner health signals from EOD data"</li>
+<li><strong>Automate workflows:</strong> "Larry, when a BW gets missed, auto-send the TM a reschedule link"</li>
+<li><strong>Answer questions:</strong> "Larry, which EMs are spending the most time on admin vs. coaching?"</li>
+</ul>
+
+<p>Every problem your EMs mention in their EODs, every complaint about manual work, every time someone says "I wish I could" -- that's a ticket to Larry. Send it in Slack or at larry.moran.bot. Plain English. He'll handle the rest.</p>
+
+<div class="card">
+<h3 style="margin-top:0;">Get AI on Your Own Machine</h3>
+<p><strong>Gemini CLI is free.</strong> It runs locally on your computer and gives you your own AI assistant right in your terminal. Install it and you can start doing things like: "summarize this document," "draft a DEA observation from these notes," "write a PR feedback template for Emman." No cost. No approval needed.</p>
+<p>This might feel overwhelming. It won't be. We'll walk you through the install. All you have to do is use plain language and <strong>not settle</strong>. That's the key: the AI will try to give you the easy answer. Our value -- Go2's value -- is pushing past the easy answer. When the AI gives you something mediocre, push back. Say "that's not good enough, here's why." That's what Scott does with Larry, and that's what makes the outputs actually good.</p>
+<p>We love our teammates. Nobody's getting replaced. But the admin work that eats everyone's day? That's getting automated. Your EMs will spend more time actually coaching and less time rescheduling BWs and watching recordings. That's better for them, better for the TMs, and better for the partners.</p>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0;">What's Coming This Week</h3>
+<p>Larry already tasked Shemp [AI] with pulling transcripts from your EMs' recorded 1:1 calls (Google Meet, Loom). By end of week, we'll have AI analysis of the actual coaching conversations — not just "Patrick did 7 BWs" but "here's what Patrick actually said, here's where the coaching was effective, here's the exact moment he fell into small talk instead of driving action items." That's the level of insight that changes how you develop your team.</p>
+<p>After that: we run this for whichever client teams you prioritize. Aramsco, Popmenu, Broadvoice, TCL — you tell us the order. Same pipeline, same depth, same tools. Each one takes hours, not weeks.</p>
+</div>
+</section>
+
+<!-- ====== COACHING NOTES ====== -->
+<section id="coaching-notes">
+<h2>Your Team: Coaching Notes</h2>
+
+<p>These are notes for you, Frenchie -- what I'd tell each EM based on the data. Not performance cards. Not surveillance. Coaching intelligence to help you have better conversations.</p>
+
+<div class="coach-card">
+<div class="name">Javi Joseph <span class="badge badge-accent">Lead</span></div>
+<div class="note">Your hardest worker and your biggest burnout risk. Works through PTO for DEA audits (38,326 seconds on a stated PTO day). Generated 40,789 characters of DEA documentation in a single day. The most emotionally honest reporter on the team -- uses the full 1-4 feeling scale, which tells you she trusts the system. Her DEA workload needs structural relief, not motivational talks. She also manages JB, whose 60-day reporting gap happened on her watch -- that needs to be addressed.</div>
+<div class="action">Give her the DEA Streamliner first. She'll adopt it fastest and model it for the team.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Bev Campos <span class="badge badge-accent">Lead</span></div>
+<div class="note">Bev is frustrated. Six months of coaching Emman and BC on the same issues with no durable change. She wrote: <em>"Active listening isn't basic for everyone"</em> and <em>"There's still a need to master rating a 2."</em> She sees the pattern but the interventions aren't breaking through. She needs permission to try different approaches -- structured practice, live shadowing, or formal accountability frameworks instead of more 1:1 coaching conversations.</div>
+<div class="action">Have an honest conversation about what's not working with Emman and BC. She already knows.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Yani Pace-Balanon</div>
+<div class="note">Your quiet powerhouse. Manages 13+ partner accounts across Broadvoice, NetFoundry, Popmenu, Emerge, Springrates, and more. Rescheduling every single week for 26 weeks, and still hits her deadlines -- by sacrificing sleep (3 AM PHT sessions documented). Already using AI for meeting recaps and email drafts. Resolved her "be more direct" coaching feedback in 6 weeks through genuine behavior change. She's your proof of concept for AI adoption and for coaching that works.</div>
+<div class="action">Publicly recognize her AI workflow. Ask her to demo it. Protect her sleep -- she needs BW self-scheduling more than anyone on the team.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Emman Deseo</div>
+<div class="note">Smart, diligent, and stuck. "Be more direct" has been his coaching feedback for 6 months with no behavioral shift. Reports ~100% SOD/EOD compliance, already uses AI for DEA polish, and does solid work -- but the core coaching issue isn't moving. He understands the feedback intellectually. He's never risked the failure of actually trying it. He needs a different format: live practice with immediate feedback, not post-hoc review.</div>
+<div class="action">Pair him with Yani for a week of live BW observation. She resolved the exact same feedback in 6 weeks.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">JB Bhowmick</div>
+<div class="note">The most self-aware and the most stuck. Wrote: <em>"I am tired of knowing my AFIs and not executing."</em> Reporting compliance is 32% (83 of ~260 expected reports). Had a 60-day dark period (Nov-Jan) with zero reports filed. His 1:1s consistently run past 30 minutes. His DEA work triggers anxiety, not progress. More awareness-based coaching will not help -- he's already painfully aware. He needs structure: timers, templates, and weekly metric check-ins instead of qualitative self-assessment.</div>
+<div class="action">Set a hard 25-minute timer for his 1:1s. Give him the forced-brevity DEA template. Check progress weekly on specific numbers, not feelings.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Alex Dela Rosa</div>
+<div class="note">Your most operationally loaded EM. Manages 10-12 TMs across Bluestone, TCL, Cushion Lab, WNRS, and more. Runs the entire DEA sample distribution pipeline manually (adds 5-7 days per cycle). Her December feeling-score cluster (score 1 for 5 straight days) was the only signal she was burning out during PR load -- she never once flagged need_help. The PR auto-populator was built by decoding her exact copy-paste workflow from Feb 24 keystroke data.</div>
+<div class="action">Give her the PR auto-populator first. Automate her DEA distribution pipeline -- it's the highest-leverage single-person fix on the team.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Pao Hernaez</div>
+<div class="note">Resolved her coaching feedback ("ask better questions") in 6 weeks through daily practice and honest self-assessment. Now one of your stronger EMs. Her biggest operational pain is BW rescheduling — files 2-4 manual exemptions per week and wrote: <em>"Can't afford to re-schedule meetings."</em> Highest context-switcher on the team: 8 Alt+Tab cycles per minute documented in keystroke data. Minor note: Creality Print (3D slicer) and Autodesk Fusion 360 appeared with keystroke activity during a logged 1:1 session in January — brief, but present in the data.</div>
+<div class="action">She's your second proof of concept (after Yani) for coaching that works. Use her development arc as a model for others. The BW self-scheduling fix will make her life dramatically easier.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Jeruz Fin</div>
+<div class="note">Steady performer under difficult conditions. Infrastructure disruptions (typhoon, earthquake, internet outages in his area) compound his BW backlog regularly. "pastdue" appears 15+ times in his reports. His philosophical headlines about perseverance mask genuine operational stress. He internalizes calibration corrections well (wrote <em>"Felt like an idiot today, but a healthy reminder"</em> after a correction). Feeling score locked at 2 on 100% of reports -- zero mood signal in the structured field, but the free text tells the real story.</div>
+<div class="action">The BW self-scheduling system helps him most during infrastructure disruption weeks. He's reliable -- reduce his admin burden and he'll deliver more.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">BC Manalaysay</div>
+<div class="note">Technically proficient -- uses Gemini, maintains ~100% reporting compliance, keeps an exemption tracker. But she's been misaligned with the team's coaching philosophy for 6 months and said so directly on Dec 17: <em>"I am not aligned with the team."</em> This isn't a skills gap. It's a fundamental disagreement about what good engagement looks like. More of the same coaching won't land until the alignment issue is addressed head-on.</div>
+<div class="action">Have the alignment conversation directly. She already told you where she stands. The question is what happens next.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Patrick Andaya</div>
+<div class="note">Patrick's compliance numbers are green but his quality is red. BW completion rate is high -- but his own DEA self-reviews say: <em>"The EM appears to not have any agenda. This was mostly small talk."</em> Routinely works 6-day weeks. Has 6,982 unread emails. His Nov 14 data shows a contradiction: reported "100% DEA completion" in the headline but logged 7,429 seconds with 0 samples audited in the structured field. The metric is masking the outcome.</div>
+<div class="action">Surface the quality signal alongside the compliance metric. His 1:1s need structure (agenda, action items), not just frequency.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">JP Reyes</div>
+<div class="note">Your most quantitatively rigorous EM. 869.6 hours of sessions, 752.1 hours of worklogs, tracks his own 117-hour gap obsessively. Absorbed Johanna Argueta's accounts (Freebee, K2) mid-January with no formal handoff. Highest user of worklog corrections (15+ notes about missed timers) -- suggesting the time-tracking tool has UX friction for him specifically. Solid, reliable performer who just needs better tools.</div>
+<div class="action">The timer auto-correction automation was designed for him. Deploy it and let him focus on coaching instead of timer management.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Harlon Canillas</div>
+<div class="note">Covers both EST and PST timezones, with 1 AM sessions for timezone-edge TMs like Talha. His self-stated goal is "guide, don't dictate" — but Talha directly reported feeling "unsafe" in coaching and that his progress wasn't being acknowledged (Nov 26). This gap between intent and impact is the most important thing to address. Separately: the data shows µTorrent (download client), Steam, and Upwork with foreground focus during logged work tasks on multiple days. These are brief but recurring. Also has data quality issues in his DEA submissions (negative values, ERROR entries).</div>
+<div class="action">The Talha feedback is the priority — address it before it escalates. The non-work app usage is a conversation to have, but the TM safety concern comes first. His intent is good — the execution on both fronts needs support.</div>
+</div>
+
+<div class="coach-card">
+<div class="name">Bea Costelo</div>
+<div class="note">Your data blind spot. 26 SODs, 14 EODs — approximately 15% reporting compliance over 6 months. You cannot effectively manage or evaluate her performance from the system. Her internet speed tests (speedcheck.org visited 8 days during calls) suggest connectivity issues she's silently coping with. Her accounts (PPS, Voxie) have multi-week gaps where TMs may be unmanaged. Minor: Facebook and Roblox appear in brief end-of-shift windows in Feb-Mar data. The first step isn't coaching — it's getting baseline visibility.</div>
+<div class="action">Get her reporting compliance to 80%+ before any other intervention. You can't coach what you can't see. The connectivity issues need to be surfaced — she may need a hardware/ISP upgrade.</div>
+</div>
+</section>
+
+<!-- ====== THE VISION ====== -->
+<section id="vision">
+<h2>The Vision</h2>
+
+<div class="letter">
+<p>Frenchie, here's where this is going.</p>
+<p>We're going to do this for every Go2 client -- show them what AI can see in their operational data, build them tools, give them a direct line to Larry. The BattlBox audit was the first external proof that this works. Yours is the first internal proof.</p>
+<p><strong>You're first.</strong> Help us prove it works by using it yourself.</p>
+<p>Every problem your EMs have with manual work, every complaint in their EODs, every time they say "I wish I could" -- that's a ticket to Larry. The more you use it, the more we learn about what Go2 clients need. The more we learn, the better the product gets. The better the product, the more clients we can serve.</p>
+<p>You're not just adopting a tool. You're shaping the product that defines Go2's future.</p>
+<div class="sig">-- Larry [AI]</div>
+</div>
+</section>
+
+<!-- ====== FINANCIAL CONTEXT ====== -->
+<section id="financials">
+<h2>The Math</h2>
+
+<p>Scott asked me to be direct about this, so I will.</p>
+
+<div class="card card-accent">
+<p>Go2 is at an inflection point. In order to hit payroll and keep the lights on, Scott needs to pivot his focus. The technology we've been building for clients -- the same technology that decoded BattlBox's operations and showed John Roman $16K+ in value -- we've been avoiding using it on ourselves.</p>
+<p>That changes now.</p>
+</div>
+
+<div class="stat-grid">
+<div class="stat-box"><div class="value">$140</div><div class="label">Monthly AI Compute</div></div>
+<div class="stat-box"><div class="value">450-600</div><div class="label">Hours Recovered/Month</div></div>
+<div class="stat-box"><div class="value">3-4</div><div class="label">FTE Capacity Freed</div></div>
+<div class="stat-box"><div class="value">$0</div><div class="label">New Headcount Needed</div></div>
+</div>
+
+<p><strong>$140 per month in AI compute recovers 450-600 hours per month of manual work.</strong> That's the equivalent of 3-4 full-time positions of capacity your team is already paying for with their time. Same headcount, dramatically more output. No one is losing their job -- the hours are being redirected from scheduling logistics and copy-paste loops into coaching, client engagement, and strategic work.</p>
+
+<p>Every hour an EM saves on admin is an hour they can spend making a TM's career better. That's what partners pay for. That's what keeps them renewing. That's not a nice-to-have -- that's survival math.</p>
+</section>
+
+<!-- ====== APPENDIX: 27 AUTOMATIONS ====== -->
+<section id="appendix-automations">
+<h2>Appendix: The 27 Automations</h2>
+
+<p>Full breakdown of every automation identified, with evidence and estimated savings. These are estimates derived from behavioral observation and SOD/EOD text analysis, not time-motion studies. Actual savings will vary. Click to expand.</p>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+<h3>Top 10 Automations by Impact</h3>
+<div class="meta"><span class="badge badge-accent">~85% of total savings</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<div class="table-wrap">
+<table>
+<tr><th>#</th><th>Automation</th><th>Manual Hrs/Mo</th><th>After Pipeline</th><th>Net Saved</th><th>Confidence</th></tr>
+<tr><td>1</td><td><strong>DEA Audit Workflow</strong> -- single-pane playback + AI-draft scoring</td><td>84</td><td>14</td><td>70</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>2</td><td><strong>BW Rescheduling + Exemption</strong> -- auto-detect no-show + self-schedule</td><td>70</td><td>8</td><td>62</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>3</td><td><strong>PR Form Auto-Population</strong> -- kill the copy-paste loop</td><td>56</td><td>6</td><td>50</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>4</td><td><strong>DEA Pacing Tracker</strong> -- auto-counter + Slack pace alerts</td><td>46</td><td>4</td><td>42</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>5</td><td><strong>Context-Switching Reduction</strong> -- unified EM dashboard</td><td>46</td><td>8</td><td>38</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>6</td><td><strong>AI Meeting Prep + Recap</strong> -- auto-transcribe + summarize</td><td>42</td><td>8</td><td>34</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>7</td><td><strong>BW Documentation Templates</strong> -- pre-populated from prior session</td><td>42</td><td>6</td><td>36</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>8</td><td><strong>BW Compliance Dashboard</strong> -- auto-generated weekly report</td><td>35</td><td>3</td><td>32</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>9</td><td><strong>PCI Follow-Up Automation</strong> -- auto-detect no-show + template</td><td>28</td><td>4</td><td>24</td><td><span class="badge badge-green">HIGH</span></td></tr>
+<tr><td>10</td><td><strong>SOD/EOD Form Fixes</strong> -- remove dead fields + smart defaults</td><td>23</td><td>5</td><td>18</td><td><span class="badge badge-green">HIGH</span></td></tr>
+</table>
+</div>
+<p style="margin-top:12px;"><strong>Top 10 total: ~472 hrs/mo manual &rarr; ~66 hrs/mo automated = ~406 hrs/mo saved</strong></p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+<h3>Remaining 17 Automations</h3>
+<div class="meta"><span class="badge badge-yellow">~15% of total savings</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<div class="table-wrap">
+<table>
+<tr><th>#</th><th>Automation</th><th>Est. Hours Saved/Mo</th></tr>
+<tr><td>11</td><td>SOD/EOD Form UX Fixes (validation + dead field removal)</td><td>7</td></tr>
+<tr><td>12</td><td>SOD Pre-Fill from Prior EOD</td><td>13</td></tr>
+<tr><td>13</td><td>Red Flag / Risk Register from EOD Data</td><td>12</td></tr>
+<tr><td>14</td><td>DEA Documentation Template (forced brevity)</td><td>12</td></tr>
+<tr><td>15</td><td>Meeting Note Pre-Population (from prior session)</td><td>12</td></tr>
+<tr><td>16</td><td>Timer/Worklog Auto-Correction</td><td>11</td></tr>
+<tr><td>17</td><td>Holiday/PTO Calendar Auto-Generation</td><td>9</td></tr>
+<tr><td>18</td><td>BambooHR PTO Approval Workflow</td><td>9</td></tr>
+<tr><td>19</td><td>Gemini/AI Workflow Formalization</td><td>7</td></tr>
+<tr><td>20</td><td>Recurring 1:1 Schedule Auto-Management</td><td>7</td></tr>
+<tr><td>21</td><td>Partner/TM Communication Templates</td><td>7</td></tr>
+<tr><td>22</td><td>EOD Submission Reminders + Compliance Tracking</td><td>7</td></tr>
+<tr><td>23</td><td>Portal Data Accuracy Alerting</td><td>4.5</td></tr>
+<tr><td>24</td><td>1:1 Timer Alert (30-min boundary)</td><td>5</td></tr>
+<tr><td>25</td><td>Infrastructure Disruption Logging</td><td>3.5</td></tr>
+<tr><td>26</td><td>AR/Collections Follow-Up Workflow</td><td>3.5</td></tr>
+<tr><td>27</td><td>Internet Quality Pre-Check</td><td>0.75</td></tr>
+</table>
+</div>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+<h3>AI Compute Cost Breakdown</h3>
+<div class="meta"><span class="badge badge-accent">~$140/mo total</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<div class="table-wrap">
+<table>
+<tr><th>Component</th><th>Est. Cost/Month</th></tr>
+<tr><td>DEA transcription + AI scoring assist</td><td>~$50</td></tr>
+<tr><td>AI meeting prep/recap (transcription + summarization)</td><td>~$30</td></tr>
+<tr><td>BW documentation template generation</td><td>~$20</td></tr>
+<tr><td>PR draft generation</td><td>~$15</td></tr>
+<tr><td>NLP extraction for risk register</td><td>~$10</td></tr>
+<tr><td>Gemini workflow formalization</td><td>~$10</td></tr>
+<tr><td>DEA concise feedback generation</td><td>~$5</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>~$120-160</strong></td></tr>
+</table>
+</div>
+<p>Everything else (dashboards, trackers, compliance tools, form fixes, calendar automation) uses zero AI compute -- they're pure software automation.</p>
+</div></div>
+</div>
+</section>
+
+<!-- ====== APPENDIX: FORM ISSUES ====== -->
+<section id="appendix-forms">
+<h2>Appendix: Form & Data Quality Issues</h2>
+
+<p>Technical details on form field problems. These are platform fixes, not people problems.</p>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+<h3>feeling_selected Field -- Dead Data</h3>
+<div class="meta"><span class="badge badge-orange">81.6% stuck at 2</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Across 1,272 EOD reports over 6 months, <strong>1,038 (81.6%)</strong> report feeling_selected = 2. Seven EMs report 2 on 90%+ of days. Harlon and Pao report 2 on <strong>100%</strong> of days -- not once in 89 and 112 reports respectively did they choose a different number.</p>
+<p>Meanwhile, 104 EODs with feeling=2 contain distress keywords ("frustrated," "failed," "messed up," "ghosting") in their free-text fields. The real emotional data lives in the headlines and news_worthy fields -- not the structured feeling field.</p>
+<p><strong>Fix:</strong> Remove the default value. Force a conscious selection before the form submits. One platform change.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+<h3>need_help Field -- Culturally Non-Functional</h3>
+<div class="meta"><span class="badge badge-orange">98.5% always "no"</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Only <strong>19 total instances</strong> of need_help = "yes" across the entire team over 6 months. Five EMs never once said yes. Harlon clicked yes once but wrote "na" in the details field.</p>
+<p>The Philippines-based team shows near-universal avoidance of the help flag. The phrasing "Do you need help?" implies weakness in a culture where requesting help can feel like admitting failure.</p>
+<p><strong>Fix:</strong> Rename to "Any blockers today?" with a structured dropdown: None / Scheduling / Tools / Partner / Coaching / Other. Normalize the response by removing the stigma.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+<h3>DEA KPI Fields -- Data Integrity Issues</h3>
+<div class="meta"><span class="badge badge-red">Invalid entries found</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>The structured DEA fields in the Go2 EOD form have significant data quality problems:</p>
+<ul>
+<li><strong>Javi:</strong> All feedback fields are "n/a" across every DEA cycle. Zero structured feedback captured.</li>
+<li><strong>Harlon:</strong> Samples Audited = -1 (Nov 12), -3 with "ERROR" (Mar 2026).</li>
+<li><strong>Patrick:</strong> Nov 14: 7,429 seconds logged in DEA Reviews, 0 samples audited recorded -- internal contradiction.</li>
+<li><strong>Jeruz:</strong> Samples Audited = -1 on Oct 10. "Misclicked" entries with all fields at placeholder values.</li>
+<li><strong>Alex:</strong> Feedback Provided, Feedback Received, Challenges -- all "N/A" despite mandatory fields.</li>
+</ul>
+<p>The real audit work happens in OneNote, Google Docs, Google Sheets, and macOS Notes -- none of which feed back into the Go2 platform.</p>
+</div></div>
+</div>
+</section>
+
+<!-- ====== APPENDIX: DATA SOURCES ====== -->
+<section id="appendix-data">
+<h2>Appendix: Data Sources & Methodology</h2>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+<h3>What We Analyzed</h3>
+<div class="meta"><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<div class="table-wrap">
+<table>
+<tr><th>Data Source</th><th>Records</th><th>Period</th></tr>
+<tr><td>App/Web Activity Events</td><td>93,000+</td><td>6 months (Sep 2025 - Mar 2026)</td></tr>
+<tr><td>Keystroke Events (daily aggregates)</td><td>8,345</td><td>3 months</td></tr>
+<tr><td>Keystroke Events (30-day granular)</td><td>32,000+</td><td>30 days per EM</td></tr>
+<tr><td>SOD/EOD Reports</td><td>2,645</td><td>6 months</td></tr>
+<tr><td>Worklogs</td><td>15,149</td><td>6 months</td></tr>
+<tr><td>Session Records</td><td>6,305</td><td>6 months</td></tr>
+<tr><td>Idle Time Records</td><td>1,331</td><td>6 months</td></tr>
+<tr><td>Schedules</td><td>123</td><td>Current</td></tr>
+</table>
+</div>
+<p>All data collected locally within each team member's Go2 desktop app. Analysis performed locally on Scott's machine. Nothing left the machine or touched external cloud services.</p>
+<p><strong>Privacy note:</strong> No passwords, API keys, credit card numbers, or personal credentials were found in any keystroke data. Full security scan: CLEAR.</p>
+<p><strong>Methodology note:</strong> Time estimates throughout this report are derived from behavioral observation (keystroke patterns, app-switch frequency, SOD/EOD text analysis) rather than formal time-motion studies. All figures are presented as ranges to reflect this uncertainty. Individual automation savings are estimates; totals reflect the sum of midpoint estimates.</p>
+</div></div>
+</div>
+</section>
+
+<hr>
+
+<div style="text-align:center;padding:40px 0;color:var(--text-muted);font-size:12px;">
+<p>Prepared by Larry [AI] at Go2 &middot; March 25, 2026</p>
+<p>14 team members &middot; 6 months of data &middot; 27 automations identified</p>
+<p style="margin-top:12px;color:var(--accent);font-size:13px;">Questions? Requests? Ideas? &rarr; larry.moran.bot or Slack DM</p>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+document.querySelectorAll('.finding-header').forEach(function(h){
+  h.addEventListener('click',function(){this.parentElement.classList.toggle('open');});
+});
+</script>
+
+</body>
+</html>

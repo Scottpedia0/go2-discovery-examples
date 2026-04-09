@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEA Audit Streamliner - Go2 Engage</title>
+<style>
+:root {
+  --bg: #09090b;
+  --bg2: #18181b;
+  --bg3: #27272a;
+  --border: #3f3f46;
+  --text: #e4e4e7;
+  --text2: #a1a1aa;
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --green: #4ade80;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --orange: #fb923c;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --cyan: #22d3ee;
+  --radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+a { color:var(--accent2); text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+/* Header */
+.header { background:var(--bg2); border-bottom:1px solid var(--border); padding:10px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.header h1 { font-size:17px; font-weight:600; }
+.header h1 span { color:var(--accent2); }
+.header-right { display:flex; gap:12px; align-items:center; }
+.header-meta { font-size:12px; color:var(--text2); }
+
+/* Tabs */
+.tabs { display:flex; background:var(--bg2); border-bottom:1px solid var(--border); padding:0 24px; overflow-x:auto; }
+.tab { padding:11px 18px; cursor:pointer; font-size:13px; font-weight:500; color:var(--text2); border-bottom:2px solid transparent; white-space:nowrap; transition:all .2s; user-select:none; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--accent2); border-bottom-color:var(--accent); }
+
+/* Layout */
+.main { padding:20px 24px; max-width:1500px; margin:0 auto; }
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* Cards */
+.card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+.card h2 { font-size:15px; font-weight:600; margin-bottom:12px; }
+.card h3 { font-size:12px; font-weight:600; margin-bottom:8px; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+
+/* Grid */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+@media(max-width:1000px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } }
+
+/* Stats */
+.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px; }
+.stat-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px; }
+.stat-value { font-size:26px; font-weight:700; }
+.stat-sub { font-size:12px; color:var(--text2); margin-top:2px; }
+
+/* Forms */
+input, select, textarea { background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:var(--radius); font-size:13px; width:100%; outline:none; transition:border-color .2s; font-family:inherit; }
+input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+label { font-size:12px; color:var(--text2); display:block; margin-bottom:4px; }
+.form-row { display:flex; gap:12px; margin-bottom:12px; align-items:flex-end; }
+.form-row > div { flex:1; }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:var(--radius); font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--bg3); color:var(--text); transition:all .15s; white-space:nowrap; font-family:inherit; }
+.btn:hover { border-color:var(--accent); background:var(--border); }
+.btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn-primary:hover { opacity:.9; background:var(--accent); }
+.btn-success { background:#166534; border-color:var(--green); color:var(--green); }
+.btn-danger { background:#7f1d1d; border-color:var(--red); color:var(--red); }
+.btn-sm { padding:5px 10px; font-size:12px; }
+.btn-group { display:flex; gap:8px; flex-wrap:wrap; }
+.btn-icon { width:32px; height:32px; padding:0; display:inline-flex; align-items:center; justify-content:center; font-size:16px; }
+
+/* Progress bar */
+.progress-bar { background:var(--bg3); border-radius:20px; height:10px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:20px; transition:width .3s; }
+
+/* Tag */
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:500; }
+.tag-done { background:rgba(74,222,128,0.15); color:var(--green); }
+.tag-pending { background:rgba(251,191,36,0.15); color:var(--yellow); }
+.tag-active { background:rgba(99,102,241,0.15); color:var(--accent2); }
+
+/* Audit workspace */
+.workspace-layout { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:1100px) { .workspace-layout { grid-template-columns:1fr; } }
+
+.video-area { background:var(--bg); border:2px dashed var(--border); border-radius:var(--radius); min-height:280px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; color:var(--text2); position:relative; overflow:hidden; }
+.video-area.has-video { border-style:solid; border-color:var(--accent); }
+.video-area iframe { width:100%; height:100%; min-height:280px; border:none; border-radius:var(--radius); }
+.video-area video { width:100%; max-height:400px; border-radius:var(--radius); }
+
+.notes-area { display:flex; flex-direction:column; gap:8px; }
+.notes-area textarea { flex:1; min-height:220px; resize:vertical; font-size:13px; line-height:1.6; font-family:'SF Mono',Monaco,'Cascadia Code',monospace; }
+
+/* Scoring */
+.score-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:8px 0; }
+.score-btn { padding:12px 8px; text-align:center; border-radius:var(--radius); cursor:pointer; border:2px solid var(--border); background:var(--bg3); color:var(--text2); font-weight:600; font-size:15px; transition:all .15s; user-select:none; }
+.score-btn:hover { border-color:var(--accent); color:var(--text); }
+.score-btn.selected { border-color:var(--accent); background:var(--accent); color:#fff; }
+.score-btn .score-label { font-size:10px; display:block; margin-top:2px; font-weight:400; }
+
+/* Structured sections */
+.section-block { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:12px; margin-bottom:10px; }
+.section-block h4 { font-size:12px; color:var(--accent2); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+.section-block textarea { min-height:80px; background:var(--bg2); }
+
+/* Calibration ref */
+.rubric-table { width:100%; border-collapse:collapse; font-size:12px; }
+.rubric-table th { text-align:left; padding:8px; border-bottom:2px solid var(--border); color:var(--text2); font-size:11px; text-transform:uppercase; }
+.rubric-table td { padding:8px; border-bottom:1px solid var(--border); vertical-align:top; line-height:1.5; }
+.rubric-table tr:hover td { background:var(--bg3); }
+.rubric-score { font-weight:700; font-size:16px; width:40px; text-align:center; }
+
+/* Sample list */
+.sample-list { list-style:none; }
+.sample-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s; border-radius:var(--radius); }
+.sample-item:hover { background:var(--bg3); }
+.sample-item.active { background:var(--accent); background:rgba(99,102,241,0.15); border:1px solid var(--accent); }
+.sample-item.completed { opacity:0.6; }
+.sample-check { width:20px; height:20px; border:2px solid var(--border); border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:12px; }
+.sample-check.done { background:var(--green); border-color:var(--green); color:#000; }
+.sample-info { flex:1; min-width:0; }
+.sample-name { font-size:13px; font-weight:500; }
+.sample-meta { font-size:11px; color:var(--text2); }
+
+/* Copy block */
+.copy-block { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:12px; font-family:'SF Mono',Monaco,monospace; font-size:12px; line-height:1.6; white-space:pre-wrap; position:relative; max-height:400px; overflow-y:auto; }
+.copy-block .copy-btn { position:absolute; top:8px; right:8px; }
+
+/* Modal */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; justify-content:center; align-items:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:24px; width:90%; max-width:700px; max-height:85vh; overflow-y:auto; }
+.modal h2 { margin-bottom:16px; font-size:16px; }
+
+/* Toast */
+.toast { position:fixed; bottom:24px; right:24px; background:var(--bg2); border:1px solid var(--green); color:var(--green); padding:10px 20px; border-radius:var(--radius); font-size:13px; z-index:300; display:none; animation:slideIn .3s; }
+@keyframes slideIn { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+
+/* Misc */
+.mt-8 { margin-top:8px; }
+.mt-12 { margin-top:12px; }
+.mt-16 { margin-top:16px; }
+.mb-8 { margin-bottom:8px; }
+.mb-12 { margin-bottom:12px; }
+.mb-16 { margin-bottom:16px; }
+.flex-between { display:flex; justify-content:space-between; align-items:center; }
+.text-muted { color:var(--text2); font-size:12px; }
+.text-green { color:var(--green); }
+.text-red { color:var(--red); }
+.text-yellow { color:var(--yellow); }
+.divider { border:none; border-top:1px solid var(--border); margin:16px 0; }
+.empty-state { text-align:center; padding:40px; color:var(--text2); }
+.mono { font-family:'SF Mono',Monaco,monospace; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1><span>DEA</span> Audit Streamliner</h1>
+  <div class="header-right">
+    <span class="header-meta" id="cycleInfo">Cycle: March 2026</span>
+    <span class="header-meta" id="deadlineCountdown"></span>
+    <button class="btn btn-sm" onclick="resetAll()">Reset Data</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" data-tab="dashboard">Dashboard</div>
+  <div class="tab" data-tab="audit">Audit Workspace</div>
+  <div class="tab" data-tab="export">Export / KPI Form</div>
+  <div class="tab" data-tab="calibration">Calibration Reference</div>
+  <div class="tab" data-tab="settings">Settings</div>
+</div>
+
+<div class="main">
+
+<!-- ========== DASHBOARD ========== -->
+<div class="panel active" id="panel-dashboard">
+  <div class="grid-4 mb-16">
+    <div class="stat-card">
+      <div class="stat-label">Completed</div>
+      <div class="stat-value" id="statCompleted">0</div>
+      <div class="stat-sub" id="statTotal">of 0 samples</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Completion</div>
+      <div class="stat-value" id="statPercent">0%</div>
+      <div class="progress-bar mt-8"><div class="progress-fill" id="progressBar" style="width:0;background:var(--accent)"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Days Remaining</div>
+      <div class="stat-value" id="statDays">--</div>
+      <div class="stat-sub" id="statPace">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Score</div>
+      <div class="stat-value" id="statAvgScore">--</div>
+      <div class="stat-sub">across completed</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="flex-between mb-12">
+        <h2>Sample Queue</h2>
+        <button class="btn btn-sm btn-primary" onclick="openAddSample()">+ Add Sample</button>
+      </div>
+      <ul class="sample-list" id="sampleList"></ul>
+      <div class="empty-state" id="emptyQueue" style="display:none;">
+        <p>No samples yet. Add samples or load demo data.</p>
+        <button class="btn btn-sm mt-8" onclick="loadDemoData()">Load Demo Data</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Pace Tracker</h2>
+      <div id="paceChart" style="padding:20px;">
+        <div class="text-muted mb-8">Daily audit targets to hit deadline:</div>
+        <div id="paceBreakdown"></div>
+      </div>
+      <hr class="divider">
+      <h3>Recent Activity</h3>
+      <div id="activityLog" class="mt-8" style="max-height:200px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== AUDIT WORKSPACE ========== -->
+<div class="panel" id="panel-audit">
+  <div class="flex-between mb-12">
+    <div style="display:flex;gap:12px;align-items:center;">
+      <h2 id="auditTitle">Select a sample to begin</h2>
+      <span class="tag tag-pending" id="auditStatus"></span>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-sm" onclick="prevSample()">Prev</button>
+      <button class="btn btn-sm" onclick="nextSample()">Next</button>
+      <button class="btn btn-sm btn-success" onclick="markComplete()">Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- Video + Notes side by side -->
+  <div class="workspace-layout mb-16">
+    <div>
+      <div class="card" style="padding:12px;">
+        <div class="flex-between mb-8">
+          <h3>Call Recording</h3>
+          <span class="text-muted" id="videoTimer">00:00</span>
+        </div>
+        <div class="form-row mb-8">
+          <div style="flex:4"><input type="text" id="videoUrl" placeholder="Paste Loom, Google Drive, or video URL..." oninput="handleVideoUrl(this.value)"></div>
+          <div style="flex:none"><button class="btn btn-sm" onclick="loadVideo()">Load</button></div>
+        </div>
+        <div class="video-area" id="videoArea">
+          <div id="videoPlaceholder">
+            <div style="font-size:40px;margin-bottom:8px;">&#9654;</div>
+            <div>Paste a video URL above to load</div>
+            <div style="font-size:11px;margin-top:4px;">Supports Loom, Google Drive, YouTube, or direct video files</div>
+          </div>
+        </div>
+        <div class="flex-between mt-8" id="videoControls" style="display:none;">
+          <div class="btn-group">
+            <button class="btn btn-sm btn-icon" onclick="seekVideo(-10)" title="Back 10s">&#9194;</button>
+            <button class="btn btn-sm btn-icon" id="playPauseBtn" onclick="togglePlayPause()">&#9654;</button>
+            <button class="btn btn-sm btn-icon" onclick="seekVideo(10)" title="Forward 10s">&#9193;</button>
+            <select id="playbackSpeed" onchange="setPlaybackSpeed(this.value)" style="width:70px;">
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+            </select>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="insertTimestamp()">&#9201; Timestamp</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card notes-area" style="padding:12px;height:100%;">
+        <div class="flex-between mb-8">
+          <h3>Raw Notes</h3>
+          <div class="btn-group">
+            <button class="btn btn-sm" onclick="insertTimestamp()">&#9201; + Time</button>
+            <button class="btn btn-sm" onclick="clearNotes()">Clear</button>
+          </div>
+        </div>
+        <textarea id="rawNotes" placeholder="Type observations here as you watch the call...&#10;&#10;Click the timestamp button to insert the current playback time.&#10;&#10;Example:&#10;[02:15] EM opens with rapport building - asks about weekend&#10;[04:30] Transition to metrics review - good use of data&#10;[07:00] AFI: EM talks over BW during objection handling&#10;[12:45] Strength: Great open-ended questions on pipeline"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Structured Observation -->
+  <div class="card">
+    <div class="flex-between mb-12">
+      <h2>Structured Observation</h2>
+      <div class="btn-group">
+        <button class="btn btn-sm btn-primary" onclick="aiDraft()">AI Draft</button>
+        <button class="btn btn-sm" onclick="autoStructure()">Auto-Structure from Notes</button>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <h4>Areas for Improvement (AFI)</h4>
+      <textarea id="afiText" placeholder="What needs work? Reference specific timestamps.&#10;&#10;Example: At [07:00], the EM talked over the BW during objection handling. Instead of allowing the BW to fully express their concern, the EM jumped in with a solution. Recommendation: Practice the 3-second pause technique after the BW finishes speaking."></textarea>
+    </div>
+
+    <div class="section-block">
+      <h4>Strengths</h4>
+      <textarea id="strengthsText" placeholder="What was done well? Be specific.&#10;&#10;Example: Strong opening rapport at [02:15] - the EM personalized the greeting and asked about the BW's weekend plans before transitioning to business. This created a comfortable environment for the call."></textarea>
+    </div>
+
+    <div class="section-block">
+      <h4>Action Items</h4>
+      <textarea id="actionItemsText" placeholder="Concrete next steps for the EM being audited.&#10;&#10;Example:&#10;1. Practice the 3-second pause after BW responses&#10;2. Use at least 2 open-ended questions per call segment&#10;3. Review the objection handling framework before next shift"></textarea>
+    </div>
+
+    <div class="section-block">
+      <h4>Overall Score</h4>
+      <div class="score-grid" id="scoreGrid">
+        <div class="score-btn" data-score="1" onclick="setScore(1)">1<span class="score-label">Needs Work</span></div>
+        <div class="score-btn" data-score="2" onclick="setScore(2)">2<span class="score-label">Below Avg</span></div>
+        <div class="score-btn" data-score="3" onclick="setScore(3)">3<span class="score-label">Meets Std</span></div>
+        <div class="score-btn" data-score="4" onclick="setScore(4)">4<span class="score-label">Above Avg</span></div>
+        <div class="score-btn" data-score="5" onclick="setScore(5)">5<span class="score-label">Excellent</span></div>
+      </div>
+      <div class="mt-8">
+        <label>Score Justification</label>
+        <textarea id="scoreJustification" rows="2" placeholder="Brief rationale for the score..."></textarea>
+      </div>
+    </div>
+
+    <div class="flex-between mt-12">
+      <button class="btn" onclick="saveDraft()">Save Draft</button>
+      <button class="btn btn-success" onclick="markComplete()">Complete &amp; Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== EXPORT / KPI FORM ========== -->
+<div class="panel" id="panel-export">
+  <div class="grid-2">
+    <div class="card">
+      <h2>Go2 KPI Form — Copy-Paste Ready</h2>
+      <p class="text-muted mb-12">Each field below is formatted for direct paste into the Go2 platform.</p>
+
+      <div class="mb-12">
+        <label>Samples Audited (numeric)</label>
+        <div class="copy-block" id="kpiSamplesAudited">0</div>
+        <button class="btn btn-sm mt-8" onclick="copyText('kpiSamplesAudited')">Copy</button>
+      </div>
+
+      <div class="mb-12">
+        <label>Feedback Provided</label>
+        <div class="copy-block" id="kpiFeedbackProvided">No audits completed yet.</div>
+        <button class="btn btn-sm mt-8" onclick="copyText('kpiFeedbackProvided')">Copy</button>
+      </div>
+
+      <div class="mb-12">
+        <label>Feedback Received</label>
+        <div class="copy-block" id="kpiFeedbackReceived">--</div>
+        <button class="btn btn-sm mt-8" onclick="copyText('kpiFeedbackReceived')">Copy</button>
+      </div>
+
+      <div class="mb-12">
+        <label>Challenges</label>
+        <div class="copy-block" id="kpiChallenges">--</div>
+        <button class="btn btn-sm mt-8" onclick="copyText('kpiChallenges')">Copy</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Full Audit Report</h2>
+        <p class="text-muted mb-12">Complete structured output of all audits this cycle.</p>
+        <div class="copy-block" id="fullReport" style="min-height:300px;">No completed audits.</div>
+        <div class="btn-group mt-8">
+          <button class="btn btn-sm" onclick="copyText('fullReport')">Copy All</button>
+          <button class="btn btn-sm" onclick="generateReport()">Regenerate</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Individual Audit Export</h2>
+        <select id="exportSelect" onchange="showIndividualExport()" class="mb-8">
+          <option value="">Select a completed audit...</option>
+        </select>
+        <div class="copy-block" id="individualExport" style="min-height:150px;">Select an audit above.</div>
+        <button class="btn btn-sm mt-8" onclick="copyText('individualExport')">Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CALIBRATION REFERENCE ========== -->
+<div class="panel" id="panel-calibration">
+  <div class="grid-2">
+    <div class="card">
+      <h2>Scoring Rubric</h2>
+      <p class="text-muted mb-12">Reference during audits. Keep this open alongside your workspace.</p>
+      <table class="rubric-table">
+        <thead>
+          <tr><th>Score</th><th>Rating</th><th>Criteria</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rubric-score text-red">1</td>
+            <td><strong>Needs Significant Improvement</strong></td>
+            <td>Multiple critical gaps. EM did not follow the engagement framework. No evidence of coaching structure. Call felt unstructured or counterproductive. BW was disengaged or confused.</td>
+          </tr>
+          <tr>
+            <td class="rubric-score text-orange">2</td>
+            <td><strong>Below Standard</strong></td>
+            <td>Some framework elements present but inconsistent. EM missed key coaching moments. Limited use of open-ended questions. Rapport was surface-level. BW engagement was passive.</td>
+          </tr>
+          <tr>
+            <td class="rubric-score text-yellow">3</td>
+            <td><strong>Meets Standard</strong></td>
+            <td>Followed the engagement framework. Used appropriate coaching techniques. BW was engaged. Addressed key metrics. Room for improvement but fundamentally sound.</td>
+          </tr>
+          <tr>
+            <td class="rubric-score text-green">4</td>
+            <td><strong>Above Standard</strong></td>
+            <td>Strong execution of framework. EM adapted approach to BW needs. Good use of data-driven coaching. BW was actively engaged and responsive. Clear action items set.</td>
+          </tr>
+          <tr>
+            <td class="rubric-score" style="color:var(--cyan);">5</td>
+            <td><strong>Excellent</strong></td>
+            <td>Exceptional coaching session. EM demonstrated mastery of framework with personalized approach. BW showed clear growth/buy-in. Innovative techniques used effectively. Model session for training.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Calibration Tips</h2>
+        <div class="section-block">
+          <h4>Common Scoring Mistakes</h4>
+          <ul style="font-size:13px;line-height:1.8;padding-left:18px;">
+            <li><strong>Leniency bias:</strong> Scoring 4 when the call is actually a 3. Ask: "Would I use this as a training example?"</li>
+            <li><strong>Halo effect:</strong> One strong moment inflates the whole score. Score the full call, not just highlights.</li>
+            <li><strong>Recency bias:</strong> Strong close masks weak opening. Weight all segments equally.</li>
+            <li><strong>Central tendency:</strong> Defaulting to 3 on everything. Use the full scale.</li>
+            <li><strong>Zooming out too much:</strong> Missing specific behaviors. Anchor observations to timestamps.</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <h4>The "Zoom Out" Technique</h4>
+          <p style="font-size:13px;line-height:1.6;">After noting specific moments, step back and ask: What was the OVERALL coaching quality? Did the BW leave better equipped than when they started? Would a new EM learn good habits from watching this call? The answers to these questions should align with your score.</p>
+        </div>
+
+        <div class="section-block">
+          <h4>Pre-Calibration Checklist</h4>
+          <ul style="font-size:13px;line-height:1.8;padding-left:18px;">
+            <li>Review your 3 most borderline scores</li>
+            <li>Write a 1-sentence justification for each score</li>
+            <li>Identify the 1 call you're least confident about</li>
+            <li>Note any calls where you changed your score after first watch</li>
+            <li>Compare your average score to the team's historical average (3.1-3.4)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Your Score Distribution</h2>
+        <div id="scoreDistribution">
+          <p class="text-muted">Complete audits to see your score distribution.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SETTINGS ========== -->
+<div class="panel" id="panel-settings">
+  <div class="grid-2">
+    <div class="card">
+      <h2>Cycle Settings</h2>
+      <div class="mb-12">
+        <label>Your Name</label>
+        <input type="text" id="settingsName" placeholder="e.g., Emman Deseo" oninput="saveSettings()">
+      </div>
+      <div class="mb-12">
+        <label>Cycle Name</label>
+        <input type="text" id="settingsCycle" placeholder="e.g., March 2026" oninput="saveSettings()">
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Total Assigned Samples</label>
+          <input type="number" id="settingsTotal" value="15" min="1" max="50" oninput="saveSettings()">
+        </div>
+        <div>
+          <label>Deadline Date</label>
+          <input type="date" id="settingsDeadline" oninput="saveSettings()">
+        </div>
+      </div>
+      <div class="mb-12">
+        <label>Challenges / Notes for KPI</label>
+        <textarea id="settingsChallenges" rows="3" placeholder="Any challenges this cycle? This will appear in the KPI export." oninput="saveSettings()"></textarea>
+      </div>
+      <div class="mb-12">
+        <label>Feedback Received</label>
+        <textarea id="settingsFeedbackReceived" rows="3" placeholder="Any feedback received from leads? For KPI export." oninput="saveSettings()"></textarea>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2>Data Management</h2>
+        <p class="text-muted mb-12">All data is stored in your browser's localStorage. Nothing is sent to any server.</p>
+        <div class="btn-group mb-12">
+          <button class="btn" onclick="exportData()">Export JSON</button>
+          <button class="btn" onclick="document.getElementById('importFile').click()">Import JSON</button>
+          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-sm" onclick="loadDemoData()">Load Demo Data</button>
+          <button class="btn btn-sm btn-danger" onclick="resetAll()">Reset Everything</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Keyboard Shortcuts</h2>
+        <table style="font-size:13px;width:100%;">
+          <tr><td style="padding:6px 0;"><kbd style="background:var(--bg3);padding:2px 8px;border-radius:4px;border:1px solid var(--border);font-family:monospace;">Ctrl+T</kbd></td><td>Insert timestamp at cursor</td></tr>
+          <tr><td style="padding:6px 0;"><kbd style="background:var(--bg3);padding:2px 8px;border-radius:4px;border:1px solid var(--border);font-family:monospace;">Ctrl+S</kbd></td><td>Save current draft</td></tr>
+          <tr><td style="padding:6px 0;"><kbd style="background:var(--bg3);padding:2px 8px;border-radius:4px;border:1px solid var(--border);font-family:monospace;">Ctrl+Enter</kbd></td><td>Mark complete & next</td></tr>
+          <tr><td style="padding:6px 0;"><kbd style="background:var(--bg3);padding:2px 8px;border-radius:4px;border:1px solid var(--border);font-family:monospace;">Ctrl+[</kbd></td><td>Previous sample</td></tr>
+          <tr><td style="padding:6px 0;"><kbd style="background:var(--bg3);padding:2px 8px;border-radius:4px;border:1px solid var(--border);font-family:monospace;">Ctrl+]</kbd></td><td>Next sample</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- Add Sample Modal -->
+<div class="modal-overlay" id="addSampleModal">
+  <div class="modal">
+    <h2>Add Audit Sample</h2>
+    <div class="mb-12">
+      <label>TM / BW Name</label>
+      <input type="text" id="newSampleName" placeholder="e.g., John Smith">
+    </div>
+    <div class="mb-12">
+      <label>Partner</label>
+      <input type="text" id="newSamplePartner" placeholder="e.g., BattlBox">
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Call Date</label>
+        <input type="date" id="newSampleDate">
+      </div>
+      <div>
+        <label>Call Duration (min)</label>
+        <input type="number" id="newSampleDuration" placeholder="30" min="1">
+      </div>
+    </div>
+    <div class="mb-12">
+      <label>Recording URL</label>
+      <input type="text" id="newSampleUrl" placeholder="Loom or Drive link...">
+    </div>
+    <div class="mb-12">
+      <label>Call Type</label>
+      <select id="newSampleType">
+        <option value="BW 1:1">BW 1:1</option>
+        <option value="PCI">PCI</option>
+        <option value="Coaching">Coaching</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="btn-group" style="justify-content:flex-end;">
+      <button class="btn" onclick="closeModal('addSampleModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addSample()">Add Sample</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI Draft Modal -->
+<div class="modal-overlay" id="aiDraftModal">
+  <div class="modal" style="max-width:800px;">
+    <div class="flex-between mb-12">
+      <h2>AI Draft Prompt</h2>
+      <button class="btn btn-sm" onclick="closeModal('aiDraftModal')">Close</button>
+    </div>
+    <p class="text-muted mb-12">Copy this prompt into ChatGPT, Gemini, or Claude to generate a structured observation draft. Paste the result back into the structured fields.</p>
+    <div class="copy-block" id="aiPromptText" style="min-height:200px;"></div>
+    <div class="btn-group mt-12">
+      <button class="btn btn-primary" onclick="copyText('aiPromptText')">Copy Prompt</button>
+      <button class="btn" onclick="closeModal('aiDraftModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== STATE ==========
+const STORAGE_KEY = 'dea-streamliner';
+let state = {
+  settings: {
+    name: '',
+    cycle: 'March 2026',
+    totalAssigned: 15,
+    deadline: '2026-04-10',
+    challenges: '',
+    feedbackReceived: ''
+  },
+  samples: [],
+  currentSampleId: null,
+  activity: []
+};
+
+// ========== INIT ==========
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { state = JSON.parse(saved); } catch(e) { console.error('Failed to load state:', e); }
+  }
+  setupTabs();
+  setupKeyboardShortcuts();
+  loadSettingsUI();
+  render();
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// ========== TABS ==========
+function setupTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      if (tab.dataset.tab === 'export') generateReport();
+    });
+  });
+}
+
+// ========== KEYBOARD SHORTCUTS ==========
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 't' || e.key === 'T') { e.preventDefault(); insertTimestamp(); }
+      if (e.key === 's' || e.key === 'S') { e.preventDefault(); saveDraft(); }
+      if (e.key === 'Enter') { e.preventDefault(); markComplete(); }
+      if (e.key === '[') { e.preventDefault(); prevSample(); }
+      if (e.key === ']') { e.preventDefault(); nextSample(); }
+    }
+  });
+}
+
+// ========== RENDER ==========
+function render() {
+  renderDashboard();
+  renderSampleList();
+  renderCurrentAudit();
+  updateDeadline();
+  renderScoreDistribution();
+}
+
+function renderDashboard() {
+  const completed = state.samples.filter(s => s.completed).length;
+  const total = state.samples.length;
+  const assigned = state.settings.totalAssigned || total;
+  const pct = assigned > 0 ? Math.round((completed / assigned) * 100) : 0;
+
+  document.getElementById('statCompleted').textContent = completed;
+  document.getElementById('statTotal').textContent = `of ${assigned} samples`;
+  document.getElementById('statPercent').textContent = pct + '%';
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressBar').style.background = pct >= 100 ? 'var(--green)' : pct >= 60 ? 'var(--yellow)' : 'var(--accent)';
+  document.getElementById('cycleInfo').textContent = 'Cycle: ' + (state.settings.cycle || '--');
+
+  // Avg score
+  const scored = state.samples.filter(s => s.completed && s.score);
+  const avg = scored.length > 0 ? (scored.reduce((a,s) => a + s.score, 0) / scored.length).toFixed(1) : '--';
+  document.getElementById('statAvgScore').textContent = avg;
+
+  // Pace
+  renderPace(completed, assigned);
+  renderActivity();
+}
+
+function renderPace(completed, assigned) {
+  const deadline = new Date(state.settings.deadline);
+  const now = new Date();
+  const remaining = assigned - completed;
+  const daysLeft = Math.max(0, Math.ceil((deadline - now) / (1000*60*60*24)));
+  const perDay = daysLeft > 0 ? (remaining / daysLeft).toFixed(1) : remaining;
+
+  let html = '';
+  if (remaining <= 0) {
+    html = '<div style="font-size:20px;color:var(--green);font-weight:600;">All samples complete!</div>';
+  } else if (daysLeft <= 0) {
+    html = '<div style="font-size:16px;color:var(--red);font-weight:600;">DEADLINE PASSED - ' + remaining + ' samples remaining</div>';
+  } else {
+    const pace = parseFloat(perDay);
+    const color = pace <= 2 ? 'var(--green)' : pace <= 4 ? 'var(--yellow)' : 'var(--red)';
+    html = `
+      <div style="font-size:14px;margin-bottom:12px;">
+        <strong style="font-size:28px;color:${color}">${perDay}</strong> audits/day needed
+      </div>
+      <div class="text-muted">
+        ${remaining} remaining / ${daysLeft} days left<br>
+        ${completed} done / ${assigned} assigned
+      </div>
+    `;
+
+    // Day-by-day projection
+    if (daysLeft <= 14) {
+      html += '<div class="mt-12" style="font-size:12px;">';
+      let rem = remaining;
+      const dailyTarget = Math.ceil(remaining / daysLeft);
+      for (let i = 0; i < Math.min(daysLeft, 7); i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() + i);
+        const dayLabel = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+        const target = Math.min(dailyTarget, rem);
+        rem -= target;
+        html += `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);">
+          <span>${dayLabel}</span><span style="color:var(--accent2)">${target} audits</span>
+        </div>`;
+      }
+      if (daysLeft > 7) html += '<div class="text-muted mt-8">+ ' + (daysLeft - 7) + ' more days...</div>';
+      html += '</div>';
+    }
+  }
+  document.getElementById('paceBreakdown').innerHTML = html;
+}
+
+function renderActivity() {
+  const el = document.getElementById('activityLog');
+  if (!state.activity || state.activity.length === 0) {
+    el.innerHTML = '<div class="text-muted">No activity yet.</div>';
+    return;
+  }
+  el.innerHTML = state.activity.slice(-10).reverse().map(a => {
+    const time = new Date(a.time).toLocaleString('en-US', {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'});
+    return `<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;"><span class="text-muted">${time}</span> ${a.text}</div>`;
+  }).join('');
+}
+
+function renderSampleList() {
+  const list = document.getElementById('sampleList');
+  const empty = document.getElementById('emptyQueue');
+
+  if (state.samples.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = state.samples.map((s, i) => {
+    const isActive = s.id === state.currentSampleId;
+    const isDone = s.completed;
+    return `<li class="sample-item ${isActive ? 'active' : ''} ${isDone ? 'completed' : ''}" onclick="selectSample('${s.id}')">
+      <div class="sample-check ${isDone ? 'done' : ''}">${isDone ? '&#10003;' : (i+1)}</div>
+      <div class="sample-info">
+        <div class="sample-name">${esc(s.name)}</div>
+        <div class="sample-meta">${esc(s.partner || '')} | ${esc(s.callType || 'BW 1:1')} | ${s.callDate || '--'} | ${s.duration ? s.duration + ' min' : '--'}</div>
+      </div>
+      <span class="tag ${isDone ? 'tag-done' : (s.rawNotes || s.afiText ? 'tag-active' : 'tag-pending')}">${isDone ? 'Done' : (s.rawNotes || s.afiText ? 'In Progress' : 'Pending')}</span>
+    </li>`;
+  }).join('');
+}
+
+function renderCurrentAudit() {
+  const sample = getCurrentSample();
+  if (!sample) {
+    document.getElementById('auditTitle').textContent = 'Select a sample to begin';
+    document.getElementById('auditStatus').textContent = '';
+    return;
+  }
+
+  document.getElementById('auditTitle').textContent = sample.name + (sample.partner ? ' (' + sample.partner + ')' : '');
+  document.getElementById('auditStatus').textContent = sample.completed ? 'Complete' : (sample.rawNotes ? 'In Progress' : 'Pending');
+  document.getElementById('auditStatus').className = 'tag ' + (sample.completed ? 'tag-done' : (sample.rawNotes ? 'tag-active' : 'tag-pending'));
+
+  document.getElementById('videoUrl').value = sample.videoUrl || '';
+  document.getElementById('rawNotes').value = sample.rawNotes || '';
+  document.getElementById('afiText').value = sample.afiText || '';
+  document.getElementById('strengthsText').value = sample.strengthsText || '';
+  document.getElementById('actionItemsText').value = sample.actionItemsText || '';
+  document.getElementById('scoreJustification').value = sample.scoreJustification || '';
+
+  // Score buttons
+  document.querySelectorAll('#scoreGrid .score-btn').forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.score) === sample.score);
+  });
+
+  // Load video if URL present
+  if (sample.videoUrl) handleVideoUrl(sample.videoUrl);
+}
+
+function renderScoreDistribution() {
+  const el = document.getElementById('scoreDistribution');
+  const scored = state.samples.filter(s => s.completed && s.score);
+  if (scored.length === 0) {
+    el.innerHTML = '<p class="text-muted">Complete audits to see your score distribution.</p>';
+    return;
+  }
+
+  const dist = [0,0,0,0,0];
+  scored.forEach(s => { if (s.score >= 1 && s.score <= 5) dist[s.score - 1]++; });
+  const max = Math.max(...dist, 1);
+
+  el.innerHTML = '<div style="display:flex;gap:8px;align-items:flex-end;height:120px;margin-top:12px;">' +
+    dist.map((count, i) => {
+      const h = Math.max(4, (count / max) * 100);
+      const colors = ['var(--red)','var(--orange)','var(--yellow)','var(--green)','var(--cyan)'];
+      return `<div style="flex:1;text-align:center;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:4px;">${count}</div>
+        <div style="height:${h}px;background:${colors[i]};border-radius:4px 4px 0 0;"></div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;">${i+1}</div>
+      </div>`;
+    }).join('') + '</div>' +
+    `<div class="text-muted mt-8">Average: ${(scored.reduce((a,s)=>a+s.score,0)/scored.length).toFixed(2)} across ${scored.length} audits</div>`;
+}
+
+// ========== SAMPLE MANAGEMENT ==========
+function getCurrentSample() {
+  return state.samples.find(s => s.id === state.currentSampleId) || null;
+}
+
+function selectSample(id) {
+  saveDraftSilent();
+  state.currentSampleId = id;
+  save();
+  // Switch to audit tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="audit"]').classList.add('active');
+  document.getElementById('panel-audit').classList.add('active');
+  renderCurrentAudit();
+  renderSampleList();
+}
+
+function prevSample() {
+  if (state.samples.length === 0) return;
+  const idx = state.samples.findIndex(s => s.id === state.currentSampleId);
+  const newIdx = idx > 0 ? idx - 1 : state.samples.length - 1;
+  selectSample(state.samples[newIdx].id);
+}
+
+function nextSample() {
+  if (state.samples.length === 0) return;
+  const idx = state.samples.findIndex(s => s.id === state.currentSampleId);
+  const newIdx = idx < state.samples.length - 1 ? idx + 1 : 0;
+  selectSample(state.samples[newIdx].id);
+}
+
+function openAddSample() {
+  document.getElementById('newSampleName').value = '';
+  document.getElementById('newSamplePartner').value = '';
+  document.getElementById('newSampleDate').value = '';
+  document.getElementById('newSampleDuration').value = '';
+  document.getElementById('newSampleUrl').value = '';
+  document.getElementById('newSampleType').value = 'BW 1:1';
+  document.getElementById('addSampleModal').classList.add('open');
+}
+
+function addSample() {
+  const name = document.getElementById('newSampleName').value.trim();
+  if (!name) { toast('Enter a TM/BW name'); return; }
+
+  const sample = {
+    id: crypto.randomUUID(),
+    name: name,
+    partner: document.getElementById('newSamplePartner').value.trim(),
+    callDate: document.getElementById('newSampleDate').value,
+    duration: parseInt(document.getElementById('newSampleDuration').value) || null,
+    videoUrl: document.getElementById('newSampleUrl').value.trim(),
+    callType: document.getElementById('newSampleType').value,
+    rawNotes: '',
+    afiText: '',
+    strengthsText: '',
+    actionItemsText: '',
+    score: null,
+    scoreJustification: '',
+    completed: false,
+    completedAt: null
+  };
+
+  state.samples.push(sample);
+  logActivity('Added sample: ' + name);
+  save();
+  closeModal('addSampleModal');
+  render();
+  toast('Sample added');
+}
+
+function setScore(score) {
+  const sample = getCurrentSample();
+  if (!sample) return;
+  sample.score = score;
+  document.querySelectorAll('#scoreGrid .score-btn').forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.score) === score);
+  });
+  save();
+}
+
+function markComplete() {
+  saveDraftSilent();
+  const sample = getCurrentSample();
+  if (!sample) { toast('No sample selected'); return; }
+  if (!sample.score) { toast('Set a score before completing'); return; }
+
+  sample.completed = true;
+  sample.completedAt = new Date().toISOString();
+  logActivity('Completed audit: ' + sample.name + ' (Score: ' + sample.score + ')');
+  save();
+  render();
+  toast('Audit marked complete!');
+
+  // Auto-advance to next incomplete
+  const nextIncomplete = state.samples.find(s => !s.completed && s.id !== sample.id);
+  if (nextIncomplete) {
+    setTimeout(() => selectSample(nextIncomplete.id), 500);
+  }
+}
+
+// ========== VIDEO HANDLING ==========
+let videoElement = null;
+let videoTimerInterval = null;
+
+function handleVideoUrl(url) {
+  // Just store it, don't auto-load
+  const sample = getCurrentSample();
+  if (sample) sample.videoUrl = url;
+}
+
+function loadVideo() {
+  const url = document.getElementById('videoUrl').value.trim();
+  if (!url) return;
+
+  const area = document.getElementById('videoArea');
+  const placeholder = document.getElementById('videoPlaceholder');
+  const controls = document.getElementById('videoControls');
+
+  // Clear previous
+  if (videoTimerInterval) clearInterval(videoTimerInterval);
+  videoElement = null;
+
+  // Detect video type
+  if (url.includes('loom.com')) {
+    // Loom embed
+    const loomId = url.match(/(?:share|embed)\/([a-f0-9]+)/)?.[1];
+    if (loomId) {
+      area.innerHTML = `<iframe src="https://www.loom.com/embed/${loomId}" allowfullscreen></iframe>`;
+      area.classList.add('has-video');
+      controls.style.display = 'none'; // Loom has its own controls
+      toast('Loom video loaded');
+    } else {
+      toast('Could not parse Loom URL');
+    }
+  } else if (url.includes('drive.google.com')) {
+    // Google Drive embed
+    const fileId = url.match(/\/d\/([^\/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
+    if (fileId) {
+      area.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" allowfullscreen></iframe>`;
+      area.classList.add('has-video');
+      controls.style.display = 'none';
+      toast('Google Drive video loaded');
+    } else {
+      toast('Could not parse Drive URL');
+    }
+  } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const ytId = url.match(/(?:v=|youtu\.be\/)([^&?]+)/)?.[1];
+    if (ytId) {
+      area.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe>`;
+      area.classList.add('has-video');
+      controls.style.display = 'none';
+      toast('YouTube video loaded');
+    }
+  } else {
+    // Direct video file
+    area.innerHTML = `<video id="directVideo" controls preload="metadata"><source src="${esc(url)}">Your browser does not support video.</video>`;
+    area.classList.add('has-video');
+    videoElement = document.getElementById('directVideo');
+    controls.style.display = 'flex';
+    startVideoTimer();
+    toast('Video loaded');
+  }
+
+  const sample = getCurrentSample();
+  if (sample) { sample.videoUrl = url; save(); }
+}
+
+function startVideoTimer() {
+  if (videoTimerInterval) clearInterval(videoTimerInterval);
+  videoTimerInterval = setInterval(() => {
+    if (videoElement) {
+      document.getElementById('videoTimer').textContent = formatTime(videoElement.currentTime);
+    }
+  }, 250);
+}
+
+function togglePlayPause() {
+  if (!videoElement) return;
+  if (videoElement.paused) { videoElement.play(); document.getElementById('playPauseBtn').innerHTML = '&#9646;&#9646;'; }
+  else { videoElement.pause(); document.getElementById('playPauseBtn').innerHTML = '&#9654;'; }
+}
+
+function seekVideo(sec) {
+  if (!videoElement) return;
+  videoElement.currentTime = Math.max(0, videoElement.currentTime + sec);
+}
+
+function setPlaybackSpeed(speed) {
+  if (!videoElement) return;
+  videoElement.playbackRate = parseFloat(speed);
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function insertTimestamp() {
+  const textarea = document.getElementById('rawNotes');
+  if (!textarea) return;
+
+  let time = '00:00';
+  if (videoElement) {
+    time = formatTime(videoElement.currentTime);
+  }
+
+  const pos = textarea.selectionStart;
+  const text = textarea.value;
+  const stamp = '[' + time + '] ';
+  const needsNewline = pos > 0 && text[pos-1] !== '\n' ? '\n' : '';
+  textarea.value = text.substring(0, pos) + needsNewline + stamp + text.substring(pos);
+  textarea.selectionStart = textarea.selectionEnd = pos + needsNewline.length + stamp.length;
+  textarea.focus();
+}
+
+// ========== NOTES & DRAFTING ==========
+function clearNotes() {
+  if (confirm('Clear raw notes?')) {
+    document.getElementById('rawNotes').value = '';
+  }
+}
+
+function autoStructure() {
+  const notes = document.getElementById('rawNotes').value.trim();
+  if (!notes) { toast('Write some notes first'); return; }
+
+  const lines = notes.split('\n').filter(l => l.trim());
+  const afis = [];
+  const strengths = [];
+  const actions = [];
+
+  lines.forEach(line => {
+    const lower = line.toLowerCase();
+    if (lower.includes('afi') || lower.includes('improvement') || lower.includes('needs work') || lower.includes('missed') || lower.includes('should') || lower.includes('instead') || lower.includes('weak') || lower.includes('lack')) {
+      afis.push(line.trim());
+    } else if (lower.includes('strength') || lower.includes('good') || lower.includes('great') || lower.includes('strong') || lower.includes('well') || lower.includes('excellent') || lower.includes('positive') || lower.includes('effective')) {
+      strengths.push(line.trim());
+    } else if (lower.includes('action') || lower.includes('recommend') || lower.includes('practice') || lower.includes('focus on') || lower.includes('next step') || lower.includes('try') || lower.includes('work on')) {
+      actions.push(line.trim());
+    } else {
+      // Unclassified — try to infer from sentiment
+      if (lower.includes('not') || lower.includes("didn't") || lower.includes('failed') || lower.includes('no ') || lower.includes('off-track')) {
+        afis.push(line.trim());
+      } else {
+        strengths.push(line.trim());
+      }
+    }
+  });
+
+  if (afis.length > 0) document.getElementById('afiText').value = afis.map(l => '- ' + l).join('\n');
+  if (strengths.length > 0) document.getElementById('strengthsText').value = strengths.map(l => '- ' + l).join('\n');
+  if (actions.length > 0) document.getElementById('actionItemsText').value = actions.map(l => '- ' + l).join('\n');
+
+  toast('Notes auto-structured into sections');
+}
+
+function aiDraft() {
+  const sample = getCurrentSample();
+  const notes = document.getElementById('rawNotes').value.trim();
+  if (!notes) { toast('Write raw notes before generating AI draft'); return; }
+
+  const prompt = `You are an expert QA auditor for a customer engagement team. I need you to take my raw timestamped notes from a DEA (Daily Engagement Audit) of a call and produce a structured observation.
+
+**Context:**
+- Auditor: ${state.settings.name || '[Your Name]'}
+- TM/BW Name: ${sample ? sample.name : '[TM Name]'}
+- Partner: ${sample ? (sample.partner || 'N/A') : 'N/A'}
+- Call Type: ${sample ? (sample.callType || 'BW 1:1') : 'BW 1:1'}
+- Call Date: ${sample ? (sample.callDate || 'N/A') : 'N/A'}
+- Call Duration: ${sample ? (sample.duration ? sample.duration + ' min' : 'N/A') : 'N/A'}
+
+**My Raw Notes:**
+${notes}
+
+**Scoring Rubric:**
+1 = Needs Significant Improvement (multiple critical gaps, no framework followed)
+2 = Below Standard (inconsistent framework, missed coaching moments)
+3 = Meets Standard (followed framework, BW engaged, room for improvement)
+4 = Above Standard (strong execution, adapted to BW needs, clear action items)
+5 = Excellent (exceptional session, mastery of framework, model for training)
+
+**Please produce the following sections:**
+
+## Areas for Improvement (AFI)
+List specific areas needing improvement with timestamp references. Be constructive and specific. For each AFI, suggest what the EM should have done instead.
+
+## Strengths
+List specific strengths observed with timestamp references. Be specific about WHY it was effective.
+
+## Action Items
+List 3-5 concrete, actionable next steps for the EM. Make them SMART (Specific, Measurable, Achievable, Relevant, Time-bound).
+
+## Suggested Score: [X/5]
+Provide a score with a 2-3 sentence justification referencing the rubric criteria.
+
+**Style guidelines:**
+- Write in a professional but casual tone (not overly formal)
+- Be observation-based, not judgmental
+- Reference specific timestamps from my notes
+- Keep each point concise (1-2 sentences max)
+- Total output should be under 500 words`;
+
+  document.getElementById('aiPromptText').textContent = prompt;
+  document.getElementById('aiDraftModal').classList.add('open');
+}
+
+// ========== SAVE / DRAFT ==========
+function saveDraftSilent() {
+  const sample = getCurrentSample();
+  if (!sample) return;
+  sample.rawNotes = document.getElementById('rawNotes').value;
+  sample.afiText = document.getElementById('afiText').value;
+  sample.strengthsText = document.getElementById('strengthsText').value;
+  sample.actionItemsText = document.getElementById('actionItemsText').value;
+  sample.scoreJustification = document.getElementById('scoreJustification').value;
+  save();
+}
+
+function saveDraft() {
+  saveDraftSilent();
+  toast('Draft saved');
+}
+
+// ========== EXPORT ==========
+function generateReport() {
+  const completed = state.samples.filter(s => s.completed);
+
+  // KPI fields
+  document.getElementById('kpiSamplesAudited').textContent = completed.length;
+
+  if (completed.length > 0) {
+    const feedback = completed.map((s, i) => {
+      return `${i+1}. ${s.name} (${s.callType || 'BW 1:1'}, ${s.callDate || 'N/A'}) - Score: ${s.score}/5\n` +
+        (s.afiText ? `   AFI: ${s.afiText.split('\n')[0]}\n` : '') +
+        (s.strengthsText ? `   Strength: ${s.strengthsText.split('\n')[0]}` : '');
+    }).join('\n\n');
+    document.getElementById('kpiFeedbackProvided').textContent = feedback;
+  } else {
+    document.getElementById('kpiFeedbackProvided').textContent = 'No audits completed yet.';
+  }
+
+  document.getElementById('kpiFeedbackReceived').textContent = state.settings.feedbackReceived || 'N/A';
+  document.getElementById('kpiChallenges').textContent = state.settings.challenges || 'N/A';
+
+  // Full report
+  if (completed.length === 0) {
+    document.getElementById('fullReport').textContent = 'No completed audits.';
+  } else {
+    const avg = (completed.reduce((a,s) => a + (s.score||0), 0) / completed.length).toFixed(1);
+    let report = `DEA AUDIT REPORT - ${state.settings.cycle || 'Current Cycle'}\n`;
+    report += `Auditor: ${state.settings.name || 'N/A'}\n`;
+    report += `Generated: ${new Date().toLocaleDateString()}\n`;
+    report += `Samples: ${completed.length}/${state.settings.totalAssigned} | Average Score: ${avg}/5\n`;
+    report += '='.repeat(60) + '\n\n';
+
+    completed.forEach((s, i) => {
+      report += `--- Sample ${i+1}: ${s.name} ---\n`;
+      report += `Partner: ${s.partner || 'N/A'} | Type: ${s.callType || 'BW 1:1'} | Date: ${s.callDate || 'N/A'} | Duration: ${s.duration ? s.duration + ' min' : 'N/A'}\n`;
+      report += `Score: ${s.score}/5\n\n`;
+
+      if (s.afiText) report += `AREAS FOR IMPROVEMENT:\n${s.afiText}\n\n`;
+      if (s.strengthsText) report += `STRENGTHS:\n${s.strengthsText}\n\n`;
+      if (s.actionItemsText) report += `ACTION ITEMS:\n${s.actionItemsText}\n\n`;
+      if (s.scoreJustification) report += `SCORE JUSTIFICATION:\n${s.scoreJustification}\n\n`;
+      report += '\n';
+    });
+
+    document.getElementById('fullReport').textContent = report;
+  }
+
+  // Individual export select
+  const sel = document.getElementById('exportSelect');
+  sel.innerHTML = '<option value="">Select a completed audit...</option>' +
+    completed.map(s => `<option value="${s.id}">${s.name} (Score: ${s.score})</option>`).join('');
+}
+
+function showIndividualExport() {
+  const id = document.getElementById('exportSelect').value;
+  const el = document.getElementById('individualExport');
+  if (!id) { el.textContent = 'Select an audit above.'; return; }
+
+  const s = state.samples.find(x => x.id === id);
+  if (!s) return;
+
+  let text = `TM/BW: ${s.name}\n`;
+  text += `Partner: ${s.partner || 'N/A'} | Type: ${s.callType || 'BW 1:1'} | Date: ${s.callDate || 'N/A'}\n`;
+  text += `Score: ${s.score}/5\n\n`;
+  if (s.afiText) text += `AREAS FOR IMPROVEMENT:\n${s.afiText}\n\n`;
+  if (s.strengthsText) text += `STRENGTHS:\n${s.strengthsText}\n\n`;
+  if (s.actionItemsText) text += `ACTION ITEMS:\n${s.actionItemsText}\n\n`;
+  if (s.scoreJustification) text += `JUSTIFICATION:\n${s.scoreJustification}\n`;
+
+  el.textContent = text;
+}
+
+// ========== DEADLINE ==========
+function updateDeadline() {
+  const deadline = new Date(state.settings.deadline);
+  const now = new Date();
+  const days = Math.ceil((deadline - now) / (1000*60*60*24));
+  const el = document.getElementById('deadlineCountdown');
+  const daysEl = document.getElementById('statDays');
+  const paceEl = document.getElementById('statPace');
+
+  if (isNaN(deadline.getTime())) {
+    el.textContent = 'No deadline set';
+    daysEl.textContent = '--';
+    paceEl.textContent = 'Set deadline in Settings';
+    return;
+  }
+
+  if (days < 0) {
+    el.innerHTML = '<span style="color:var(--red);">OVERDUE by ' + Math.abs(days) + ' days</span>';
+    daysEl.textContent = Math.abs(days);
+    daysEl.style.color = 'var(--red)';
+    paceEl.textContent = 'OVERDUE';
+  } else if (days <= 3) {
+    el.innerHTML = '<span style="color:var(--red);">' + days + ' days left</span>';
+    daysEl.textContent = days;
+    daysEl.style.color = 'var(--red)';
+    paceEl.textContent = 'Deadline: ' + deadline.toLocaleDateString();
+  } else if (days <= 7) {
+    el.innerHTML = '<span style="color:var(--yellow);">' + days + ' days left</span>';
+    daysEl.textContent = days;
+    daysEl.style.color = 'var(--yellow)';
+    paceEl.textContent = 'Deadline: ' + deadline.toLocaleDateString();
+  } else {
+    el.textContent = days + ' days left';
+    daysEl.textContent = days;
+    daysEl.style.color = 'var(--text)';
+    paceEl.textContent = 'Deadline: ' + deadline.toLocaleDateString();
+  }
+}
+
+// ========== SETTINGS ==========
+function loadSettingsUI() {
+  document.getElementById('settingsName').value = state.settings.name || '';
+  document.getElementById('settingsCycle').value = state.settings.cycle || '';
+  document.getElementById('settingsTotal').value = state.settings.totalAssigned || 15;
+  document.getElementById('settingsDeadline').value = state.settings.deadline || '';
+  document.getElementById('settingsChallenges').value = state.settings.challenges || '';
+  document.getElementById('settingsFeedbackReceived').value = state.settings.feedbackReceived || '';
+}
+
+function saveSettings() {
+  state.settings.name = document.getElementById('settingsName').value;
+  state.settings.cycle = document.getElementById('settingsCycle').value;
+  state.settings.totalAssigned = parseInt(document.getElementById('settingsTotal').value) || 15;
+  state.settings.deadline = document.getElementById('settingsDeadline').value;
+  state.settings.challenges = document.getElementById('settingsChallenges').value;
+  state.settings.feedbackReceived = document.getElementById('settingsFeedbackReceived').value;
+  save();
+  render();
+}
+
+// ========== DATA MANAGEMENT ==========
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'dea-audit-' + (state.settings.cycle || 'export').replace(/\s+/g, '-').toLowerCase() + '.json';
+  a.click();
+  toast('Data exported');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      state = JSON.parse(e.target.result);
+      save();
+      loadSettingsUI();
+      render();
+      toast('Data imported successfully');
+    } catch(err) { toast('Invalid JSON file'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function resetAll() {
+  if (!confirm('Reset all data? This cannot be undone.')) return;
+  state = {
+    settings: { name: '', cycle: 'March 2026', totalAssigned: 15, deadline: '2026-04-10', challenges: '', feedbackReceived: '' },
+    samples: [],
+    currentSampleId: null,
+    activity: []
+  };
+  save();
+  loadSettingsUI();
+  render();
+  toast('All data reset');
+}
+
+function loadDemoData() {
+  state.settings = {
+    name: 'Emman Deseo',
+    cycle: 'March 2026',
+    totalAssigned: 12,
+    deadline: '2026-04-10',
+    challenges: 'Heavy BW 1:1 schedule this cycle. Had back-to-back meetings on 3 days that cut into audit time.',
+    feedbackReceived: 'Lead noted scoring was more consistent this cycle. Need to be more specific in AFI comments.'
+  };
+
+  state.samples = [
+    {
+      id: crypto.randomUUID(), name: 'Maria Santos', partner: 'BattlBox', callDate: '2026-03-05', duration: 28,
+      videoUrl: '', callType: 'BW 1:1',
+      rawNotes: '[02:15] EM opens with rapport - asks about weekend plans, good energy\n[04:30] Transition to metrics review - pulls up dashboard, walks through conversion rate\n[07:00] AFI: EM talks over BW during objection about lead quality - didn\'t let her finish\n[09:45] Good recovery - EM asks open-ended question about pipeline approach\n[12:30] Strength: Uses specific data points to coach on call-to-close ratio\n[15:00] EM sets clear action items - 3 specific goals for next week\n[18:20] AFI: Wrap-up felt rushed, didn\'t confirm BW understood action items\n[22:00] Overall: Solid session with room for improvement on active listening',
+      afiText: '- At [07:00], EM talked over the BW during objection handling about lead quality. The BW was mid-sentence when the EM jumped in with a solution. Recommendation: Practice the 3-second pause technique.\n- At [18:20], the wrap-up was rushed. EM listed action items but did not ask BW to repeat them back or confirm understanding.',
+      strengthsText: '- Strong opening rapport at [02:15] - personalized greeting created comfortable environment\n- Excellent use of data-driven coaching at [12:30] - specific conversion metrics gave BW clear targets\n- Good recovery at [09:45] with open-ended pipeline question after the earlier interruption',
+      actionItemsText: '1. Practice 3-second pause after BW finishes speaking\n2. End each call with BW repeating back action items\n3. Review active listening framework before next shift',
+      score: 3, scoreJustification: 'Meets standard. Framework was followed, BW was engaged, good use of data. However, the interruption at 07:00 and rushed close prevent a 4.', completed: true, completedAt: '2026-03-20T14:30:00Z'
+    },
+    {
+      id: crypto.randomUUID(), name: 'Jake Thompson', partner: 'BattlBox', callDate: '2026-03-07', duration: 35,
+      videoUrl: '', callType: 'BW 1:1',
+      rawNotes: '[01:00] EM starts strong - reviews last session\'s action items first\n[03:30] BW shares win - closed 3 deals this week. EM celebrates genuinely\n[06:00] Strength: Excellent transition from celebration to coaching on next level\n[10:15] Deep dive into objection handling - EM role-plays a scenario with BW\n[14:00] Strength: BW is highly engaged, asking follow-up questions\n[18:00] EM introduces new technique for handling price objections\n[22:30] Action plan co-created with BW - both contributed ideas\n[28:00] Strong close - BW expresses confidence, clear next steps agreed',
+      afiText: '- Minor: At [18:00], the new technique introduction could have included more examples. One role-play scenario would have solidified the concept.\n- The session ran 5 minutes long. Time management could be tightened.',
+      strengthsText: '- Outstanding session structure: reviewed previous action items [01:00], celebrated wins [03:30], coached forward [06:00]\n- Role-play at [10:15] was highly effective - BW practiced in a safe environment\n- Co-created action plan at [22:30] gives BW ownership of their development\n- BW engagement was exceptional throughout - asking questions, taking notes',
+      actionItemsText: '1. Include role-play examples when introducing new techniques\n2. Set a timer reminder at 25-min mark to begin wrap-up\n3. Continue the co-creation approach to action planning',
+      score: 4, scoreJustification: 'Above standard. Strong framework execution with personalized coaching. BW was highly engaged and showed growth. Minor time management issue prevents a 5.', completed: true, completedAt: '2026-03-21T10:15:00Z'
+    },
+    {
+      id: crypto.randomUUID(), name: 'Priya Patel', partner: 'BattlBox', callDate: '2026-03-10', duration: 22,
+      videoUrl: '', callType: 'PCI',
+      rawNotes: '[01:30] EM jumps straight to metrics without rapport building\n[04:00] AFI: Reading numbers off screen without context or coaching\n[08:00] BW seems disengaged - one-word answers\n[11:00] EM notices disengagement, tries to pivot but too late\n[14:00] Some improvement - asks about challenges BW is facing\n[17:00] Action items are vague - "do better on calls"',
+      afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Carlos Rivera', partner: 'Go2', callDate: '2026-03-11', duration: 30,
+      videoUrl: '', callType: 'BW 1:1', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Sarah Kim', partner: 'BattlBox', callDate: '2026-03-12', duration: 25,
+      videoUrl: '', callType: 'BW 1:1', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Ahmed Hassan', partner: 'Go2', callDate: '2026-03-13', duration: 32,
+      videoUrl: '', callType: 'PCI', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Lisa Chen', partner: 'BattlBox', callDate: '2026-03-14', duration: 27,
+      videoUrl: '', callType: 'BW 1:1', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'David Park', partner: 'Go2', callDate: '2026-03-15', duration: 33,
+      videoUrl: '', callType: 'Coaching', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Nina Gomez', partner: 'BattlBox', callDate: '2026-03-16', duration: 29,
+      videoUrl: '', callType: 'BW 1:1', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Tom Wilson', partner: 'Go2', callDate: '2026-03-17', duration: 26,
+      videoUrl: '', callType: 'BW 1:1', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Rachel Foster', partner: 'BattlBox', callDate: '2026-03-18', duration: 31,
+      videoUrl: '', callType: 'PCI', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    },
+    {
+      id: crypto.randomUUID(), name: 'Mark Santos', partner: 'Go2', callDate: '2026-03-19', duration: 24,
+      videoUrl: '', callType: 'BW 1:1', rawNotes: '', afiText: '', strengthsText: '', actionItemsText: '',
+      score: null, scoreJustification: '', completed: false, completedAt: null
+    }
+  ];
+
+  state.activity = [
+    { time: '2026-03-20T14:30:00Z', text: 'Completed audit: Maria Santos (Score: 3)' },
+    { time: '2026-03-21T10:15:00Z', text: 'Completed audit: Jake Thompson (Score: 4)' },
+    { time: '2026-03-22T09:00:00Z', text: 'Added 10 new samples to queue' }
+  ];
+
+  state.currentSampleId = state.samples[2].id; // Set to first incomplete
+  save();
+  loadSettingsUI();
+  render();
+  toast('Demo data loaded - 12 samples, 2 completed');
+}
+
+// ========== UTILITIES ==========
+function logActivity(text) {
+  if (!state.activity) state.activity = [];
+  state.activity.push({ time: new Date().toISOString(), text: text });
+  if (state.activity.length > 50) state.activity = state.activity.slice(-50);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function copyText(elementId) {
+  const text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard'));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 2500);
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// Auto-save notes on input
+document.getElementById('rawNotes')?.addEventListener('input', () => {
+  const sample = getCurrentSample();
+  if (sample) { sample.rawNotes = document.getElementById('rawNotes').value; save(); }
+});
+['afiText','strengthsText','actionItemsText','scoreJustification'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', () => {
+    const sample = getCurrentSample();
+    if (sample) { sample[id] = document.getElementById(id).value; save(); }
+  });
+});
+
+// Init
+init();
+</script>
+</body>
+</html>

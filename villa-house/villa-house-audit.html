@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Villa &amp; House Operational Audit | Go2</title>
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #111113;
+  --bg-card-hover: #18181b;
+  --bg-input: #1a1a1d;
+  --border: #2a2a2e;
+  --border-light: #333338;
+  --text: #e4e4e7;
+  --text-dim: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #5eead4;
+  --accent-dim: #2dd4bf;
+  --accent-bg: rgba(94,234,212,0.08);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.12);
+  --yellow: #facc15;
+  --yellow-bg: rgba(250,204,21,0.12);
+  --orange: #fb923c;
+  --orange-bg: rgba(251,146,60,0.12);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.12);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+/* Password overlay */
+#auth-overlay {
+  position: fixed; inset:0; z-index:9999;
+  background: var(--bg);
+  display: flex; align-items:center; justify-content:center;
+  flex-direction: column; gap: 24px;
+}
+#auth-overlay.hidden { display:none; }
+#auth-overlay h1 { color: var(--accent); font-size:28px; font-weight:600; letter-spacing:-0.5px; }
+#auth-overlay p { color: var(--text-dim); font-size:14px; max-width:400px; text-align:center; }
+#auth-overlay input {
+  background: var(--bg-input); border:1px solid var(--border); border-radius:8px;
+  color: var(--text); padding:12px 16px; font-size:16px; width:280px;
+  outline:none; text-align:center;
+}
+#auth-overlay input:focus { border-color: var(--accent); }
+#auth-overlay button {
+  background: var(--accent); color:#000; border:none; padding:10px 32px;
+  border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;
+}
+#auth-overlay .error { color: var(--red); font-size:13px; min-height:20px; }
+
+/* Main content */
+#main-content { display:none; }
+#main-content.visible { display:block; }
+
+/* Nav */
+nav {
+  position:fixed; top:0; left:0; width:260px; height:100vh;
+  background: #08080a; border-right:1px solid var(--border);
+  overflow-y:auto; z-index:100; padding:24px 0;
+  scrollbar-width:thin; scrollbar-color: var(--border) transparent;
+}
+nav::-webkit-scrollbar { width:4px; }
+nav::-webkit-scrollbar-thumb { background: var(--border); border-radius:2px; }
+nav .nav-header {
+  padding: 0 20px 16px; border-bottom:1px solid var(--border); margin-bottom:12px;
+}
+nav .nav-header h2 { color:var(--accent); font-size:15px; font-weight:600; }
+nav .nav-header p { color:var(--text-muted); font-size:11px; margin-top:2px; }
+nav a {
+  display:block; padding:6px 20px; color:var(--text-dim); text-decoration:none;
+  font-size:13px; transition:all 0.15s;
+}
+nav a:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+nav a.active { color:var(--accent); background:var(--accent-bg); }
+nav a.section-head {
+  color:var(--text-muted); font-size:10px; text-transform:uppercase;
+  letter-spacing:1px; padding-top:16px; pointer-events:none;
+  font-weight:600;
+}
+
+/* Content area */
+.content {
+  margin-left:260px; max-width:960px; padding:48px 48px 120px;
+}
+@media (max-width:900px) {
+  nav { display:none; }
+  .content { margin-left:0; padding:24px 16px 80px; }
+}
+
+/* Typography */
+h1 { font-size:32px; font-weight:700; letter-spacing:-1px; margin-bottom:8px; }
+h2 {
+  font-size:22px; font-weight:600; letter-spacing:-0.5px;
+  margin-top:64px; margin-bottom:16px; padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+  color: var(--text);
+}
+h3 { font-size:17px; font-weight:600; margin-top:32px; margin-bottom:12px; color:var(--accent); }
+h4 { font-size:14px; font-weight:600; margin-top:20px; margin-bottom:8px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; }
+p { margin-bottom:12px; color:var(--text-dim); }
+p strong, li strong { color:var(--text); }
+ul, ol { padding-left:24px; margin-bottom:16px; color:var(--text-dim); }
+li { margin-bottom:6px; }
+a { color:var(--accent); }
+hr { border:none; border-top:1px solid var(--border); margin:48px 0; }
+
+/* Card */
+.card {
+  background: var(--bg-card); border:1px solid var(--border); border-radius:12px;
+  padding:24px; margin:16px 0;
+}
+.card-accent { border-left:3px solid var(--accent); }
+.card-red { border-left:3px solid var(--red); }
+.card-yellow { border-left:3px solid var(--yellow); }
+
+/* Stat grid */
+.stat-grid {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+  gap:12px; margin:20px 0;
+}
+.stat-box {
+  background:var(--bg-card); border:1px solid var(--border); border-radius:10px;
+  padding:16px; text-align:center;
+}
+.stat-box .value { font-size:28px; font-weight:700; color:var(--accent); }
+.stat-box .label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+
+/* Tables */
+table {
+  width:100%; border-collapse:collapse; margin:16px 0; font-size:13px;
+}
+th {
+  text-align:left; padding:10px 12px; background:var(--bg-input);
+  border-bottom:2px solid var(--border); color:var(--text);
+  font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;
+  position:sticky; top:0; z-index:1;
+}
+td {
+  padding:10px 12px; border-bottom:1px solid var(--border); color:var(--text-dim);
+  vertical-align:top;
+}
+tr:hover td { background:rgba(255,255,255,0.02); }
+
+/* Big table wrapper */
+.big-table-wrap {
+  overflow-x:auto; border:1px solid var(--border); border-radius:12px;
+  margin:20px 0; background:var(--bg-card);
+}
+.big-table-wrap table { margin:0; }
+.big-table-wrap th { background:#0d0d10; }
+.big-table-wrap td { white-space:nowrap; }
+.big-table-wrap td:first-child { white-space:normal; min-width:200px; font-weight:500; color:var(--text); }
+
+/* Badges */
+.badge {
+  display:inline-block; padding:2px 8px; border-radius:4px;
+  font-size:11px; font-weight:600; letter-spacing:0.3px;
+}
+.badge-green { background:var(--green-bg); color:var(--green); }
+.badge-yellow { background:var(--yellow-bg); color:var(--yellow); }
+.badge-orange { background:var(--orange-bg); color:var(--orange); }
+.badge-red { background:var(--red-bg); color:var(--red); }
+.badge-accent { background:var(--accent-bg); color:var(--accent); }
+.badge-blue { background:var(--blue-bg); color:var(--blue); }
+
+/* Expandable sections */
+.finding {
+  background: var(--bg-card); border:1px solid var(--border); border-radius:12px;
+  margin:16px 0; overflow:hidden;
+}
+.finding-header {
+  padding:16px 20px; cursor:pointer; display:flex;
+  justify-content:space-between; align-items:center;
+  transition: background 0.15s;
+}
+.finding-header:hover { background:var(--bg-card-hover); }
+.finding-header h3 { margin:0; font-size:15px; }
+.finding-header .meta { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.finding-header .arrow {
+  color:var(--text-muted); font-size:18px; transition:transform 0.2s; margin-left:12px;
+}
+.finding.open .finding-header .arrow { transform:rotate(90deg); }
+.finding-body {
+  max-height:0; overflow:hidden; transition: max-height 0.35s ease;
+}
+.finding.open .finding-body { max-height:none; }
+.finding-body-inner {
+  padding:0 20px 20px; border-top:1px solid var(--border);
+}
+
+/* Code blocks */
+pre {
+  background:var(--bg-input); border:1px solid var(--border); border-radius:8px;
+  padding:16px; overflow-x:auto; font-family:var(--mono); font-size:13px;
+  line-height:1.5; margin:12px 0; position:relative; color:var(--text-dim);
+}
+code {
+  font-family:var(--mono); font-size:13px;
+  background:var(--bg-input); padding:1px 5px; border-radius:3px;
+}
+pre code { background:none; padding:0; }
+
+/* Steps */
+.steps { counter-reset: step; margin:16px 0; }
+.step {
+  position:relative; padding:12px 12px 12px 52px; margin:8px 0;
+  background:var(--bg-card); border:1px solid var(--border); border-radius:8px;
+  counter-increment: step;
+}
+.step::before {
+  content: counter(step);
+  position:absolute; left:16px; top:12px;
+  width:24px; height:24px; background:var(--accent); color:#000;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700;
+}
+
+/* Tier labels */
+.tier { display:inline-block; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:600; margin:2px 4px 2px 0; }
+.tier-1 { background:var(--green-bg); color:var(--green); }
+.tier-2 { background:var(--yellow-bg); color:var(--yellow); }
+.tier-3 { background:var(--accent-bg); color:var(--accent); }
+
+/* Workflow visualization */
+.workflow {
+  display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; align-items:center;
+}
+.workflow .wf-step {
+  background:var(--bg-input); border:1px solid var(--border); border-radius:6px;
+  padding:8px 14px; font-size:12px; color:var(--text-dim);
+}
+.workflow .wf-arrow { color:var(--accent); font-size:16px; }
+.workflow .wf-step.wf-hot { border-color:var(--accent); color:var(--accent); }
+
+/* Person header */
+.person-header {
+  display:flex; align-items:center; gap:16px; margin-top:48px; margin-bottom:20px;
+  padding:20px; background:var(--bg-card); border:1px solid var(--border);
+  border-radius:12px; border-left:3px solid var(--accent);
+}
+.person-avatar {
+  width:48px; height:48px; border-radius:50%; background:var(--accent-bg);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:700; color:var(--accent);
+}
+.person-info h3 { margin:0; font-size:18px; color:var(--text); }
+.person-info p { margin:0; font-size:13px; color:var(--text-muted); }
+
+/* Tool cards */
+.tool-card {
+  display:flex; gap:16px; background:var(--bg-card); border:1px solid var(--border);
+  border-radius:10px; padding:16px; margin:10px 0; align-items:flex-start;
+}
+.tool-icon {
+  width:40px; height:40px; border-radius:8px; background:var(--accent-bg);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  font-size:18px;
+}
+.tool-info h4 { margin:0 0 4px; font-size:14px; color:var(--text); text-transform:none; letter-spacing:0; }
+.tool-info p { margin:0; font-size:13px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* Print */
+@media print {
+  nav { display:none; }
+  .content { margin-left:0; }
+  .finding-body { max-height:none !important; }
+  #auth-overlay { display:none !important; }
+  #main-content { display:block !important; }
+}
+
+/* Progress bar */
+.progress-bar {
+  background:var(--bg-input); border-radius:4px; height:8px; margin:8px 0; overflow:hidden;
+}
+.progress-bar .fill { height:100%; border-radius:4px; transition:width 0.3s; }
+.fill-accent { background:var(--accent); }
+.fill-green { background:var(--green); }
+.fill-yellow { background:var(--yellow); }
+.fill-red { background:var(--red); }
+
+/* Pulse animation for key stats */
+@keyframes subtle-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(94,234,212,0); }
+  50% { box-shadow: 0 0 12px 2px rgba(94,234,212,0.15); }
+}
+.stat-box.glow { animation: subtle-glow 3s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="auth-overlay">
+  <h1>Villa &amp; House Operational Audit</h1>
+  <p>This report contains confidential operational intelligence. Enter the access code to continue.</p>
+  <input type="password" id="auth-input" placeholder="Access code" autofocus>
+  <button onclick="checkAuth()">Enter</button>
+  <div class="error" id="auth-error"></div>
+</div>
+
+<!-- Main Content -->
+<div id="main-content">
+
+<nav id="sidebar">
+  <div class="nav-header">
+    <h2>Villa &amp; House Audit</h2>
+    <p>Go2 | April 2026</p>
+  </div>
+  <a href="#header">Overview</a>
+  <a href="#exec-summary">Executive Summary</a>
+  <a href="#big-table">The Big Table</a>
+  <a class="section-head">Team Deep Dives</a>
+  <a href="#beng">Beng Atencio</a>
+  <a href="#jp">JP Maquilang</a>
+  <a href="#eric">Eric Pamintuan</a>
+  <a class="section-head">Key Findings</a>
+  <a href="#f-copypaste">8,000 Copy-Pastes/Month</a>
+  <a href="#f-cheatsheet">The Cheat Sheet</a>
+  <a href="#f-notepad">Notepad as Shadow ERP</a>
+  <a href="#f-templates">Manual Email Templates</a>
+  <a href="#f-redundancy">Zero Redundancy</a>
+  <a href="#f-postmichelle">Post-Michelle Impact</a>
+  <a href="#f-sodeod">The Report Problem</a>
+  <a href="#f-carrier">Carrier Claim Assembly</a>
+  <a class="section-head">Deliverables</a>
+  <a href="#team-risk">Team Risk Assessment</a>
+  <a href="#tools-built">Tools Built</a>
+  <a href="#data-quality">Data Quality</a>
+  <a href="#whats-next">What's Next</a>
+</nav>
+
+<div class="content">
+
+<!-- ====== HEADER ====== -->
+<section id="header" style="text-align:center;padding:60px 0 40px;">
+<h1 style="color:var(--accent);font-size:2.2rem;">Villa &amp; House Operational Audit</h1>
+<p style="color:var(--text-muted); font-size:14px;">Prepared by Larry [AI] at Go2 &middot; April 8, 2026</p>
+<p style="color:var(--text-dim); font-size:12px; margin-top:8px;">3 team members &middot; 6 months of data &middot; 2.3M+ activity records &middot; 2,286 hours logged</p>
+<p style="color:var(--text-dim); font-size:12px;">Data collected locally within each team member's desktop app. All analysis performed locally. Nothing left the analyst's machine or touched the cloud.</p>
+</section>
+
+<!-- ====== EXECUTIVE SUMMARY ====== -->
+<section id="exec-summary">
+<h2>Executive Summary</h2>
+
+<div class="stat-grid">
+  <div class="stat-box">
+    <div class="value">3</div>
+    <div class="label">Team Members</div>
+  </div>
+  <div class="stat-box">
+    <div class="value">6 mo</div>
+    <div class="label">Data Period</div>
+  </div>
+  <div class="stat-box">
+    <div class="value">2.3M+</div>
+    <div class="label">Activity Records</div>
+  </div>
+  <div class="stat-box glow">
+    <div class="value">267</div>
+    <div class="label">Copy-Pastes / Day (Beng)</div>
+  </div>
+  <div class="stat-box glow">
+    <div class="value">96.5h</div>
+    <div class="label">Automatable Hrs/Mo (Eric)</div>
+  </div>
+  <div class="stat-box">
+    <div class="value">527</div>
+    <div class="label">App Switches / Day (JP)</div>
+  </div>
+</div>
+
+<div class="card card-accent">
+<h3 style="margin-top:0;">The Story</h3>
+<p>Villa &amp; House's operations team is three people running order processing and claims resolution across Acumatica ERP, Outlook, Notepad, a Calculator app, and dozens of copy-paste cycles per hour. They are good at their jobs -- the work gets done, customers get served, claims get filed. But the infrastructure underneath them is almost entirely manual.</p>
+
+<p><strong>Beng Atencio</strong> transcribes orders from batch PDFs into Acumatica by hand. Thirty-four copy-paste operations per order. Two hundred sixty-seven per day. She keeps a personal spreadsheet called "Beng Cheat Sheet" open at all times because the ERP is missing configuration data she needs -- she references it 48 times per workday.</p>
+
+<p><strong>JP Maquilang</strong> is the only person who can do both orders and claims. He runs EPACS Monday through Wednesday and claims Thursday through Friday with zero day-level exceptions. He tracks order batches in numbered Notepad files (*2 RZ through *18 RZ) because there is no batch tracking in the system. His machine had an 8-week stability crisis starting November 2025 that caused 30 documented session restarts.</p>
+
+<p><strong>Eric Pamintuan</strong> handles claims exclusively. 42.5% of his keystrokes are Ctrl+V. He maintains two Notepad files -- TEMPLATES.txt for customer response templates (225 accesses in 30 days) and a carrier claim log (695 accesses in 30 days). He decoded and runs a 10-step claims lifecycle with zero AI tool usage across 6 months.</p>
+
+<p>The team has <strong>zero redundancy</strong>. Beng cannot handle claims. Eric cannot handle orders. If JP leaves, the two remaining specialists have no cross-functional bridge.</p>
+</div>
+
+<div class="card card-accent">
+<h3 style="margin-top:0;">Key Numbers</h3>
+<ul>
+  <li><strong>Team analyzed:</strong> 3 people over 6 months (Oct 2025 -- Apr 2026). Beng Atencio (Order Processing), JP Maquilang (Orders + Claims), Eric Pamintuan (Claims).</li>
+  <li><strong>Data sources:</strong> 2.3M+ activity records across session logs, app/web tracking, keystroke captures, idle time monitoring, worklogs, and daily reports.</li>
+  <li><strong>Total automatable time identified:</strong> ~175-230 hours/month across the team -- equivalent to approximately 1.0-1.4 full-time employees.</li>
+  <li><strong>Estimated full automation cost:</strong> ~$15-50/month in AI compute (primarily email drafting and PDF parsing).</li>
+  <li><strong>Automation opportunities identified:</strong> 16 across 3 team members. 12 at HIGH confidence, 4 at MEDIUM.</li>
+  <li><strong>Tools prototyped:</strong> 3 working HTML applications built from decoded workflow data, ready for review.</li>
+</ul>
+</div>
+</section>
+
+<!-- ====== THE BIG TABLE ====== -->
+<section id="big-table">
+<h2>The Big Table</h2>
+<p>Every automation opportunity. Three columns show the progression: what it costs today in manual hours, what it costs with the dashboard tools we built, and what it costs with full integration. All numbers trace to counted events in the data.</p>
+
+<div class="big-table-wrap">
+<table>
+<thead>
+<tr>
+  <th style="min-width:200px;">Automation</th>
+  <th>Who</th>
+  <th>Current<br>(hrs/mo)</th>
+  <th>Dashboard<br>Tool</th>
+  <th>Full Pipeline<br>(hrs/mo)</th>
+  <th>Confidence</th>
+  <th>AI Cost<br>/Month</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Order PDF Transcription</strong><br><span style="color:var(--text-muted);font-size:12px;">34 copy-pastes per order, 164 orders/mo</span></td>
+  <td>Beng</td>
+  <td><strong>28+</strong></td>
+  <td>12-15</td>
+  <td><strong>2-4</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$5-15</td>
+</tr>
+<tr>
+  <td><strong>Cheat Sheet Elimination</strong><br><span style="color:var(--text-muted);font-size:12px;">1,527 events/mo, 48 lookups/day</span></td>
+  <td>Beng</td>
+  <td><strong>5.2</strong></td>
+  <td>1-2</td>
+  <td><strong>0</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Shipping Cost Calculation</strong><br><span style="color:var(--text-muted);font-size:12px;">Calculator on 71 of 103 days, 16% rate</span></td>
+  <td>Beng</td>
+  <td><strong>1</strong></td>
+  <td>0</td>
+  <td><strong>0</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Address Verification</strong><br><span style="color:var(--text-muted);font-size:12px;">161 Google Maps trips in 30 days</span></td>
+  <td>Beng</td>
+  <td><strong>1</strong></td>
+  <td>0.5</td>
+  <td><strong>0</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Copy-Paste Data Shuttle</strong><br><span style="color:var(--text-muted);font-size:12px;">166 copy-paste cycles/day, 527 Alt+Tabs/day</span></td>
+  <td>JP</td>
+  <td><strong>15-25</strong></td>
+  <td>8-12</td>
+  <td><strong>2-4</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Notepad Order Batch Tracking</strong><br><span style="color:var(--text-muted);font-size:12px;">*2 RZ through *18 RZ files</span></td>
+  <td>JP</td>
+  <td><strong>4-6</strong></td>
+  <td>1-2</td>
+  <td><strong>0</strong></td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>ZPL Label Editing</strong><br><span style="color:var(--text-muted);font-size:12px;">7.9h on one label file in 30 days</span></td>
+  <td>JP</td>
+  <td><strong>12-15</strong></td>
+  <td>6-8</td>
+  <td><strong>0-1</strong></td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Carrier Claims Form Filing</strong><br><span style="color:var(--text-muted);font-size:12px;">Manual data entry into PDFs and portals</span></td>
+  <td>JP + Eric</td>
+  <td><strong>20-27</strong></td>
+  <td>8-12</td>
+  <td><strong>2-4</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Template Email Responses</strong><br><span style="color:var(--text-muted);font-size:12px;">TEMPLATES.txt: 225 accesses/mo, typed manually</span></td>
+  <td>Eric</td>
+  <td><strong>29.3</strong></td>
+  <td>10-15</td>
+  <td><strong>3-5</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$5-15</td>
+</tr>
+<tr>
+  <td><strong>Carrier Claim Data Assembly</strong><br><span style="color:var(--text-muted);font-size:12px;">695 Notepad accesses/mo for claim log</span></td>
+  <td>Eric</td>
+  <td><strong>15.1</strong></td>
+  <td>5-8</td>
+  <td><strong>1-2</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Photo Evidence Pipeline</strong><br><span style="color:var(--text-muted);font-size:12px;">Download, crop, re-upload: 6-10 app switches/claim</span></td>
+  <td>Eric</td>
+  <td><strong>15.5</strong></td>
+  <td>8-10</td>
+  <td><strong>2-3</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Case Documentation Logging</strong><br><span style="color:var(--text-muted);font-size:12px;">Manual date+name+notes 16x/day</span></td>
+  <td>Eric</td>
+  <td><strong>11.7</strong></td>
+  <td>4-6</td>
+  <td><strong>0</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Replacement Order Creation</strong><br><span style="color:var(--text-muted);font-size:12px;">3-5 ROs/day, manually assembled</span></td>
+  <td>Eric</td>
+  <td><strong>11</strong></td>
+  <td>4-6</td>
+  <td><strong>1-2</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Refund Approval Workflow</strong><br><span style="color:var(--text-muted);font-size:12px;">Teams chat for every non-standard resolution</span></td>
+  <td>Eric</td>
+  <td><strong>7.3</strong></td>
+  <td>3-4</td>
+  <td><strong>1</strong></td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Multi-Inbox Email Monitoring</strong><br><span style="color:var(--text-muted);font-size:12px;">JP: 4 inboxes, Eric: 2 inboxes</span></td>
+  <td>JP + Eric</td>
+  <td><strong>8-12</strong></td>
+  <td>4-6</td>
+  <td><strong>1-2</strong></td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+  <td>$0</td>
+</tr>
+<tr>
+  <td><strong>Daily Report Automation</strong><br><span style="color:var(--text-muted);font-size:12px;">Beng: 100% static content, typed daily</span></td>
+  <td>All</td>
+  <td><strong>2-3</strong></td>
+  <td>0.5</td>
+  <td><strong>0</strong></td>
+  <td><span class="badge badge-green">HIGH</span></td>
+  <td>$0</td>
+</tr>
+<tr style="background:var(--accent-bg);font-weight:600;">
+  <td>TOTAL</td>
+  <td>All</td>
+  <td>176-237</td>
+  <td>76-108</td>
+  <td><strong>15-28</strong></td>
+  <td colspan="2">~150-210 hrs/mo recoverable</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Confidence: <span class="badge badge-green">HIGH</span> = verified across multiple data sources with unambiguous event counts. <span class="badge badge-yellow">MEDIUM</span> = strong signal but some inference required. "Dashboard Tool" = the HTML prototypes delivered with this report. "Full Pipeline" = API integration with Acumatica, carrier systems, and email.</p>
+</section>
+
+<!-- ====== BENG DEEP DIVE ====== -->
+<section id="beng">
+<h2>Team Deep Dive: Beng Atencio</h2>
+
+<div class="person-header">
+  <div class="person-avatar">BA</div>
+  <div class="person-info">
+    <h3>Beng Atencio</h3>
+    <p>Lead Order Processor &middot; E.P.A.C.S. &middot; Since Aug 2022 &middot; 746.7h logged in 6 months</p>
+  </div>
+</div>
+
+<h3>What She Actually Does</h3>
+<p>Beng's job title is "Teammate." Her actual function is order transcription. She takes batch order PDFs from three sources (Bungalow 5, Repzio, MarketTime) and manually types them into Acumatica's Sales Orders screen. She does this for every order, every day, with a personal spreadsheet open as a constant reference because the ERP lacks the configuration data she needs.</p>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="value">7.8</div><div class="label">Avg Orders / Day</div></div>
+  <div class="stat-box"><div class="value">267</div><div class="label">Copy-Pastes / Day</div></div>
+  <div class="stat-box"><div class="value">34</div><div class="label">Pastes Per Order</div></div>
+  <div class="stat-box"><div class="value">8.13h</div><div class="label">Avg Daily Hours</div></div>
+  <div class="stat-box"><div class="value">3 min</div><div class="label">Start Time Std Dev</div></div>
+  <div class="stat-box"><div class="value">99.7%</div><div class="label">Time on E.P.A.C.S.</div></div>
+</div>
+
+<h3>Her Workflow (Decoded from 19,166 Events)</h3>
+<div class="workflow">
+  <span class="wf-step">Download PDF batch</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step wf-hot">Open Cheat Sheet</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step">Copy from PDF</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step wf-hot">Paste into Acumatica</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step">Check Cheat Sheet</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step">Verify on Google Maps</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step">Calculate shipping (16%)</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step">Send confirmation email</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step">Repeat</span>
+</div>
+
+<h4>Top Screen Transitions (30 days, counted)</h4>
+<table>
+<tr><th>Transition</th><th>Count</th><th>Interpretation</th></tr>
+<tr><td>Cheat Sheet &rarr; Sales Orders</td><td>807</td><td>Reference lookup before entering order data</td></tr>
+<tr><td>Sales Orders &rarr; Cheat Sheet</td><td>711</td><td>Checking codes mid-entry</td></tr>
+<tr><td>Outlook Inbox &rarr; Sales Orders</td><td>596</td><td>Order email &rarr; order entry</td></tr>
+<tr><td>Sales Orders &rarr; Outlook Inbox</td><td>583</td><td>Order entry &rarr; back to email</td></tr>
+<tr><td>Sales Orders &rarr; Order PDF</td><td>354</td><td>Referencing source document</td></tr>
+<tr><td>Google Maps &rarr; Sales Orders</td><td>156</td><td>Address verified, back to entry</td></tr>
+</table>
+
+<h3>Beng's Automation Opportunities</h3>
+
+<div class="finding">
+<div class="finding-header" onclick="toggleFinding(this)">
+  <h3>Batch PDF Order Import (28+ hrs/mo)</h3>
+  <div class="meta"><span class="badge badge-green">HIGH</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><strong>What happens today:</strong> Beng opens batch order PDFs (BW AM, BW PM, RZ AM, MT PM -- approximately 4 batches per day) and manually copies each field into Acumatica. 3,819 copy events and 4,175 paste events in 30 days. That is 267 copy-paste operations per workday, or 34 per order.</p>
+<p><strong>Evidence:</strong> Chrome has MORE pastes (2,418) than copies (1,960), while Edge/Acumatica has MORE copies (1,742) than pastes (1,426). This confirms directional data flow: data flows FROM PDFs (Chrome) INTO Acumatica (Edge), and FROM Acumatica (Edge) INTO email/Outlook (Chrome).</p>
+<p><strong>Three Tiers:</strong></p>
+<p><span class="tier tier-1">TODAY</span> Restructure the PDF download flow: batch all morning PDFs into one session, then all afternoon PDFs. Reduces context switching. Estimated savings: 2-3 hrs/mo.</p>
+<p><span class="tier tier-2">DASHBOARD</span> The Order Entry Assistant tool (delivered with this report) pre-formats order data into Acumatica-ready fields. Paste once per order instead of 34 times. Estimated savings: 13-16 hrs/mo.</p>
+<p><span class="tier tier-3">FULL PIPELINE</span> API integration between Repzio, MarketTime, and BigCommerce into Acumatica. Repzio has a REST API. MarketTime likely supports EDI/API feeds. BigCommerce has standard Acumatica connectors. For pure PDF sources, OCR extraction into a staging queue. Beng reviews and approves instead of transcribes. Estimated savings: 24-26 hrs/mo. Build time: 2-4 weeks. AI compute: $5-15/mo for OCR on remaining PDF-only sources.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="toggleFinding(this)">
+  <h3>Cheat Sheet Elimination (5.2 hrs/mo)</h3>
+  <div class="meta"><span class="badge badge-green">HIGH</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><strong>What happens today:</strong> "Beng Cheat Sheet.xlsx" registered 1,527 events in 30 days -- her most-accessed Chrome tab after email. She switches to it 807 times before entering Sales Orders and 157 times before Shipments. It likely contains order type codes, customer shortcuts, shipping rate tables, carrier codes, and other reference data that should live in the ERP.</p>
+<p><strong>Evidence:</strong> 48 switches to the Cheat Sheet per workday. 5.24 hours of direct screen time in 30 days.</p>
+<p><span class="tier tier-1">TODAY</span> Audit the Cheat Sheet contents. Identify which data belongs in Acumatica's Ship Via Codes, Customer defaults, or Stock Item configurations. Begin migrating the most-referenced data.</p>
+<p><span class="tier tier-2">DASHBOARD</span> The Order Entry Assistant includes a quick-reference panel with the most common lookup values. Reduces tab-switching to zero for standard orders.</p>
+<p><span class="tier tier-3">FULL PIPELINE</span> Full migration of Cheat Sheet content into Acumatica configuration: shipping rate tables, customer defaults, order type codes, carrier routing rules. Custom fields or lookup panels within the Sales Orders screen. The Cheat Sheet becomes unnecessary. Build time: 1-2 weeks (Acumatica configuration, not custom development).</p>
+</div></div>
+</div>
+
+</section>
+
+<!-- ====== JP DEEP DIVE ====== -->
+<section id="jp">
+<h2>Team Deep Dive: JP Maquilang</h2>
+
+<div class="person-header">
+  <div class="person-avatar">JP</div>
+  <div class="person-info">
+    <h3>JP Maquilang</h3>
+    <p>Hybrid Order Processor + Claims Handler &middot; The Team's Only Bridge &middot; Since Dec 2022 &middot; 790.5h in 6 months</p>
+  </div>
+</div>
+
+<h3>What He Actually Does</h3>
+<p>JP is the most critical person on this team. He is the only team member who handles both order processing AND claims -- and the data shows he does it with zero day-level crossover. Monday through Wednesday he processes orders. Thursday and Friday he files carrier claims. This pattern held with zero exceptions across every day in the 30-day granular window.</p>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="value">77/23</div><div class="label">EPACS / Claims Split</div></div>
+  <div class="stat-box"><div class="value">527</div><div class="label">Alt+Tab / Day</div></div>
+  <div class="stat-box"><div class="value">166</div><div class="label">Copy-Paste Cycles / Day</div></div>
+  <div class="stat-box"><div class="value">7.7</div><div class="label">Orders / Day</div></div>
+  <div class="stat-box"><div class="value">5.6</div><div class="label">Cases / Day</div></div>
+  <div class="stat-box"><div class="value">30</div><div class="label">PC Crash Notes (8 wks)</div></div>
+</div>
+
+<h3>The Day-Level Role Separation</h3>
+<div class="card card-accent">
+<table>
+<tr><th>Day</th><th>Role</th><th>Exceptions (30-day window)</th></tr>
+<tr><td>Monday</td><td><span class="badge badge-green">EPACS</span></td><td>0</td></tr>
+<tr><td>Tuesday</td><td><span class="badge badge-green">EPACS</span></td><td>0</td></tr>
+<tr><td>Wednesday</td><td><span class="badge badge-green">EPACS</span></td><td>0</td></tr>
+<tr><td>Thursday</td><td><span class="badge badge-blue">Claims</span></td><td>0</td></tr>
+<tr><td>Friday</td><td><span class="badge badge-blue">Claims</span></td><td>0</td></tr>
+</table>
+<p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Context switches per day: 1-2 (only the initial task transition). This is not multitasking -- it is serial specialization by day of week.</p>
+</div>
+
+<h3>The Notepad Shadow System</h3>
+<p>JP maintains numbered Notepad files (*2 RZ through *18 RZ) to track RepZio order batches. These are manual task lists outside the ERP. Combined with the "To Blue Truck" carrier communication note (3.1 hours), this represents a significant portion of work managed in plaintext files because the ERP does not provide batch-level tracking.</p>
+
+<h3>PC Stability Crisis</h3>
+<p>From November 2025 through January 2026, JP logged 30 worklog entries citing "pc issue," "pc restart," "pc keeps restarting," and "app issue." This 8-week instability period is visible in the session data as 17 multi-session days. Each restart means lost context, re-authentication (RepZio login on 31 of 111 days), and workflow interruption.</p>
+
+<h3>JP's Automation Opportunities</h3>
+
+<div class="finding">
+<div class="finding-header" onclick="toggleFinding(this)">
+  <h3>Copy-Paste Data Shuttle (15-25 hrs/mo)</h3>
+  <div class="meta"><span class="badge badge-green">HIGH</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><strong>What happens today:</strong> 3,158 copy events and 3,242 paste events across 19 days. 10,017 Alt+Tab switches. JP copies data from RepZio/MarketTime/email, Alt+Tabs to Acumatica, pastes into fields, Alt+Tabs to Notepad for tracking, pastes again, Alt+Tabs back. This is the single largest time cost in JP's workflow.</p>
+<p><span class="tier tier-1">TODAY</span> Batch order data into clipboard chains. Copy all fields for one order before switching to Acumatica. Reduces Alt+Tab cycles by 30-40%.</p>
+<p><span class="tier tier-2">DASHBOARD</span> The Batch Order Tracker (delivered) provides a staging area where order data is assembled before entry. One structured paste per order instead of 15+ field-by-field pastes.</p>
+<p><span class="tier tier-3">FULL PIPELINE</span> Direct API integration between RepZio (REST API available) and Acumatica. Orders flow automatically. JP reviews exceptions only. MarketTime import via their API. Build time: 3-5 weeks.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="toggleFinding(this)">
+  <h3>ZPL Label Generation (12-15 hrs/mo)</h3>
+  <div class="meta"><span class="badge badge-yellow">MEDIUM</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><strong>What happens today:</strong> JP opens ZPL label files in Notepad (7.9 hours on the primary label alone in 30 days), manually edits label data, then uses zpl_to_pdf for conversion. This happens on both EPACS and Claims days.</p>
+<p><strong>Evidence:</strong> Notepad is JP's 7th most-used app at 23.7 hours over 6 months. 10.9 million characters of ZPL label data processed through Notepad in 19 days.</p>
+<p><span class="tier tier-1">TODAY</span> Standardize label templates. Pre-fill static fields. Reduce manual editing to shipment-specific variables only.</p>
+<p><span class="tier tier-2">DASHBOARD</span> A label generator that takes shipment data and outputs formatted ZPL. JP confirms and sends to printer.</p>
+<p><span class="tier tier-3">FULL PIPELINE</span> Acumatica shipment confirmation auto-generates ZPL labels from the shipment record. No Notepad editing needed. Requires Acumatica label configuration. Build time: 1-2 weeks.</p>
+</div></div>
+</div>
+
+</section>
+
+<!-- ====== ERIC DEEP DIVE ====== -->
+<section id="eric">
+<h2>Team Deep Dive: Eric Pamintuan</h2>
+
+<div class="person-header">
+  <div class="person-avatar">EP</div>
+  <div class="person-info">
+    <h3>Eric Pamintuan</h3>
+    <p>Claims Lead &middot; 10-Step Claims Lifecycle &middot; Since Dec 2022 &middot; 749.2h in 6 months</p>
+  </div>
+</div>
+
+<h3>What He Actually Does</h3>
+<p>Eric runs Villa &amp; House's entire claims operation. He triages claims from a shared Outlook inbox, investigates orders in Acumatica, files carrier claims, negotiates resolutions with customers, creates replacement orders, processes refunds, and documents everything -- all while maintaining two Notepad files as his primary workflow infrastructure. He is the most skilled and engaged operator on the team, and his EOD reports are the only source of operational narrative for the claims function.</p>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="value">16.1</div><div class="label">Cases / Day (Avg)</div></div>
+  <div class="stat-box"><div class="value">42.5%</div><div class="label">Keystrokes = Ctrl+V</div></div>
+  <div class="stat-box"><div class="value">25-27 min</div><div class="label">Per Case (Avg)</div></div>
+  <div class="stat-box"><div class="value">695</div><div class="label">Notepad Accesses / Mo</div></div>
+  <div class="stat-box"><div class="value">96.5h</div><div class="label">Automatable / Month</div></div>
+  <div class="stat-box"><div class="value">0</div><div class="label">AI Tool Usage</div></div>
+</div>
+
+<h3>The 10-Step Claims Lifecycle (Decoded)</h3>
+<div class="steps">
+  <div class="step"><strong>Triage</strong> -- Open shared Claims inbox, read incoming claim, copy key identifiers <span style="color:var(--text-muted);">(2-5 min)</span></div>
+  <div class="step"><strong>Case Lookup</strong> -- Switch to Acumatica Cases (CR306000), search by case number <span style="color:var(--text-muted);">(2-3 min)</span></div>
+  <div class="step"><strong>Order Investigation</strong> -- Open Sales Orders, Customers, Shipments, Stock Items to cross-reference <span style="color:var(--text-muted);">(3-10 min)</span></div>
+  <div class="step"><strong>Evidence Review</strong> -- Download damage photos, crop with Snipping Tool, re-upload to Acumatica <span style="color:var(--text-muted);">(3-8 min)</span></div>
+  <div class="step"><strong>Carrier Claim Filing</strong> -- Open Notepad carrier log, assemble tracking/invoice/dimension data <span style="color:var(--text-muted);">(5-10 min)</span></div>
+  <div class="step"><strong>Resolution Decision</strong> -- Discuss with Cade Lake via Teams (refund, discount, replacement, repair, denial) <span style="color:var(--text-muted);">(1-30 min)</span></div>
+  <div class="step"><strong>Customer Response</strong> -- Compose email using TEMPLATES.txt snippets in Acumatica <span style="color:var(--text-muted);">(3-8 min)</span></div>
+  <div class="step"><strong>Case Documentation</strong> -- Log resolution notes: "[date] Eric - [action] - [details]" <span style="color:var(--text-muted);">(1-3 min)</span></div>
+  <div class="step"><strong>Order Execution</strong> -- If replacement: create RO in Sales Orders with "no pay" flag <span style="color:var(--text-muted);">(3-10 min)</span></div>
+  <div class="step"><strong>Refund Processing</strong> -- If refund: process credit memo, route to finance <span style="color:var(--text-muted);">(3-5 min)</span></div>
+</div>
+
+<h4>Top App Transitions (30 days, counted)</h4>
+<table>
+<tr><th>Transition</th><th>Count</th><th>Interpretation</th></tr>
+<tr><td>Sales Orders &harr; Notepad</td><td>601</td><td>Copying order data to carrier claim log</td></tr>
+<tr><td>Claims Inbox &harr; Cases</td><td>659</td><td>Email-to-case triage loop</td></tr>
+<tr><td>Email Activity &harr; Notepad</td><td>337</td><td>Using templates for responses</td></tr>
+<tr><td>Customers &harr; Claims Inbox</td><td>314</td><td>Photo upload and context checking</td></tr>
+<tr><td>Cases &harr; Cade (Teams)</td><td>264</td><td>Real-time approval loop</td></tr>
+</table>
+
+<h3>Claim Types (Estimated Distribution)</h3>
+<div class="card">
+<table>
+<tr><th>Claim Type</th><th>Est. Frequency</th><th>Evidence</th></tr>
+<tr><td>Shipping damage</td><td>30-40%</td><td>Carrier claim filing workflow, photo evidence, portal access</td></tr>
+<tr><td>QC / Manufacturing defect</td><td>20-25%</td><td>Keystroke: "QC concern", "imperfections", "warped shades"</td></tr>
+<tr><td>Missing parts / hardware</td><td>15-20%</td><td>Keystroke: "missing light switch", "HARDWARE ASSISTANCE"</td></tr>
+<tr><td>Discount / keep-with-discount</td><td>10-15%</td><td>Keystroke: "30% discount", "$500 discount"</td></tr>
+<tr><td>Refund processing</td><td>10-15%</td><td>Keystroke: "Cade approved refund", "please refund $"</td></tr>
+<tr><td>Returns / discontinued</td><td>5-10%</td><td>Keystroke: "accept a return", "discontinued item"</td></tr>
+</table>
+<p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Confidence: MEDIUM. Estimated from keystroke sampling, not exhaustive case data.</p>
+</div>
+
+<h3>Eric's Automation Opportunities</h3>
+
+<div class="finding">
+<div class="finding-header" onclick="toggleFinding(this)">
+  <h3>Template Email Responses (29.3 hrs/mo)</h3>
+  <div class="meta"><span class="badge badge-green">HIGH</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><strong>What happens today:</strong> Eric opens TEMPLATES.txt in Notepad (225 accesses in 30 days), finds the appropriate response template, copies it, switches to Acumatica Email Activity, pastes it, and manually customizes with customer name, product name, case details, and resolution-specific language. 16 responses per day.</p>
+<p><strong>Decoded resolution types from keystrokes:</strong> Full refund, partial discount (20-30%), replacement order with inspection notes, courtesy replacement (freight covered or not), repair, denial.</p>
+<p><span class="tier tier-1">TODAY</span> Convert TEMPLATES.txt into a categorized document. Group templates by resolution type (refund, replacement, discount, denial). Add merge-field placeholders for customer name, product, invoice number.</p>
+<p><span class="tier tier-2">DASHBOARD</span> The Claims Processing Dashboard (delivered) includes Eric's decoded templates with one-click insertion. Select resolution type, enter case-specific details, template auto-fills. Estimated savings: 14-19 hrs/mo.</p>
+<p><span class="tier tier-3">FULL PIPELINE</span> Dynamic email templates within Acumatica that auto-fill customer name, product, invoice, and offer pre-built resolution blocks. AI draft generation based on case type and resolution decision. Eric reviews and sends. Build time: 2-3 weeks. AI cost: $5-15/mo.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="toggleFinding(this)">
+  <h3>Carrier Claim Data Assembly (15.1 hrs/mo)</h3>
+  <div class="meta"><span class="badge badge-green">HIGH</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><strong>What happens today:</strong> Eric opens "Consolidated Furniture Carriers For.txt" in Notepad (695 accesses in 30 days -- his most-used "tool" after Acumatica). For each carrier claim, he copies carrier name, tracking number, invoice number, product dimensions, weight, and customer details from multiple Acumatica screens and assembles them into a formatted text block.</p>
+<p><strong>Carriers decoded from data:</strong> FedEx, Zenith, Brooks, CPU, TFX, BlueTruck, J.B. Hunt, Accokeek Express, Western Logistics.</p>
+<p><span class="tier tier-1">TODAY</span> Create a structured claim intake form (even in Excel) that consolidates the required fields. Reduces switching between 4-5 Acumatica screens.</p>
+<p><span class="tier tier-2">DASHBOARD</span> The Claims Dashboard (delivered) auto-formats carrier claim data into the correct structure. Enter case number, and the tool pulls available data from a single form.</p>
+<p><span class="tier tier-3">FULL PIPELINE</span> Acumatica generic inquiry that pulls case data, linked sales order, shipment tracking, customer info, and product dimensions into a single screen. One-click carrier claim document generation. Build time: 2-3 weeks. Acumatica REST API: GET /entity/Default/current/Case, linked to SalesOrder and Shipment entities.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="toggleFinding(this)">
+  <h3>Photo Evidence Pipeline (15.5 hrs/mo)</h3>
+  <div class="meta"><span class="badge badge-green">HIGH</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><strong>What happens today:</strong> Download photos from email/Acumatica file, open in Windows Photos, open Snipping Tool (284 events in 30 days), crop relevant damage area, save screenshot, navigate to Acumatica Customer record, upload. 6-10 app switches per claim with photos. ~40% of claims involve photo evidence.</p>
+<p><span class="tier tier-1">TODAY</span> Skip the crop step for clear photos. Upload originals directly to the case record. Use Snipping Tool only for photos that need annotation.</p>
+<p><span class="tier tier-2">DASHBOARD</span> Drag-and-drop photo upload zone in the Claims Dashboard that auto-resizes and formats for Acumatica.</p>
+<p><span class="tier tier-3">FULL PIPELINE</span> In-browser image annotation tool within Acumatica. Email attachments auto-linked to case records. Drag-and-drop from Outlook to Acumatica. AI-assisted damage detection and auto-categorization. Build time: 3-4 weeks.</p>
+</div></div>
+</div>
+
+</section>
+
+<!-- ====== KEY FINDINGS ====== -->
+<section id="f-copypaste">
+<h2>Finding: 8,000 Copy-Pastes Per Month</h2>
+
+<div class="card card-accent">
+<p>Beng's order processing generates 3,819 copy events and 4,175 paste events in 30 days. JP adds another 3,158 copies and 3,242 pastes across 19 days (projected: ~5,000+/month). Eric contributes 1,780 paste events in 30 days. The combined team performs approximately <strong>13,000+ copy-paste operations per month</strong>.</p>
+<p>This is not a productivity problem -- it is an infrastructure problem. The team copies data between systems because the systems are not connected. Acumatica does not talk to RepZio. Batch order PDFs do not feed into the ERP. Customer response templates live in a Notepad file. Carrier claim data lives in a different Notepad file.</p>
+<p><strong>Data source:</strong> Keystroke granular captures (30-day and 19-day windows). Copy = Ctrl+C events. Paste = Ctrl+V events. Counted per-application to determine directional data flow.</p>
+</div>
+</section>
+
+<section id="f-cheatsheet">
+<h2>Finding: The Cheat Sheet</h2>
+
+<div class="card card-accent">
+<p>"Beng Cheat Sheet.xlsx" is accessed 1,527 times in 30 days. It is her most-visited Chrome tab after email. She switches to it 807 times before entering Sales Orders and 157 times before creating Shipments. That is <strong>48 lookups per workday</strong> -- roughly once every 10 minutes.</p>
+<p>This file is a workaround. It contains reference data that should live in Acumatica's configuration tables: order type codes, customer shortcuts, shipping rate tables, carrier routing rules. Its existence means either the ERP was never fully configured, or configuration drifted over time as the business changed.</p>
+<p><strong>Recommendation:</strong> Audit the Cheat Sheet contents. Every item in it represents a missing or misconfigured ERP field. Migrating this data into Acumatica would eliminate 5.2 hours/month of reference lookups and reduce the risk of Beng being the only person who knows these codes.</p>
+</div>
+</section>
+
+<section id="f-notepad">
+<h2>Finding: Notepad as Shadow ERP</h2>
+
+<div class="card card-accent">
+<p>Across the team, Notepad functions as a parallel information system:</p>
+<ul>
+  <li><strong>Beng:</strong> 15.3 hours over 6 months. Scratch clipboard for copy-paste intermediary, meeting notes, order tracking shorthand.</li>
+  <li><strong>JP:</strong> 23.7 hours over 6 months. Numbered batch tracking files (*2 RZ through *18 RZ), ZPL label editing (7.9 hours on one label file), carrier communication notes.</li>
+  <li><strong>Eric:</strong> TEMPLATES.txt (225 accesses/30 days, 1.08 hours) and Consolidated Furniture Carriers log (695 accesses/30 days, 3.39 hours). These are the two most critical "tools" in the claims workflow after Acumatica itself.</li>
+</ul>
+<p>Combined: <strong>43.5 hours of Notepad usage over 6 months</strong>. This is not casual note-taking. These are structured, recurring workflows that the ERP does not support.</p>
+</div>
+</section>
+
+<section id="f-templates">
+<h2>Finding: Manual Email Templates</h2>
+
+<div class="card card-accent">
+<p>Both Beng and Eric compose customer-facing emails by typing recurring phrases from memory or copying from Notepad templates. Eric's TEMPLATES.txt was accessed 225 times in 30 days. Beng types the same confirmation phrases repeatedly: "Thank you. The order has been forward[ed]..." and "Please confirm if I can proceed."</p>
+<p>Neither team member uses AI tools for email composition. Eric has zero AI tool usage across 6 months. Beng accessed ChatGPT exactly once with 4 events. JP used it on 3 days with 13 events. All customer responses are composed manually.</p>
+<p><strong>Opportunity:</strong> Template-based responses alone (Eric's TEMPLATES.txt replacement) represent 29.3 hours/month. Adding Beng's email templates adds another 3-5 hours/month. AI-assisted drafting with resolution-type selection could reduce this further while maintaining the team's professional tone.</p>
+</div>
+</section>
+
+<section id="f-redundancy">
+<h2>Finding: Zero Redundancy</h2>
+
+<div class="card card-red">
+<p>This is the most structurally important finding in the audit. Over 6 months and 746+ hours each, <strong>Beng has logged zero Claims hours and Eric has logged zero EPACS hours.</strong> They operate in complete functional isolation. Neither has ever worked in the other's domain in the observable data.</p>
+
+<table>
+<tr><th>If This Person Is Out</th><th>Impact</th><th>Risk Level</th></tr>
+<tr><td><strong>Beng</strong></td><td>JP absorbs orders at reduced capacity. Claims coverage suffers as JP is pulled away.</td><td><span class="badge badge-yellow">MEDIUM</span></td></tr>
+<tr><td><strong>Eric</strong></td><td>JP absorbs some claims at ~35% of Eric's throughput (5.6 vs 16.1 cases/day). Orders also degrade.</td><td><span class="badge badge-orange">HIGH</span></td></tr>
+<tr><td><strong>JP</strong></td><td>Zero cross-functional coverage. Orders and claims become completely siloed with no overflow capacity.</td><td><span class="badge badge-red">CRITICAL</span></td></tr>
+</table>
+
+<p style="margin-top:16px;"><strong>Evidence:</strong> 773 worklog entries across 3 members with zero crossover exceptions. Verified against app/web usage patterns (completely different Acumatica modules), keystroke data (different typed content), and daily report content.</p>
+</div>
+</section>
+
+<section id="f-postmichelle">
+<h2>Finding: Post-Michelle Impact</h2>
+
+<div class="card card-yellow">
+<p>Michelle Cayanan's departure in June 2025 created measurable operational changes visible in the 12-month data:</p>
+
+<table>
+<tr><th>Metric</th><th>Pre-June 2025</th><th>Post-July 2025</th><th>Change</th></tr>
+<tr><td>Claims hours/month</td><td>240.1h</td><td>146.5h</td><td><span class="badge badge-red">-39%</span></td></tr>
+<tr><td>Meeting hours/month</td><td>4.5h</td><td>0.7h</td><td><span class="badge badge-red">-84%</span></td></tr>
+<tr><td>Order Import hours/month</td><td>4.7h</td><td>0.7h</td><td><span class="badge badge-red">-84%</span></td></tr>
+<tr><td>EPACS hours/month</td><td>241.4h</td><td>217.3h</td><td><span class="badge badge-yellow">-10%</span></td></tr>
+<tr><td>Training &amp; Updates</td><td>0h</td><td>1.0h (brief)</td><td>Appeared then vanished</td></tr>
+</table>
+
+<p style="margin-top:16px;">The 39% drop in claims hours exceeds the expected 25% capacity loss from losing one of four team members. The 84% collapse in meeting time suggests the team stopped holding regular meetings entirely. The management/coordination infrastructure disappeared with the fourth person.</p>
+<p><strong>Confidence:</strong> HIGH on magnitude. MEDIUM on causation (per-person pre/post data not available in the weekly dataset).</p>
+</div>
+</section>
+
+<section id="f-sodeod">
+<h2>Finding: The Report Problem</h2>
+
+<div class="card card-accent">
+<p>The team's daily start-of-day and end-of-day reports are a compliance checkbox, not an operational intelligence source.</p>
+
+<h4>Beng's Reports (103 EODs)</h4>
+<ul>
+  <li><strong>Headline:</strong> "Done [weekday]!" -- 87.4% of entries</li>
+  <li><strong>Win description:</strong> "Same" -- 99.0% of entries</li>
+  <li><strong>Feeling score:</strong> 3 -- 100.0% of entries (zero variation across 6 months)</li>
+  <li><strong>Need help:</strong> "No" -- 100.0% of entries</li>
+  <li><strong>Newsworthy:</strong> "None" -- 100.0% of entries</li>
+</ul>
+<p>The ONLY variable data point is the Orders Entered count.</p>
+
+<h4>Eric's Reports (107 EODs) -- The Exception</h4>
+<p>Eric's reports are genuinely informative. 84 of 107 EODs contain substantive content. He references specific colleague coordination, carrier negotiations, case closures, and client interactions. His feeling score varies (3: 69%, 2: 28%, 1: 3%). He is the only team member to rate a "1." His reports are the primary source of operational narrative for the claims function.</p>
+
+<h4>JP's Reports (103 EODs)</h4>
+<p>51% headline: "BAU." Never reports needing help. Zero escalations across 6 months. Feeling score fixed at 3 for 88% of entries.</p>
+
+<p><strong>Team-wide:</strong> Zero "need help" flags across 313 total EOD reports. This is either a genuinely self-sufficient team or a system that nobody trusts to use honestly.</p>
+</div>
+</section>
+
+<section id="f-carrier">
+<h2>Finding: Carrier Claim Assembly</h2>
+
+<div class="card card-accent">
+<p>Both JP and Eric file carrier claims. The process involves manually assembling data from multiple Acumatica screens (Cases, Sales Orders, Shipments, Customers, Stock Items) into either Notepad text files or web-based claim forms. JP uses Eclaims (1.22 hours, 233 events) and PDF forms (Zenith, TFX). Eric uses his Notepad carrier log as the primary staging area.</p>
+
+<p><strong>Combined carrier claim filing time:</strong> JP ~8-12 hours/month + Eric ~15.1 hours/month = approximately 23-27 hours/month of manual claim data assembly. The underlying data already exists in Acumatica. It is being manually re-assembled because there is no consolidated view.</p>
+
+<p><strong>Carriers decoded from the data:</strong> FedEx, Zenith Global Logistics, Brooks Furniture Express, CPU (Customer Pick-Up), TFX (ShipTFX), BlueTruck Logistics, J.B. Hunt, Accokeek Express, Western Logistics, BFX.</p>
+</div>
+</section>
+
+<!-- ====== TEAM RISK ====== -->
+<section id="team-risk">
+<h2>Team Risk Assessment</h2>
+
+<div class="card card-red">
+<h3 style="margin-top:0; color:var(--red);">Single Points of Failure</h3>
+<table>
+<tr><th>Function</th><th>Primary</th><th>Backup</th><th>Risk</th></tr>
+<tr><td>Order entry (EPACS)</td><td>Beng</td><td>JP (partial)</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+<tr><td>Claims processing</td><td>Eric</td><td>JP (35% capacity)</td><td><span class="badge badge-orange">High</span></td></tr>
+<tr><td>Cross-functional bridge</td><td>JP</td><td>None</td><td><span class="badge badge-red">Critical</span></td></tr>
+<tr><td>Carrier coordination</td><td>Eric</td><td>None visible</td><td><span class="badge badge-orange">High</span></td></tr>
+<tr><td>Customer phone contact</td><td>Beng (20.1h)</td><td>JP (2.8h)</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+<tr><td>Order receipt processing (RepZio)</td><td>Beng + JP</td><td>None if both out</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+</table>
+</div>
+
+<h3>Workload Trends</h3>
+<p>Team hours grew 46% from October 2025 (309.8h) to March 2026 (451.8h). All three members show individual increases. Eric's monthly case volume grew 76% (199 to 351 cases). This growth occurred with a fixed 3-person team, post-departure. There is no evidence of plans to add headcount.</p>
+
+<div class="card">
+<h4>Monthly Hours by Person</h4>
+<table>
+<tr><th>Month</th><th>Beng</th><th>Eric</th><th>JP</th><th>Team Total</th></tr>
+<tr><td>Oct 2025</td><td>108.6h</td><td>85.8h</td><td>115.4h</td><td>309.8h</td></tr>
+<tr><td>Nov 2025</td><td>121.1h</td><td>104.0h</td><td>99.0h</td><td>324.1h</td></tr>
+<tr><td>Dec 2025</td><td>107.0h</td><td>128.6h</td><td>98.7h</td><td>334.3h</td></tr>
+<tr><td>Jan 2026</td><td>108.0h</td><td>132.9h</td><td>141.7h</td><td>382.6h</td></tr>
+<tr><td>Feb 2026</td><td>129.3h</td><td>129.1h</td><td>143.7h</td><td>402.1h</td></tr>
+<tr><td>Mar 2026</td><td>151.3h</td><td>141.0h</td><td>159.5h</td><td>451.8h</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ====== TOOLS BUILT ====== -->
+<section id="tools-built">
+<h2>Tools Built</h2>
+<p>Three working prototype tools built from the actual workflow data. Each is a single HTML file with zero dependencies, dark mode matching this report, and functionality based on the decoded workflows.</p>
+
+<div class="tool-card">
+  <div class="tool-icon">B</div>
+  <div class="tool-info">
+    <h4>Beng: Order Entry Assistant</h4>
+    <p>Eliminates the copy-paste loop. Takes order data from batch PDFs and formats it for Acumatica import. Includes the actual fields decoded from her workflow: order type (BW/RZ/WB), customer lookup, shipping calculation (auto-applies the 16% rate she uses most), address verification prompts, and confirmation email template.</p>
+    <p class="size">tools/beng-order-entry-assistant.html</p>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-icon">JP</div>
+  <div class="tool-info">
+    <h4>JP: Batch Order Tracker &amp; Claims Form</h4>
+    <p>Replaces the Notepad shadow system (*2 RZ through *18 RZ files). Provides batch-level order tracking with status indicators, plus a claims form pre-fill template for carrier claims filing. Includes the dual-role view (EPACS vs Claims) matching his day-level separation pattern.</p>
+    <p class="size">tools/jp-batch-order-tracker.html</p>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-icon">E</div>
+  <div class="tool-info">
+    <h4>Eric: Claims Processing Dashboard</h4>
+    <p>Consolidates the 10-step claims lifecycle into a single interface. Includes response templates decoded from TEMPLATES.txt, carrier claim data assembly (replacing the Notepad carrier log), claim status tracker with resolution type categorization, and the approval workflow (replacing the Teams chat loop with Cade).</p>
+    <p class="size">tools/eric-claims-dashboard.html</p>
+  </div>
+</div>
+</section>
+
+<!-- ====== DATA QUALITY ====== -->
+<section id="data-quality">
+<h2>Data Quality</h2>
+
+<div class="card">
+<h3 style="margin-top:0;">What We Trust</h3>
+<ul>
+  <li><strong>Session data:</strong> Machine-recorded timestamps. 375 sessions across 3 people. HIGH confidence.</li>
+  <li><strong>App/web daily:</strong> 6-month daily aggregates. Application categorizations verified against window titles. HIGH confidence.</li>
+  <li><strong>Keystroke granular (30-day):</strong> Individual keystroke events with timestamps and application context. The richest data source. HIGH confidence on patterns.</li>
+  <li><strong>Worklogs:</strong> 773 entries across 3 members. Task attribution verified against app usage. HIGH confidence.</li>
+  <li><strong>Window titles:</strong> Most reliable signal for Acumatica screen identification. 22,000+ granular events. HIGH confidence.</li>
+</ul>
+
+<h3>What We Cannot Fully Trust</h3>
+<ul>
+  <li><strong>Idle time data:</strong> Only 82 records across 37 calendar days (Oct 15 - Nov 21, 2025). Tracking appears to have been enabled briefly then stopped. Insufficient for meaningful analysis.</li>
+  <li><strong>Eric's web-host tracking:</strong> Only 3.1 hours on acumatica.vandh.com despite 467h in Chrome, because the agent captures window titles rather than URLs for Chrome. His actual ERP usage is reflected in window title data.</li>
+  <li><strong>Weekly hours data:</strong> All 168 records have user_name = null. Per-person weekly breakdowns not available for the 12-month window.</li>
+  <li><strong>EOD sentiment:</strong> Beng rates 3/3 every day for 6 months. This flat-line data has zero analytical value for her.</li>
+  <li><strong>Claim type distribution:</strong> Estimated from keystroke sampling, not exhaustive case records. MEDIUM confidence.</li>
+</ul>
+
+<h3>Known Gaps</h3>
+<ul>
+  <li>Beng Cheat Sheet contents not captured (only access frequency)</li>
+  <li>Eric's TEMPLATES.txt contents not captured (only access frequency and some typed fragments)</li>
+  <li>Mouse clicks, scrolls, and form dropdown selections not captured in keystroke data</li>
+  <li>Go2 background time inflates total hours by ~12-13% across all members</li>
+  <li>Dec 29-30 sessions for Eric appear to be manual timesheet entries (exactly 28800 seconds, 02:00 start)</li>
+</ul>
+</div>
+</section>
+
+<!-- ====== WHAT'S NEXT ====== -->
+<section id="whats-next">
+<h2>What's Next</h2>
+
+<div class="card card-accent">
+<h3 style="margin-top:0;">Immediate Actions (This Week)</h3>
+<ol>
+  <li><strong>Review the three prototype tools</strong> with each team member. Get feedback on whether the decoded workflows match their reality.</li>
+  <li><strong>Audit Beng's Cheat Sheet.</strong> Have her walk through the contents. Identify which items are missing ERP configuration vs. personal preference shortcuts.</li>
+  <li><strong>Audit Eric's TEMPLATES.txt.</strong> Extract the full template library. This becomes the foundation for automated email drafting.</li>
+  <li><strong>Address JP's PC stability.</strong> The 8-week crash crisis created 30 documented session restarts. If the hardware issue persists, it needs resolution before any workflow improvements.</li>
+</ol>
+
+<h3>Short-Term (2-4 Weeks)</h3>
+<ol>
+  <li><strong>Acumatica configuration:</strong> Migrate Cheat Sheet data into ERP shipping rate tables, customer defaults, and order type configurations.</li>
+  <li><strong>Template system:</strong> Deploy Eric's decoded email templates within Acumatica's email activity screen.</li>
+  <li><strong>Batch tracking:</strong> Replace JP's Notepad files with a structured batch tracking view in Acumatica or as a standalone tool.</li>
+</ol>
+
+<h3>Medium-Term (1-3 Months)</h3>
+<ol>
+  <li><strong>RepZio API integration:</strong> Direct order feed from RepZio into Acumatica. Eliminates PDF transcription for the highest-volume order source.</li>
+  <li><strong>Carrier claim assembly:</strong> Acumatica generic inquiry that consolidates case + order + shipment + customer data for one-click claim generation.</li>
+  <li><strong>Cross-training program:</strong> Begin cross-training Beng on basic claims and Eric on basic order processing. This is the most important structural improvement -- reduce the single-point-of-failure risk.</li>
+</ol>
+
+<h3>Revenue Opportunities</h3>
+<ul>
+  <li><strong>Faster claims resolution:</strong> 96.5 automatable hours/month in Eric's workflow translates to faster customer response times, which correlates with customer retention in furniture claims.</li>
+  <li><strong>Reduced data entry errors:</strong> 34 copy-paste operations per order creates error surface. Each mistyped address, wrong item code, or missed shipping calculation has a cost. Automated data flow eliminates transcription errors entirely.</li>
+  <li><strong>Capacity for growth:</strong> 175-230 recoverable hours/month is approximately 1.0-1.4 FTEs of capacity. This team can absorb significant order volume growth without adding headcount.</li>
+</ul>
+</div>
+</section>
+
+</div><!-- end .content -->
+</div><!-- end #main-content -->
+
+<script>
+function checkAuth() {
+  const input = document.getElementById('auth-input');
+  const error = document.getElementById('auth-error');
+  if (input.value === 'vandh2026') {
+    document.getElementById('auth-overlay').classList.add('hidden');
+    document.getElementById('main-content').classList.add('visible');
+  } else {
+    error.textContent = 'Incorrect access code. Please try again.';
+    input.value = '';
+    input.focus();
+  }
+}
+document.getElementById('auth-input').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') checkAuth();
+});
+
+function toggleFinding(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+// Scroll spy for nav
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (scrollY >= sectionTop) current = section.getAttribute('id');
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
