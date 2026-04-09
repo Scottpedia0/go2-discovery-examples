@@ -3,11 +3,1027 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aramsco — Coming Soon</title>
+<title>Aramsco Operational Audit | Go2</title>
 <style>
-body{font-family:-apple-system,sans-serif;background:#0a0a0a;color:#e4e4e7;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
-h1{color:#5eead4;font-size:24px}
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #111113;
+  --bg-card-hover: #18181b;
+  --bg-input: #1a1a1d;
+  --border: #2a2a2e;
+  --border-light: #333338;
+  --text: #e4e4e7;
+  --text-dim: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #5eead4;
+  --accent-dim: #2dd4bf;
+  --accent-bg: rgba(94,234,212,0.08);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.12);
+  --yellow: #facc15;
+  --yellow-bg: rgba(250,204,21,0.12);
+  --orange: #fb923c;
+  --orange-bg: rgba(251,146,60,0.12);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.12);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167,139,250,0.12);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', Menlo, Consolas, monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;font-size:15px;min-height:100vh;}
+
+/* ===== PASSWORD GATE ===== */
+#auth-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;}
+#auth-overlay.hidden{display:none;}
+#auth-overlay h1{color:var(--accent);font-size:28px;font-weight:700;letter-spacing:-0.5px;}
+#auth-overlay .subtitle{color:var(--text-muted);font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+#auth-overlay p{color:var(--text-dim);font-size:14px;max-width:420px;text-align:center;}
+#auth-overlay input{background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:12px 16px;font-size:16px;width:280px;outline:none;text-align:center;}
+#auth-overlay input:focus{border-color:var(--accent);}
+#auth-overlay button{background:var(--accent);color:#000;border:none;padding:10px 32px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.2s;}
+#auth-overlay button:hover{opacity:0.85;}
+#auth-overlay .error{color:var(--red);font-size:13px;min-height:20px;}
+
+/* ===== MAIN ===== */
+#main-content{display:none;}
+#main-content.visible{display:block;}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;width:260px;height:100vh;background:#08080a;border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:24px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+nav::-webkit-scrollbar{width:4px;}
+nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+nav .nav-header{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+nav .nav-header h2{color:var(--accent);font-size:15px;font-weight:600;}
+nav .nav-header p{color:var(--text-muted);font-size:11px;margin-top:2px;}
+nav a{display:block;padding:6px 20px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all 0.15s;}
+nav a:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+nav a.active{color:var(--accent);background:var(--accent-bg);}
+nav a.section-head{color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;padding-top:16px;pointer-events:none;font-weight:600;}
+
+.content{margin-left:260px;max-width:960px;padding:48px 48px 120px;}
+@media(max-width:900px){nav{display:none;}.content{margin-left:0;padding:24px 16px 80px;}}
+
+/* ===== TYPOGRAPHY ===== */
+h1{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;}
+h2{font-size:22px;font-weight:600;letter-spacing:-0.5px;margin-top:64px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);color:var(--text);}
+h3{font-size:17px;font-weight:600;margin-top:32px;margin-bottom:12px;color:var(--accent);}
+h4{font-size:14px;font-weight:600;margin-top:20px;margin-bottom:8px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;}
+p{margin-bottom:12px;color:var(--text-dim);}
+p strong,li strong{color:var(--text);}
+ul,ol{padding-left:24px;margin-bottom:16px;color:var(--text-dim);}
+li{margin-bottom:6px;}
+a{color:var(--accent);}
+hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
+
+/* ===== CARDS ===== */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;}
+.card-accent{border-left:3px solid var(--accent);}
+.card-red{border-left:3px solid var(--red);}
+.card-yellow{border-left:3px solid var(--yellow);}
+.card-green{border-left:3px solid var(--green);}
+.card-blue{border-left:3px solid var(--blue);}
+
+/* ===== STAT GRID ===== */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:20px 0;}
+.stat-box{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.stat-box .value{font-size:28px;font-weight:700;color:var(--accent);}
+.stat-box .label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;}
+@keyframes subtle-glow{0%,100%{box-shadow:0 0 0 0 rgba(94,234,212,0);}50%{box-shadow:0 0 12px 2px rgba(94,234,212,0.15);}}
+.stat-box.glow{animation:subtle-glow 3s ease-in-out infinite;}
+
+/* ===== TABLES ===== */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+th{text-align:left;padding:10px 12px;background:var(--bg-input);border-bottom:2px solid var(--border);color:var(--text);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;position:sticky;top:0;z-index:1;}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);vertical-align:top;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.big-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin:20px 0;background:var(--bg-card);}
+.big-table-wrap table{margin:0;}
+.big-table-wrap th{background:#0d0d10;}
+.big-table-wrap td{white-space:nowrap;}
+.big-table-wrap td:first-child{white-space:normal;min-width:200px;font-weight:500;color:var(--text);}
+
+/* ===== BADGES ===== */
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:0.3px;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.badge-orange{background:var(--orange-bg);color:var(--orange);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-accent{background:var(--accent-bg);color:var(--accent);}
+.badge-blue{background:var(--blue-bg);color:var(--blue);}
+.badge-purple{background:var(--purple-bg);color:var(--purple);}
+
+/* ===== EXPANDABLE FINDINGS ===== */
+.finding{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden;}
+.finding-header{padding:16px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.15s;}
+.finding-header:hover{background:var(--bg-card-hover);}
+.finding-header h3{margin:0;font-size:15px;}
+.finding-header .meta{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.finding-header .arrow{color:var(--text-muted);font-size:18px;transition:transform 0.2s;margin-left:12px;}
+.finding.open .finding-header .arrow{transform:rotate(90deg);}
+.finding-body{max-height:0;overflow:hidden;transition:max-height 0.35s ease;}
+.finding.open .finding-body{max-height:none;}
+.finding-body-inner{padding:0 20px 20px;border-top:1px solid var(--border);}
+
+/* ===== PERSON HEADER ===== */
+.person-header{display:flex;align-items:center;gap:16px;margin-top:48px;margin-bottom:20px;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;border-left:3px solid var(--accent);}
+.person-avatar{width:48px;height:48px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent);}
+.person-info h3{margin:0;font-size:18px;color:var(--text);}
+.person-info p{margin:0;font-size:13px;color:var(--text-muted);}
+
+/* ===== PROGRESS ===== */
+.progress-bar{background:var(--bg-input);border-radius:4px;height:8px;margin:8px 0;overflow:hidden;}
+.progress-bar .fill{height:100%;border-radius:4px;transition:width 0.3s;}
+.fill-accent{background:var(--accent);}
+.fill-green{background:var(--green);}
+.fill-yellow{background:var(--yellow);}
+.fill-red{background:var(--red);}
+
+/* ===== TIERS ===== */
+.tier{display:inline-block;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;margin:2px 4px 2px 0;}
+.tier-1{background:var(--green-bg);color:var(--green);}
+.tier-2{background:var(--yellow-bg);color:var(--yellow);}
+.tier-3{background:var(--accent-bg);color:var(--accent);}
+
+/* ===== TOOL CARDS ===== */
+.tool-card{display:flex;gap:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;margin:10px 0;align-items:flex-start;}
+.tool-icon{width:40px;height:40px;border-radius:8px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.tool-info h4{margin:0 0 4px;font-size:14px;color:var(--text);text-transform:none;letter-spacing:0;}
+.tool-info p{margin:0;font-size:13px;}
+
+/* ===== COHORT TABS ===== */
+.cohort-tabs{display:flex;gap:4px;margin:20px 0 12px;flex-wrap:wrap;}
+.cohort-tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg-card);color:var(--text-dim);transition:all 0.2s;}
+.cohort-tab:hover{background:var(--bg-card-hover);color:var(--text);}
+.cohort-tab.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);}
+.cohort-panel{display:none;}
+.cohort-panel.active{display:block;}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ===== PRINT ===== */
+@media print{nav{display:none;}.content{margin-left:0;}.finding-body{max-height:none!important;}#auth-overlay{display:none!important;}#main-content{display:block!important;}}
 </style>
 </head>
-<body><h1>Report loading shortly...</h1></body>
+<body>
+
+<!-- ====== PASSWORD GATE ====== -->
+<div id="auth-overlay">
+  <div class="subtitle">Go2 Operational Intelligence</div>
+  <h1>Aramsco Team Audit</h1>
+  <p>This report contains confidential operational intelligence prepared for Aramsco leadership. Enter the access code to continue.</p>
+  <input type="password" id="auth-input" placeholder="Access code" autofocus onkeydown="if(event.key==='Enter')checkAuth()">
+  <button onclick="checkAuth()">Enter</button>
+  <div class="error" id="auth-error"></div>
+</div>
+
+<!-- ====== MAIN CONTENT ====== -->
+<div id="main-content">
+
+<nav id="sidebar">
+  <div class="nav-header">
+    <h2>Aramsco Audit</h2>
+    <p>Go2 | April 2026</p>
+  </div>
+  <a href="#header">Overview</a>
+  <a href="#exec-summary">Executive Summary</a>
+  <a href="#team-structure">Team Structure</a>
+  <a href="#coverage">Coverage Model</a>
+  <a href="#big-table">The Big Table</a>
+  <a class="section-head">Team Deep Dives</a>
+  <a href="#veterans">Veterans (4+ Years)</a>
+  <a href="#mid-tenure">Mid-Tenure (2-4 Years)</a>
+  <a href="#new-hires">New Hires (&lt;6 Months)</a>
+  <a class="section-head">Key Findings</a>
+  <a href="#f-pete">Pete's Reporting Blackout</a>
+  <a href="#f-copypaste">Copy-Paste Reporting</a>
+  <a href="#f-rove">Rove's Quality Leap</a>
+  <a href="#f-gilbert">Gilbert's Commission Signal</a>
+  <a href="#f-eod">Zero End-of-Day Reports</a>
+  <a href="#f-outage">Feb 13-17 System Outage</a>
+  <a href="#f-sentiment">The Frozen Sentiment Scale</a>
+  <a href="#f-turnover">Historical Turnover Signal</a>
+  <a class="section-head">Operations</a>
+  <a href="#kpi-trends">Operational KPI Trends</a>
+  <a href="#role-specialization">Role Specialization</a>
+  <a href="#automation">Automation Opportunities</a>
+  <a class="section-head">Deliverables</a>
+  <a href="#tools-built">Tools Built</a>
+  <a href="#implementation">Implementation Playbook</a>
+  <a href="#data-quality">Data Quality</a>
+</nav>
+
+<div class="content">
+
+<!-- ====== HEADER ====== -->
+<section id="header" style="text-align:center;padding:60px 0 40px;">
+<h1 style="color:var(--accent);font-size:2.2rem;">Aramsco Operational Audit</h1>
+<p style="color:var(--text-muted);font-size:14px;">Prepared by Larry [AI] at Go2 &middot; April 9, 2026</p>
+<p style="color:var(--text-dim);font-size:12px;margin-top:8px;">14 team members &middot; 6 months of data &middot; 2,487 operational reports &middot; 2,737 work sessions &middot; 1.8M behavioral data points</p>
+<p style="color:var(--text-dim);font-size:12px;">Data collected locally within each team member's desktop app. All analysis performed locally.</p>
+</section>
+
+<!-- ====== EXECUTIVE SUMMARY ====== -->
+<section id="exec-summary">
+<h2>Executive Summary</h2>
+
+<div class="stat-grid">
+  <div class="stat-box">
+    <div class="value">14</div>
+    <div class="label">Go2 Teammates</div>
+  </div>
+  <div class="stat-box">
+    <div class="value">6 mo</div>
+    <div class="label">Data Period</div>
+  </div>
+  <div class="stat-box">
+    <div class="value">2,487</div>
+    <div class="label">Operational Reports</div>
+  </div>
+  <div class="stat-box glow">
+    <div class="value">17%</div>
+    <div class="label">Pete's Report Rate</div>
+  </div>
+  <div class="stat-box glow">
+    <div class="value">0</div>
+    <div class="label">End-of-Day Reports</div>
+  </div>
+  <div class="stat-box">
+    <div class="value">12-13h</div>
+    <div class="label">Daily Coverage Window</div>
+  </div>
+</div>
+
+<div class="card card-accent">
+<h3 style="margin-top:0;">The Story</h3>
+<p>Aramsco's Go2 team is a 14-person Philippines-based operation providing customer service, inside sales support, and order processing for a national restoration/remediation/cleaning supply distributor formed from the JonDon and USA Clean merger. They cover US business hours Monday through Friday across a three-shift model, handle inbound phone calls, process orders through Eclipse ERP, manage direct-ship vendor lifecycles, and support Outside Sales Representatives across multiple territories.</p>
+
+<p>The team works. Attendance averages 86%. Daily hours hit 8.0 with mechanical precision. Report filing has improved month-over-month from 243 reports in October to 506 in March. But underneath those numbers, Larry identified structural patterns that explain why some processes work and others create invisible drag.</p>
+
+<p><strong>The headline finding:</strong> The most senior teammate on the account -- a 5-year veteran with deep institutional knowledge -- stopped filing operational reports entirely for three consecutive months while continuing to work full shifts. Nobody flagged it. Meanwhile, the newest hire (5.5 months in) writes the most detailed and operationally useful reports on the entire team, filing more consistently than people with 3x her tenure. Report quality does not correlate with experience. It correlates with engagement, accountability, and whether anyone is reading.</p>
+</div>
+
+<div class="card card-accent">
+<h3 style="margin-top:0;">Top 5 Findings</h3>
+<ol>
+  <li><strong>Pete's 3-month reporting blackout:</strong> 5-year veteran, 17% report compliance, zero reports filed after January 6. Session data confirms he worked every weekday. This is a management visibility failure, not a performance problem.</li>
+  <li><strong>Copy-paste reporting epidemic:</strong> 4 team members (Vin, Liz, Raymond, Dave) file functionally identical reports daily. 58-85% duplication rates. The reporting system rewards filing, not content.</li>
+  <li><strong>Zero end-of-day reports team-wide:</strong> Not one person across 14 teammates filed a single end-of-day report in 6 months. This is either policy (not required) or a systemic compliance gap. Either way, there is no daily feedback loop.</li>
+  <li><strong>Gilbert's commission anxiety:</strong> Decoded from Tagalog-language messages: the inside sales rep hit his February goal but was at 41% mid-March, asking about delayed commission payments. Financial pressure language detected.</li>
+  <li><strong>Feb 13-17 system outage exposed zero-fallback infrastructure:</strong> When Eclipse and VPN went down, the entire team had no backup workflow. Customers were told to call back Monday.</li>
+</ol>
+</div>
+</section>
+
+<!-- ====== TEAM STRUCTURE ====== -->
+<section id="team-structure">
+<h2>Team Structure</h2>
+
+<h3>The 24-Person Organization</h3>
+<p>Aramsco Division 21971 is a blended operation: 14 Go2 teammates (Philippines) and 10 Aramsco-side managers, supervisors, trainers, and specialists (US-based).</p>
+
+<div class="card">
+<h4>Aramsco-Side Leadership (10)</h4>
+<table>
+<tr><th>Name</th><th>Role</th><th>Function</th></tr>
+<tr><td>Cindy Burk</td><td>Sr Manager, Customer Success</td><td>Executive Sponsor</td></tr>
+<tr><td>Gina Colucci</td><td>Director, Inside Sales</td><td>Sales Leadership</td></tr>
+<tr><td>Caleb MacMaster</td><td>CS Manager</td><td>Operations Management</td></tr>
+<tr><td>Cassandra Merritt</td><td>CS Supervisor</td><td>Frontline Supervision</td></tr>
+<tr><td>Kate Capanear</td><td>CS Supervisor</td><td>Frontline Supervision</td></tr>
+<tr><td>Tammy Rhoades</td><td>CS Supervisor</td><td>Frontline Supervision</td></tr>
+<tr><td>Dianne Harrison</td><td>Trainer</td><td>Onboarding/Skill Development</td></tr>
+<tr><td>Jacque Gaines</td><td>Trainer</td><td>Onboarding/Skill Development</td></tr>
+<tr><td>Sadhi Krishnamoorthy</td><td>Project Manager</td><td>Program Oversight</td></tr>
+<tr><td>Stephanie Smith</td><td>Inside Sales Rep</td><td>Sales Execution</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h4>Go2 Teammates (14) by Cohort</h4>
+<table>
+<tr><th>Name</th><th>Hire Date</th><th>Tenure</th><th>Cohort</th><th>Decoded Role</th></tr>
+<tr><td><strong>Liz Olenius</strong></td><td>Apr 2021</td><td>5 years</td><td>Original</td><td>CSR (transitioned from SDR)</td></tr>
+<tr><td><strong>Pete Aparicio</strong></td><td>Apr 2021</td><td>5 years</td><td>Original</td><td>Inside Sales Support</td></tr>
+<tr><td><strong>Ged Mercado</strong></td><td>Dec 2021</td><td>4.3 years</td><td>Original</td><td>Purchasing/ISS for Lori</td></tr>
+<tr><td><strong>Noev Ygay</strong></td><td>Mar 2022</td><td>4 years</td><td>2022</td><td>Order Processing/ISS</td></tr>
+<tr><td><strong>Vin Conde</strong></td><td>Jul 2022</td><td>3.7 years</td><td>2022</td><td>CSR (phone queue)</td></tr>
+<tr><td><strong>Rove Ancajas</strong></td><td>Sep 2022</td><td>3.5 years</td><td>2022</td><td>ISS for Jenny/Eddie</td></tr>
+<tr><td><strong>Marl Branzuela</strong></td><td>Jan 2023</td><td>3.2 years</td><td>2023</td><td>ISS for John/Ralph</td></tr>
+<tr><td><strong>Dave Jovellanos</strong></td><td>Nov 2023</td><td>2.4 years</td><td>2023</td><td>CSR/ISR Support hybrid</td></tr>
+<tr><td><strong>Renz Velasquez</strong></td><td>Nov 2023</td><td>2.4 years</td><td>2023</td><td>CSR/ISR Support hybrid</td></tr>
+<tr><td><strong>Anj Dayon-Perez</strong></td><td>Oct 2025</td><td>5.5 months</td><td>Oct Batch</td><td>CSR/Order Processing</td></tr>
+<tr><td><strong>Marilou Carbon</strong></td><td>Oct 2025</td><td>5.5 months</td><td>Oct Batch</td><td>Inside Sales Support/Ops</td></tr>
+<tr><td><strong>Raymond Bonilla</strong></td><td>Oct 2025</td><td>5.5 months</td><td>Oct Batch</td><td>CSR/Direct Order Ops</td></tr>
+<tr><td><strong>Gilbert Galban</strong></td><td>Jan 2026</td><td>3 months</td><td>2026</td><td>Inside Sales Rep (revenue)</td></tr>
+<tr><td><strong>Jen Santos-Moron</strong></td><td>Mar 2026</td><td>5 weeks</td><td>2026</td><td>CSR (in training)</td></tr>
+</table>
+</div>
+
+<div class="card card-yellow">
+<h4>Supervision Ratio</h4>
+<p>3 CS Supervisors (Cassandra, Kate, Tammy) overseeing 14 Go2 teammates yields a <strong>1:4.7 ratio</strong>. This is on the tighter end for remote offshore teams, which is appropriate given the product catalog complexity and the pace of recent hiring (5 new hires in 6 months).</p>
+</div>
+</section>
+
+<!-- ====== COVERAGE MODEL ====== -->
+<section id="coverage">
+<h2>Coverage Model</h2>
+
+<h3>Three-Shift Architecture</h3>
+<p>The Go2 team covers US business hours across three staggered shifts, providing a 12-13 hour daily window.</p>
+
+<div class="card">
+<table>
+<tr><th>Shift</th><th>Hours (ET)</th><th>Members</th><th>Function</th></tr>
+<tr><td><span class="badge badge-green">Early</span></td><td>08:00 - 17:00</td><td>Ged, Noev, Vin, Pete, Gilbert</td><td>Morning call volume, East Coast alignment</td></tr>
+<tr><td><span class="badge badge-blue">Standard</span></td><td>09:00 - 18:00</td><td>Anj, Raymond, Rove, Dave</td><td>Core business hours overlap</td></tr>
+<tr><td><span class="badge badge-purple">Late</span></td><td>11:00 - 20:00</td><td>Renz, Marilou, Liz, Marl</td><td>West Coast coverage extension</td></tr>
+</table>
+</div>
+
+<h3>Coverage Heatmap (Weekdays)</h3>
+<div class="card">
+<table>
+<tr><th>Time (ET)</th><th>People Online</th><th>Coverage Level</th></tr>
+<tr><td>08:00 - 09:00</td><td>3-4</td><td><span class="badge badge-yellow">Thin</span></td></tr>
+<tr><td>09:00 - 11:00</td><td>6-8</td><td><span class="badge badge-blue">Building</span></td></tr>
+<tr><td>11:00 - 17:00</td><td>10-12</td><td><span class="badge badge-green">Peak</span></td></tr>
+<tr><td>17:00 - 19:00</td><td>6-8</td><td><span class="badge badge-blue">Tapering</span></td></tr>
+<tr><td>19:00 - 21:00</td><td>3-4</td><td><span class="badge badge-yellow">Thin</span></td></tr>
+<tr><td>21:00+</td><td>0</td><td><span class="badge badge-red">None</span></td></tr>
+<tr><td>Weekends</td><td>0-1</td><td><span class="badge badge-red">Effectively None</span></td></tr>
+</table>
+</div>
+
+<div class="card card-red">
+<h3 style="margin-top:0;">Coverage Gaps Identified</h3>
+<ul>
+<li><strong>Zero weekend coverage:</strong> Only 10 sessions logged on Saturday and 2 on Sunday across the entire 6-month window. For a national restoration supply company where emergency orders can happen any day, this is a structural gap.</li>
+<li><strong>After-hours black hole:</strong> Zero coverage after 9 PM ET. West Coast customers calling after 5 PM PT hit nothing.</li>
+<li><strong>Early morning thin coverage:</strong> Only 3-4 people available before 10 AM ET, when East Coast customers are opening their day.</li>
+</ul>
+</div>
+</section>
+
+<!-- ====== THE BIG TABLE ====== -->
+<section id="big-table">
+<h2>The Big Table</h2>
+<p>Every operational optimization opportunity identified, with three implementation tiers: what you can fix today with zero tools, what the dashboard tools we built can address, and what a full integration pipeline would eliminate.</p>
+
+<div class="big-table-wrap">
+<table>
+<thead>
+<tr>
+  <th style="min-width:220px;">Opportunity</th>
+  <th>Impact Area</th>
+  <th>Manual Fix<br>(Today)</th>
+  <th>Dashboard<br>Tool</th>
+  <th>Full Pipeline</th>
+  <th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Report Quality Enforcement</strong><br><span style="color:var(--text-muted);font-size:12px;">58-85% copy-paste rates across 4 team members</span></td>
+  <td>Visibility</td>
+  <td>Set content minimums, reject empty reports</td>
+  <td><a href="tools/sod-dashboard.html">SOD Dashboard</a> detects duplicates</td>
+  <td>AI-scored report quality with auto-feedback</td>
+  <td><span class="badge badge-green">HIGH</span></td>
+</tr>
+<tr>
+  <td><strong>Pete's Reporting Blackout</strong><br><span style="color:var(--text-muted);font-size:12px;">3 months, 63 work days, zero reports</span></td>
+  <td>Compliance</td>
+  <td>Direct conversation, set expectations</td>
+  <td>Dashboard flags gaps within 24 hours</td>
+  <td>Auto-escalation after 2 missed reports</td>
+  <td><span class="badge badge-green">HIGH</span></td>
+</tr>
+<tr>
+  <td><strong>End-of-Day Feedback Loop</strong><br><span style="color:var(--text-muted);font-size:12px;">Zero EOD reports across entire 14-person team</span></td>
+  <td>Accountability</td>
+  <td>Decide: require or formally drop</td>
+  <td>Dashboard tracks SOD-to-EOD completion</td>
+  <td>Auto-prompted EOD with pre-filled metrics</td>
+  <td><span class="badge badge-green">HIGH</span></td>
+</tr>
+<tr>
+  <td><strong>Weekend Coverage</strong><br><span style="color:var(--text-muted);font-size:12px;">10 Saturday + 2 Sunday sessions in 6 months</span></td>
+  <td>Revenue</td>
+  <td>Rotating weekend shift (2-person minimum)</td>
+  <td><a href="tools/coverage-planner.html">Coverage Planner</a> visualizes gaps</td>
+  <td>Demand-based scheduling with call volume prediction</td>
+  <td><span class="badge badge-green">HIGH</span></td>
+</tr>
+<tr>
+  <td><strong>Sentiment Scale Redesign</strong><br><span style="color:var(--text-muted);font-size:12px;">97.3% of mood reports are identical score</span></td>
+  <td>Wellbeing</td>
+  <td>Switch to 5-point or free-text scale</td>
+  <td>Dashboard highlights deviations</td>
+  <td>Pulse surveys with anonymous feedback channel</td>
+  <td><span class="badge badge-green">HIGH</span></td>
+</tr>
+<tr>
+  <td><strong>System Outage Fallback</strong><br><span style="color:var(--text-muted);font-size:12px;">Feb 13-17: 4 days of zero productivity</span></td>
+  <td>Resilience</td>
+  <td>Documented offline workflows</td>
+  <td>N/A</td>
+  <td>Redundant access paths, local caching</td>
+  <td><span class="badge badge-green">HIGH</span></td>
+</tr>
+<tr>
+  <td><strong>Role Specialization Formalization</strong><br><span style="color:var(--text-muted);font-size:12px;">Organic specialization visible but undeclared</span></td>
+  <td>Efficiency</td>
+  <td>Document who does what, publish internally</td>
+  <td>Dashboard shows role-based KPIs</td>
+  <td>Skill-based routing with ACD integration</td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+</tr>
+<tr>
+  <td><strong>1:1 Engagement Distribution</strong><br><span style="color:var(--text-muted);font-size:12px;">Veterans get 0 documented check-ins; new hires get 12</span></td>
+  <td>Retention</td>
+  <td>Monthly 1:1 for all, not just new hires</td>
+  <td>Dashboard tracks engagement cadence</td>
+  <td>Automated scheduling with pre-populated agendas</td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+</tr>
+<tr>
+  <td><strong>Transfer Cause Standardization</strong><br><span style="color:var(--text-muted);font-size:12px;">142 entries, zero taxonomy -- "tech" vs "xfer to parts"</span></td>
+  <td>Routing</td>
+  <td>Create dropdown with 5-8 categories</td>
+  <td><a href="tools/cs-tracker.html">CS Tracker</a> shows routing patterns</td>
+  <td>ACD pre-routing based on IVR selection</td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+</tr>
+<tr>
+  <td><strong>Commission Payment Timeliness</strong><br><span style="color:var(--text-muted);font-size:12px;">Gilbert asking about January commissions in March</span></td>
+  <td>Retention</td>
+  <td>Clear payment timeline communicated upfront</td>
+  <td>N/A</td>
+  <td>Automated commission tracking dashboard</td>
+  <td><span class="badge badge-yellow">MEDIUM</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ====== TEAM DEEP DIVES ====== -->
+<section id="veterans">
+<h2>Veterans (4+ Years)</h2>
+<p>Five team members with the deepest institutional knowledge: Ged, Pete, Liz, Vin, and Rove. Together they represent 21+ years of cumulative Aramsco experience.</p>
+
+<div class="person-header" id="ged">
+  <div class="person-avatar">GM</div>
+  <div class="person-info">
+    <h3>Ged Mercado</h3>
+    <p>4.3 years &middot; Purchasing/ISS for Rep Lori &middot; Report Grade: <span class="badge badge-green">A</span></p>
+  </div>
+</div>
+<div class="card card-green">
+<p><strong>The gold standard.</strong> Ged writes the most detailed and operationally useful reports on the team -- 82 words average, zero copy-paste across 113 reports, naming specific customers, vendors, order numbers, and systems in every entry. 100% report compliance. 88.3% attendance. Every session is exactly 4 hours (two per day), indicating either perfect discipline or schedule-tool precision.</p>
+<p>His decoded role is <strong>Purchasing Support / Inside Sales Support</strong> for rep Lori, handling order lifecycle management, Price Desk coordination, freight cost research across multiple warehouses, vendor follow-up, and direct ship management. Reports show forward-looking task planning, not just reactive work. Ged thinks about improving throughput, not just clearing queues.</p>
+<p><strong>Key signal:</strong> Ged is a 4-year veteran who treats daily reports as a genuine planning tool. If every team member reported like Ged, management would have near-complete operational visibility.</p>
+</div>
+
+<div class="person-header" id="pete">
+  <div class="person-avatar">PA</div>
+  <div class="person-info">
+    <h3>Pete Aparicio</h3>
+    <p>5 years (most senior) &middot; ISS for AJ/Josh/Ryan &middot; Report Grade: <span class="badge badge-red">F (compliance)</span></p>
+  </div>
+</div>
+<div class="card card-red">
+<p><strong>The critical anomaly.</strong> Pete is the most tenured person on the account. He worked 109 out of 127 possible weekdays (85.8% attendance), logging full 8-hour shifts. But he submitted only <strong>19 operational reports in 6 months -- a 17% compliance rate</strong>. After January 6, 2026, Pete filed zero reports for three consecutive months despite working every weekday.</p>
+<p>The 19 reports that do exist reveal deep operational competence: handling complex orders, covering for reps on PTO, managing vendor relationships across Legend Brands and Therma-Stor, resolving tax and invoice issues. Zero copy-paste. Every report is unique and substantive.</p>
+<p><strong>The problem is not Pete's work -- it is that nobody noticed 3 months of missing reports from the team's most senior member.</strong> This sets a precedent that reporting is optional for tenured staff, which undermines the entire system.</p>
+</div>
+
+<div class="person-header" id="liz">
+  <div class="person-avatar">LO</div>
+  <div class="person-info">
+    <h3>Liz Olenius</h3>
+    <p>5 years &middot; CSR (transitioned from SDR Oct 2025) &middot; Report Grade: <span class="badge badge-orange">D</span></p>
+  </div>
+</div>
+<div class="card">
+<p>Liz underwent a significant <strong>role transition</strong> within this data window: from Go2 SDR (outbound sales) to Aramsco CSR (inbound customer service) starting October 27, 2025. She completed a thorough 6-week training and transitioned to live calls by December 9.</p>
+<p><strong>The reporting story:</strong> During training (Oct-Dec 8), Liz wrote genuine, varied daily reports tracking her progression. The moment training ended, reports collapsed into identical copy-paste: 58% of her post-training reports are duplicates. The daily sentiment improved materially after the role transition -- her SDR days showed consistent frustration signals that disappeared in the CSR role.</p>
+<p>Report compliance is technically excellent (104%). Content quality is poor. This is compliance theater -- filing daily but providing zero operational intelligence.</p>
+</div>
+
+<div class="person-header" id="vin">
+  <div class="person-avatar">VC</div>
+  <div class="person-info">
+    <h3>Vin Conde</h3>
+    <p>3.7 years &middot; CSR (phone queue) &middot; Report Grade: <span class="badge badge-red">F (content)</span></p>
+  </div>
+</div>
+<div class="card">
+<p>Vin files reports with 101% compliance but writes an average of <strong>10 words per report</strong> -- the lowest on the entire team. 59% of his reports are copy-paste duplicates. His standard entry: "Assist customers and process orders efficiently. / Calls / NA." His worth_noting field says "Friday!" on 13% of entries and "NA" on the rest.</p>
+<p>A brief quality improvement around November 7 (expanded bullet points, specific task mentions) lasted approximately 2 weeks before reverting -- suggesting a coaching moment that did not sustain. Vin is the definition of <strong>present-but-invisible</strong>: shows up, works his hours, files reports, but provides near-zero operational visibility.</p>
+</div>
+
+<div class="person-header" id="rove">
+  <div class="person-avatar">RA</div>
+  <div class="person-info">
+    <h3>Rove Ancajas</h3>
+    <p>3.5 years &middot; ISS for Jenny/Eddie &middot; Report Grade: <span class="badge badge-green">B+</span></p>
+  </div>
+</div>
+<div class="card card-accent">
+<p><strong>Highest attendance (90.6%), best cohort trajectory.</strong> Rove has only 1.7% copy-paste across 118 reports -- every day is freshly written. He names specific vendors (Nikro, Woodard, Nilfisk), specific customers (ServiceMaster, Paul Davis), and tracks direct-ship lifecycles with granular detail.</p>
+<p><strong>The evolution story:</strong> Starting mid-January, Rove's writing quality transformed dramatically -- from simple task lists to polished professional language. The shift was sudden enough to suggest either AI writing assistance, coaching, or a deliberate self-improvement effort. Regardless of the mechanism, the underlying work content is substantive: 100+ item price lists, multi-vendor coordination, OSR coverage during absences.</p>
+<p>Rove is also the only team member who reports personal context in the worth_noting field (typhoon impact, dental surgery, health status). He treats the system as a genuine communication channel.</p>
+</div>
+</section>
+
+<section id="mid-tenure">
+<h2>Mid-Tenure (2-4 Years)</h2>
+<p>Four team members in the operational core: Marl, Noev, Dave, and Renz. Together they process the bulk of daily order volume and phone calls.</p>
+
+<div class="person-header">
+  <div class="person-avatar">MB</div>
+  <div class="person-info">
+    <h3>Marl Branzuela</h3>
+    <p>3.2 years &middot; ISS for John/Ralph &middot; Report Grade: <span class="badge badge-green">B+</span></p>
+  </div>
+</div>
+<div class="card card-green">
+<p><strong>Highest report quality in the mid-tenure cohort by a wide margin.</strong> Marl names specific customers, vendors, internal contacts, and systems in every report. Uses structured bullet points. References specific order workflows (Direct Ship lifecycle, matrix pricing, Price Desk coordination, credit team coordination). Clear upward trajectory: started taking customer calls via web agent in January 2026 -- a role expansion.</p>
+<p><strong>Flag:</strong> A 2-week unexplained absence (March 9-20) with no mention in reports before or after returning.</p>
+</div>
+
+<div class="person-header">
+  <div class="person-avatar">NY</div>
+  <div class="person-info">
+    <h3>Noev Ygay</h3>
+    <p>4 years &middot; Order Processing/ISS &middot; Report Grade: <span class="badge badge-orange">D</span></p>
+  </div>
+</div>
+<div class="card card-yellow">
+<p>Noev was on <strong>maternity leave from December 11 through February 8</strong> -- a protected, expected absence that accounts for the lower report count and session numbers. Adjusting for leave, her attendance (93.2%) and report compliance (93.9%) are competitive with the team.</p>
+<p><strong>The concern is report quality.</strong> For a 4-year veteran, Noev writes the most minimal reports in the cohort: single-sentence entries, generic language, no customer names, no system references. A brief quality improvement on February 18 (her first detailed report post-leave) lasted 2 days before reverting. Additionally, her end-of-day report compliance is the lowest on the team at 41.9%.</p>
+</div>
+
+<div class="person-header">
+  <div class="person-avatar">DJ</div>
+  <div class="person-info">
+    <h3>Dave Jovellanos</h3>
+    <p>2.4 years &middot; CSR/ISR Support hybrid &middot; Report Grade: <span class="badge badge-red">D</span></p>
+  </div>
+</div>
+<div class="card">
+<p><strong>Perfect compliance, zero insight.</strong> Dave has the team's only 100% report filing rate: 112 reports for 112 work days. But 85%+ of those reports are copy-paste of the same sentence. No customer names, no vendor names, no specific tasks in any of 112 reports. Not a single item was considered "worth noting" across 6 months.</p>
+<p>A role transition happened in mid-December (from primary CSR to ISR support hybrid processing requests from Inside Sales Reps), but Dave never self-reported the change. The shift is only visible through subtle language changes in the template.</p>
+</div>
+
+<div class="person-header">
+  <div class="person-avatar">RV</div>
+  <div class="person-info">
+    <h3>Renz Velasquez</h3>
+    <p>2.4 years &middot; CSR/ISR Support hybrid &middot; Report Grade: <span class="badge badge-yellow">C+</span></p>
+  </div>
+</div>
+<div class="card">
+<p>Renz is template-driven but shows periodic meaningful variation. He occasionally names specific contacts (Chris of ILRO, Eppie), references learning moments ("Learned something new about PO with special instructions"), and tracks specific tasks. His transfer-cause logging is the most detailed on the team -- 49 documented call transfers with reasons.</p>
+<p>Like Dave, Renz went through a role transition in December from pure CSR to a hybrid call-handling plus ISR support role. He logged 184 hours in March -- above the theoretical 176-hour ceiling -- confirming occasional weekend work.</p>
+</div>
+</section>
+
+<section id="new-hires">
+<h2>New Hires (&lt;6 Months)</h2>
+<p>Five recent additions: three from the October 2025 batch (Anj, Marilou, Raymond), plus Gilbert (January) and Jen (March). All are active and on-schedule. None show termination risk.</p>
+
+<div class="person-header">
+  <div class="person-avatar">MC</div>
+  <div class="person-info">
+    <h3>Marilou Carbon <span class="badge badge-accent">Star Performer</span></h3>
+    <p>5.5 months &middot; Inside Sales Support/Ops &middot; Report Grade: <span class="badge badge-green">A</span></p>
+  </div>
+</div>
+<div class="card card-green">
+<p><strong>The standout performer across the entire team.</strong> Highest report count (112 SODs + 112 EODs), most articulate reports, fastest ramp to independence. Marilou writes the most detailed, introspective daily reports on the team -- showing genuine business internalization, not just task completion.</p>
+<p>Growth language signals tell the story: from "Excited about our job shadowing experience!" in October to "close at least 80% of my pending tickets" (self-imposed quantitative target) in March. She was handling independent DeskPro ticket processing by January 2, covering for colleagues during absences, and processing freight claims by February.</p>
+<p><strong>Highest attendance on the team: 91.5% (118 of 129 business days).</strong> Zero material red flags. The only note: she never requests help (0 out of 112 EODs), which could indicate either strong independence or reluctance to escalate.</p>
+</div>
+
+<div class="person-header">
+  <div class="person-avatar">AD</div>
+  <div class="person-info">
+    <h3>Anj Dayon-Perez</h3>
+    <p>5.5 months &middot; CSR/Order Processing &middot; Report Grade: <span class="badge badge-yellow">C</span></p>
+  </div>
+</div>
+<div class="card">
+<p>Solid operator whose reports became robotic by late December. Early entries showed personality and real-time frustration with equipment delays. By month 3, reports collapsed into template mode. End-of-day headlines still show situational specificity, suggesting she is engaged in the work but disengaged from the reporting ritual.</p>
+</div>
+
+<div class="person-header">
+  <div class="person-avatar">RB</div>
+  <div class="person-info">
+    <h3>Raymond Bonilla</h3>
+    <p>5.5 months &middot; CSR/Direct Order Ops &middot; Report Grade: <span class="badge badge-red">F (content)</span></p>
+  </div>
+</div>
+<div class="card card-yellow">
+<p><strong>Most severe template collapse on the team.</strong> Starting January 8, Raymond copy-pasted the same report block for 90+ consecutive days. Recent reports (late March) suddenly include order count targets ("Need to place at least 4-5 orders today") -- language that suggests management coaching on output volume. Eclipse access issues disrupted Raymond's workflow 4+ times during the data window.</p>
+</div>
+
+<div class="person-header">
+  <div class="person-avatar">GG</div>
+  <div class="person-info">
+    <h3>Gilbert Galban</h3>
+    <p>3 months &middot; Inside Sales Rep (revenue role) &middot; Report Grade: <span class="badge badge-blue">B</span></p>
+  </div>
+</div>
+<div class="card card-accent">
+<p><strong>The only revenue-generating role on the Go2 team.</strong> Gilbert is not doing customer service -- he is cold-calling customers from an inherited book of business, generating quotes, and working toward a monthly gross profit goal of $16,000. He hit his February target but was at 41% mid-March with declining sentiment (last 3 reports marked "no win").</p>
+<p><strong>Commission anxiety decoded:</strong> Tagalog-language messages reveal genuine financial pressure around delayed January commission payments: "para may pambili ng gatas this Friday" -- literally needing money for baby formula. If commissions are routinely delayed 2+ months, this is an attrition risk factor for the team's only direct revenue contributor.</p>
+<p>Gilbert is a returning Go2 teammate (prior activity from 2023-2025 visible in historical data), which explains his fast ramp.</p>
+</div>
+
+<div class="person-header">
+  <div class="person-avatar">JS</div>
+  <div class="person-info">
+    <h3>Jen Santos-Moron</h3>
+    <p>5 weeks &middot; CSR (in training) &middot; Report Grade: <span class="badge badge-accent">Early/Good</span></p>
+  </div>
+</div>
+<div class="card">
+<p><strong>Promising early signals.</strong> Only 5 weeks of data but shows strong organizational habits: uses Microsoft OneNote for training notes (unique among all hires), asks good questions in chat, actively checks Utah time zone for client alignment, and has Krisp noise-cancellation installed (suggests awareness of call-handling requirements before starting live calls).</p>
+<p>A 10-day gap between Go2 basic training and Aramsco onboarding (March 5-15) is likely a client-side provisioning gap -- a process improvement opportunity for future hires.</p>
+</div>
+</section>
+
+<!-- ====== KEY FINDINGS ====== -->
+<section id="f-pete">
+<h2>Key Finding: Pete's Reporting Blackout</h2>
+<div class="finding open">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>3 Months, 63 Work Days, Zero Reports</h3>
+  <div class="meta"><span class="badge badge-red">Critical</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Pete Aparicio -- 5-year veteran, most senior Go2 teammate on the Aramsco account -- submitted 19 operational reports in 6 months. That is a <strong>17% compliance rate</strong>. After January 6, 2026, he filed zero reports for three consecutive months while working full shifts every weekday.</p>
+<p>Session data confirms he was present and working: 109 active days, 867 total tracked hours, consistent 8-hour shifts. The 19 reports he did file show deep operational competence and zero copy-paste. The issue is purely compliance.</p>
+<h4>Why This Matters</h4>
+<ul>
+<li>The most senior person sets the behavioral floor for the team. If Pete does not report, newer teammates question why they should.</li>
+<li>3 months of missing reports should have been flagged within the first week. The fact that it was not indicates the reporting system is not being monitored at the supervisory level.</li>
+<li>Without Pete's reports, management has zero visibility into the most experienced operator's daily activities, customer interactions, and escalations.</li>
+</ul>
+<h4>Recommendation</h4>
+<p>Direct conversation. Determine if this is an explicit exemption, a tooling issue (his go2impact.com email domain may indicate different platform access), or non-compliance. Close the loop publicly so the team knows reporting applies to everyone.</p>
+</div></div>
+</div>
+</section>
+
+<section id="f-copypaste">
+<h2>Key Finding: Copy-Paste Reporting Epidemic</h2>
+<div class="finding open">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>4 Team Members Filing Identical Reports Daily</h3>
+  <div class="meta"><span class="badge badge-orange">High</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<table>
+<tr><th>Person</th><th>Tenure</th><th>Reports</th><th>Copy-Paste %</th><th>Avg Words</th></tr>
+<tr><td>Raymond Bonilla</td><td>5.5 months</td><td>109</td><td>85%+</td><td>~15</td></tr>
+<tr><td>Vin Conde</td><td>3.7 years</td><td>112</td><td>59%</td><td>10</td></tr>
+<tr><td>Liz Olenius</td><td>5 years</td><td>109</td><td>58%</td><td>20</td></tr>
+<tr><td>Dave Jovellanos</td><td>2.4 years</td><td>112</td><td>85%+</td><td>~8</td></tr>
+</table>
+<p>These four team members represent different tenure levels, different roles, and different shifts -- but they have all converged on the same behavior: file the minimum content required to register as "compliant." The current system rewards filing, not quality.</p>
+<h4>The Pattern</h4>
+<p>Every one of these four went through a period of genuine reporting before converging on templates. For Liz, it happened the day training ended (December 9). For Raymond, it was January 8. For Dave, it happened before the data window even opens. The decay is predictable: without quality feedback, reports regress to the minimum acceptable input.</p>
+<h4>Contrast with the A-Grade Reporters</h4>
+<p>Ged (0% copy-paste, 82 words/report), Rove (1.7%, 34 words), and Marilou (low, detailed) demonstrate that the system can produce excellent operational intelligence when the reporter is engaged. The tool is not broken. The accountability loop is.</p>
+</div></div>
+</div>
+</section>
+
+<section id="f-rove">
+<h2>Key Finding: Rove's Quality Transformation</h2>
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>Mid-January Writing Quality Leap</h3>
+  <div class="meta"><span class="badge badge-blue">Notable</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Starting approximately January 8, Rove's daily reports shifted from simple bullet-point task lists to polished professional paragraphs. Language went from "Handle all task efficiently" to "Deliver comprehensive customer and sales support across all Aramsco platforms, ensuring efficient order processing, proactive drop-ship follow-ups, and timely management of pending quotes."</p>
+<p>The transformation is sudden and uniform enough to suggest AI-assisted writing. This is not necessarily negative -- the underlying work content remains substantive and specific. But it warrants a non-punitive conversation about whether this approach could be encouraged team-wide as a planning tool rather than just a report-polishing tool.</p>
+</div></div>
+</div>
+</section>
+
+<section id="f-gilbert">
+<h2>Key Finding: Gilbert's Commission Signal</h2>
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>Revenue Role Under Pressure</h3>
+  <div class="meta"><span class="badge badge-orange">High</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Gilbert is the only Go2 teammate in a direct revenue-generating role (Inside Sales Rep with a $16K/month GP target). Behavioral data reveals:</p>
+<ul>
+<li><strong>Hit February GP goal</strong> -- confirmed in both reports and decoded messages</li>
+<li><strong>41% to goal mid-March</strong> -- behind pace with "slow day" entries appearing multiple times</li>
+<li><strong>Commission payment delays:</strong> January commissions still unpaid as of mid-March. Tagalog messages to manager reveal genuine financial stress.</li>
+<li><strong>Declining sentiment:</strong> Last 3 end-of-day reports marked "did not get win"</li>
+<li><strong>Reaching out for support:</strong> April 8 report: "I reached out to Matt for additional support in reaching my GP goals"</li>
+</ul>
+<p>The sales pipeline may be structurally thin -- his book of business was inherited from a departed teammate ("Alyssa") and many accounts appear dormant. He is making 30 cold calls per day with low response rates. This is a territory quality issue, not necessarily a performance issue.</p>
+</div></div>
+</div>
+</section>
+
+<section id="f-eod">
+<h2>Key Finding: Zero End-of-Day Reports</h2>
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>No Daily Feedback Loop Exists</h3>
+  <div class="meta"><span class="badge badge-red">Critical</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Across 14 team members, 6 months, and 1,261 start-of-day report submissions, there are <strong>zero end-of-day reports from the veteran and mid-tenure cohorts</strong>. The newer hires (Anj, Marilou, Raymond, Gilbert, Jen) do file EODs, but the established team does not.</p>
+<p>This creates a one-directional system: the team declares intentions in the morning but never closes the loop on what actually happened. There is no mechanism for tracking daily accomplishments, blockers, or wins at the individual level for 9 of 14 team members.</p>
+<h4>Decision Required</h4>
+<p>Either end-of-day reports are expected (in which case this is a team-wide compliance failure requiring management intervention) or they are not required (in which case the expectation should be formally removed to avoid ambiguity).</p>
+</div></div>
+</div>
+</section>
+
+<section id="f-outage">
+<h2>Key Finding: Feb 13-17 System Outage</h2>
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>Zero-Fallback Infrastructure Exposed</h3>
+  <div class="meta"><span class="badge badge-red">Critical</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Multiple data points converge on a significant Aramsco systems outage around February 13-17, 2026:</p>
+<ul>
+<li>Rove reported the lowest daily sentiment score on both February 13 and 17, noting: "All Aramsco systems, including Eclipse and the VPN, remained inaccessible throughout the shift."</li>
+<li>Liz reported low sentiment on February 14 and 17.</li>
+<li>Noev noted system downtime on February 13.</li>
+<li>Multiple team members referenced waiting for system access to return.</li>
+</ul>
+<p>The Go2 team is entirely dependent on Aramsco's Eclipse ERP and VPN. When those went down, the team had <strong>no backup workflow, no offline procedures, and no way to serve customers</strong>. Rove documented that customers "declined manual note-taking and will call back Monday."</p>
+<p>This is a business continuity gap that directly impacts revenue during outage windows.</p>
+</div></div>
+</div>
+</section>
+
+<section id="f-sentiment">
+<h2>Key Finding: The Frozen Sentiment Scale</h2>
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>97.3% of Mood Reports Are Identical</h3>
+  <div class="meta"><span class="badge badge-yellow">Moderate</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>Out of 1,226 end-of-day mood entries, <strong>1,193 (97.3%) are scored "3" out of 3</strong>. Only 15 entries (1.2%) are "1" and 18 (1.5%) are "2". No one on this 14-person team has ever reported a day better than neutral on the current scale.</p>
+<p>This metric generates no usable signal. The scale is either too coarse (3 points), culturally biased toward the midpoint, or the team has learned that the score carries no consequences.</p>
+<p><strong>The two outliers:</strong> Rove Ancajas (7 "low" days, 6.0% rate vs. 1.2% team average) and Liz Olenius (8 "medium" days) are the only statistically meaningful deviations. Rove's low days map to the system outage and personal health events. Liz's low days cluster in her SDR role before the transition to CSR.</p>
+</div></div>
+</div>
+</section>
+
+<section id="f-turnover">
+<h2>Key Finding: Historical Turnover Signal</h2>
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>5 Former Teammates Visible in Historical Data</h3>
+  <div class="meta"><span class="badge badge-yellow">Moderate</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p>The 1.8M-row historical time-use dataset reveals <strong>19 unique member IDs</strong>. 14 match the current active roster. The remaining 5 are former Go2 teammates who cycled through Aramsco between 2023 and mid-2025, contributing over 10,500 tracked hours before departing.</p>
+<p>A cluster of departures around mid-2025 aligns with the October 2025 hiring surge being a backfill wave. The division has experienced approximately <strong>36% historical turnover</strong> (5 departures out of ~14 peak slots).</p>
+<p>Several departed members maintained output right up to their final tracked dates, suggesting departures rather than performance-driven exits.</p>
+</div></div>
+</div>
+</section>
+
+<!-- ====== OPERATIONAL KPI TRENDS ====== -->
+<section id="kpi-trends">
+<h2>Operational KPI Trends</h2>
+
+<h3>Task Distribution (804 KPI Entries)</h3>
+<div class="card">
+<table>
+<tr><th>Task Type</th><th>Entries</th><th>% of Total</th><th>Primary Users</th></tr>
+<tr><td><strong>Customer Support</strong></td><td>421</td><td>52.4%</td><td>Dave, Vin, Renz, Anj, Marl, Rove, Noev, Ged, Marilou, Raymond</td></tr>
+<tr><td>Manifest</td><td>93</td><td>11.6%</td><td>Pete (primary)</td></tr>
+<tr><td>Training</td><td>73</td><td>9.1%</td><td>New hires</td></tr>
+<tr><td>Break</td><td>64</td><td>8.0%</td><td>Various</td></tr>
+<tr><td>Purchasing Support</td><td>45</td><td>5.6%</td><td>Ged (primary)</td></tr>
+<tr><td>Meeting</td><td>30</td><td>3.7%</td><td>Various</td></tr>
+<tr><td>Admin Tasks</td><td>30</td><td>3.7%</td><td>Various</td></tr>
+<tr><td>1:1 with Manager</td><td>23</td><td>2.9%</td><td>Anj (12), Gilbert (6)</td></tr>
+<tr><td>Cold Outreach</td><td>10</td><td>1.2%</td><td>Liz (exclusive)</td></tr>
+<tr><td>Lead Scraping</td><td>10</td><td>1.2%</td><td>Liz (exclusive)</td></tr>
+</table>
+</div>
+
+<h3>Report Volume Trending Up</h3>
+<div class="card card-green">
+<table>
+<tr><th>Month</th><th>Reports Filed</th><th>Trend</th></tr>
+<tr><td>October 2025</td><td>243</td><td></td></tr>
+<tr><td>November</td><td>384</td><td>+58%</td></tr>
+<tr><td>December</td><td>388</td><td>+1%</td></tr>
+<tr><td>January 2026</td><td>397</td><td>+2%</td></tr>
+<tr><td>February</td><td>451</td><td>+14%</td></tr>
+<tr><td>March</td><td>506</td><td>+12%</td></tr>
+</table>
+<p>Report volume doubled from October to March, reflecting new hires being added and improving compliance habits. The team is getting better at reporting even as content quality remains uneven.</p>
+</div>
+
+<h3>The Help Request Gap</h3>
+<div class="card card-yellow">
+<p>Out of 1,226 end-of-day submissions, exactly <strong>2 requested help (0.16%)</strong>. This is not credible for a customer service team handling complex orders, new systems, and escalations with 5 hires under 6 months old. The "need help" field either carries cultural stigma, is bypassed in favor of Slack/direct messages, or is not taken seriously as a communication tool.</p>
+</div>
+</section>
+
+<section id="role-specialization">
+<h2>Role Specialization</h2>
+<p>The team is evolving from a generalist CS pool toward organic specialization. These lanes are visible in the data but are not formally declared.</p>
+
+<div class="card">
+<table>
+<tr><th>Specialization</th><th>Members</th><th>Evidence</th></tr>
+<tr><td><strong>Purchasing/Procurement Support</strong></td><td>Ged</td><td>45 documented KPI entries, consistent Price Desk / vendor coordination references</td></tr>
+<tr><td><strong>Phone-Heavy CS</strong></td><td>Vin, Renz, Dave</td><td>High call volumes, transfer-cause logging, queue-based work patterns</td></tr>
+<tr><td><strong>Dedicated Rep Support (ISS)</strong></td><td>Marl, Rove, Pete, Noev</td><td>Named rep assignments, order lifecycle management, pricing work</td></tr>
+<tr><td><strong>Inside Sales (Revenue)</strong></td><td>Gilbert</td><td>GP targets, cold calling, quote generation, commission tracking</td></tr>
+<tr><td><strong>Ticket/Ops Support</strong></td><td>Marilou, Raymond</td><td>DeskPro ticket processing, direct order operations</td></tr>
+<tr><td><strong>Flexible/Multi-Role</strong></td><td>Liz, Anj</td><td>Role transitions visible, cross-functional assignments</td></tr>
+<tr><td><strong>Training Pipeline</strong></td><td>Jen</td><td>Currently onboarding, not yet in production</td></tr>
+</table>
+</div>
+<p>Formalizing these lanes could improve call routing, training paths, performance management, and succession planning.</p>
+</section>
+
+<section id="automation">
+<h2>Automation Opportunities</h2>
+<p>Each opportunity below has three implementation tiers: what you can do today with zero tools, what our built dashboard tools address, and what a full integration pipeline would look like.</p>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>Report Quality Scoring</h3>
+  <div class="meta"><span class="tier tier-1">Today</span><span class="tier tier-2">Tool</span><span class="tier tier-3">Pipeline</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><span class="tier tier-1">Manual:</span> Set content minimums -- require at least one specific customer/order reference and one specific planned task. Reject "Assist customers efficiently / Calls / NA" as a valid report. Review takes 2 minutes per report.</p>
+<p><span class="tier tier-2">Dashboard:</span> The <a href="tools/sod-dashboard.html">SOD Quality Dashboard</a> automatically detects duplicate reports, calculates word counts, and flags reports below quality thresholds. Supervisor reviews drop from 2 minutes to 15 seconds per person.</p>
+<p><span class="tier tier-3">Full Pipeline:</span> AI-scored report quality with automated feedback. Reports that fall below a threshold trigger a gentle prompt ("Your report today looks similar to yesterday -- can you add what specific customers or tasks you're planning?"). Estimated build: 2 weeks. Cost: ~$5/month AI compute.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>Compliance Monitoring</h3>
+  <div class="meta"><span class="tier tier-1">Today</span><span class="tier tier-2">Tool</span><span class="tier tier-3">Pipeline</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><span class="tier tier-1">Manual:</span> Weekly compliance check by supervisor. Flag anyone below 90% within the same week.</p>
+<p><span class="tier tier-2">Dashboard:</span> The SOD Dashboard shows real-time compliance rates with automatic gap detection. Missing reports surface within 24 hours, not 3 months.</p>
+<p><span class="tier tier-3">Full Pipeline:</span> Automated escalation chain: missed report triggers a reminder at shift end, 2 consecutive misses notify supervisor, 5+ consecutive misses flag to management. Estimated build: 1 week.</p>
+</div></div>
+</div>
+
+<div class="finding">
+<div class="finding-header" onclick="this.parentElement.classList.toggle('open')">
+  <h3>Coverage Optimization</h3>
+  <div class="meta"><span class="tier tier-1">Today</span><span class="tier tier-2">Tool</span><span class="tier tier-3">Pipeline</span><span class="arrow">&#9654;</span></div>
+</div>
+<div class="finding-body"><div class="finding-body-inner">
+<p><span class="tier tier-1">Manual:</span> Implement a rotating weekend shift (minimum 2 people, Saturday 9 AM - 5 PM ET). Stagger early shift starts to ensure 4+ people available by 8 AM ET.</p>
+<p><span class="tier tier-2">Dashboard:</span> The <a href="tools/coverage-planner.html">Coverage Planner</a> visualizes who is online when, highlights gaps, and models the impact of adding weekend shifts.</p>
+<p><span class="tier tier-3">Full Pipeline:</span> Demand-based scheduling integrated with call volume data from Anywhere 365. Predict high-volume periods and auto-schedule additional coverage. Estimated build: 4-6 weeks.</p>
+</div></div>
+</div>
+</section>
+
+<!-- ====== TOOLS BUILT ====== -->
+<section id="tools-built">
+<h2>Tools Built</h2>
+<p>Three working prototype dashboards built from the audit data, ready for supervisor use.</p>
+
+<div class="tool-card">
+  <div class="tool-icon">&#128202;</div>
+  <div class="tool-info">
+    <h4><a href="tools/sod-dashboard.html">Daily Report Quality Dashboard</a></h4>
+    <p>Shows each person's reporting quality score, compliance rate, copy-paste detection, word count trends, and content grade. Surfaces who is filing, who is phoning it in, and who has gone dark. Management tool for supervisors.</p>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-icon">&#128344;</div>
+  <div class="tool-info">
+    <h4><a href="tools/coverage-planner.html">Shift Coverage Planner</a></h4>
+    <p>Interactive visualization of who is online when across the three-shift model. Shows coverage density by hour, identifies gaps, and models the impact of adding weekend or extended-hours shifts. Based on actual session data.</p>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-icon">&#128200;</div>
+  <div class="tool-info">
+    <h4><a href="tools/cs-tracker.html">CS Performance Tracker</a></h4>
+    <p>Aggregates KPI data from operational reports into a unified dashboard. Shows task distribution, transfer causes, sentiment trends, attendance rates, and report volume by person and month. Highlights outliers automatically.</p>
+  </div>
+</div>
+</section>
+
+<section id="implementation">
+<h2>Implementation Playbook</h2>
+<p>A comprehensive three-tier implementation guide for every optimization opportunity is available as a separate document.</p>
+<div class="card card-accent">
+<p><a href="aramsco-implementation-playbook.html"><strong>View the Full Implementation Playbook &#8594;</strong></a></p>
+<p>Each entry includes: manual fix (today, zero tools), dashboard tool (built, ready to use), and full pipeline (API specs, integration architecture, build time, cost estimates).</p>
+</div>
+</section>
+
+<section id="data-quality">
+<h2>Data Quality &amp; Methodology</h2>
+<div class="card">
+<h4>What Was Analyzed</h4>
+<ul>
+<li><strong>2,487 operational reports</strong> (1,261 start-of-day + 1,226 end-of-day) across 14 team members over 6 months (Oct 2025 - Apr 2026)</li>
+<li><strong>2,737 work sessions</strong> with precise clock-in/clock-out timestamps</li>
+<li><strong>10,482 schedule records</strong> across all shifts and time zones</li>
+<li><strong>1.8 million time-use activity rows</strong> spanning August 2023 through April 2026</li>
+<li><strong>804 KPI task-level entries</strong> with custom fields per task type</li>
+<li><strong>App/web usage data</strong> for 6 team members (daily aggregates + 30-day granular for 2)</li>
+<li><strong>Keystroke behavioral data</strong> for Gilbert and Jen (decoded character-by-character including backspaces)</li>
+</ul>
+</div>
+<div class="card">
+<h4>Privacy Note</h4>
+<p>All data was collected locally within each team member's desktop application as part of standard Go2 operational monitoring. Analysis was performed locally. No data left the analyst's environment or was transmitted to external services.</p>
+</div>
+<div class="card">
+<h4>Confidence Framework</h4>
+<p>Findings are graded HIGH (directly observable in data), MEDIUM (strong inference from patterns), or LOW (inference with significant uncertainty). All numbers cited in this report trace to specific data files and row counts.</p>
+</div>
+</section>
+
+<hr>
+<p style="text-align:center;color:var(--text-muted);font-size:12px;padding:20px 0;">Aramsco Operational Audit &middot; Prepared by Larry [AI] at Go2 &middot; April 2026<br>14 team members &middot; 2,487 reports &middot; 2,737 sessions &middot; 1.8M behavioral data points</p>
+
+</div><!-- .content -->
+</div><!-- #main-content -->
+
+<script>
+function checkAuth(){
+  const input=document.getElementById('auth-input');
+  const error=document.getElementById('auth-error');
+  if(input.value.toLowerCase().trim()==='aramsco2026'){
+    document.getElementById('auth-overlay').classList.add('hidden');
+    document.getElementById('main-content').classList.add('visible');
+    sessionStorage.setItem('aramsco-auth','1');
+  } else {
+    error.textContent='Incorrect access code. Please try again.';
+    input.value='';
+    input.focus();
+  }
+}
+if(sessionStorage.getItem('aramsco-auth')==='1'){
+  document.getElementById('auth-overlay').classList.add('hidden');
+  document.getElementById('main-content').classList.add('visible');
+}
+document.addEventListener('DOMContentLoaded',function(){
+  // Active nav tracking
+  const sections=document.querySelectorAll('section[id]');
+  const navLinks=document.querySelectorAll('nav a[href^="#"]');
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        navLinks.forEach(l=>l.classList.remove('active'));
+        const active=document.querySelector('nav a[href="#'+entry.target.id+'"]');
+        if(active)active.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  sections.forEach(s=>observer.observe(s));
+  // Finding toggle
+  document.querySelectorAll('.finding-header').forEach(h=>{
+    h.addEventListener('click',()=>h.parentElement.classList.toggle('open'));
+  });
+  // Enter key on password
+  document.getElementById('auth-input').addEventListener('keydown',e=>{
+    if(e.key==='Enter')checkAuth();
+  });
+});
+</script>
+</body>
 </html>

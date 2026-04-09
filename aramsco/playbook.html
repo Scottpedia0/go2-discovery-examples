@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Implementation Playbook | Aramsco Optimization</title>
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #111113;
+  --bg-card-hover: #18181b;
+  --bg-input: #1a1a1d;
+  --border: #2a2a2e;
+  --border-light: #333338;
+  --text: #e4e4e7;
+  --text-dim: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #5eead4;
+  --accent-dim: #2dd4bf;
+  --accent-bg: rgba(94,234,212,0.08);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.12);
+  --yellow: #facc15;
+  --yellow-bg: rgba(250,204,21,0.12);
+  --orange: #fb923c;
+  --orange-bg: rgba(251,146,60,0.12);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.12);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167,139,250,0.12);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', Menlo, Consolas, monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;font-size:15px;min-height:100vh;}
+
+nav{position:fixed;top:0;left:0;width:260px;height:100vh;background:#08080a;border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:24px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+nav::-webkit-scrollbar{width:4px;}
+nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+nav .nav-header{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+nav .nav-header h2{color:var(--accent);font-size:15px;font-weight:600;}
+nav .nav-header p{color:var(--text-muted);font-size:11px;margin-top:2px;}
+nav a{display:block;padding:6px 20px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all 0.15s;}
+nav a:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+nav a.active{color:var(--accent);background:var(--accent-bg);}
+nav a.section-head{color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;padding-top:16px;pointer-events:none;font-weight:600;}
+
+.content{margin-left:260px;max-width:960px;padding:48px 48px 120px;}
+@media(max-width:900px){nav{display:none;}.content{margin-left:0;padding:24px 16px 80px;}}
+
+h1{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;color:var(--accent);}
+h2{font-size:22px;font-weight:600;letter-spacing:-0.5px;margin-top:64px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);color:var(--text);}
+h3{font-size:17px;font-weight:600;margin-top:32px;margin-bottom:12px;color:var(--accent);}
+h4{font-size:14px;font-weight:600;margin-top:20px;margin-bottom:8px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;}
+p{margin-bottom:12px;color:var(--text-dim);}
+p strong,li strong{color:var(--text);}
+ul,ol{padding-left:24px;margin-bottom:16px;color:var(--text-dim);}
+li{margin-bottom:6px;}
+a{color:var(--accent);}
+
+.subtitle{color:var(--text-muted);font-size:14px;margin-bottom:40px;}
+.back-link{display:inline-block;margin-bottom:24px;color:var(--text-muted);text-decoration:none;font-size:13px;}
+.back-link:hover{color:var(--accent);}
+
+.tier-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;}
+.tier-card.manual{border-left:4px solid var(--green);}
+.tier-card.dashboard{border-left:4px solid var(--blue);}
+.tier-card.pipeline{border-left:4px solid var(--purple);}
+.tier-label{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+.tier-label.t1{background:var(--green-bg);color:var(--green);}
+.tier-label.t2{background:var(--blue-bg);color:var(--blue);}
+.tier-label.t3{background:var(--purple-bg);color:var(--purple);}
+
+.effort-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;margin-left:8px;}
+.effort-low{background:var(--green-bg);color:var(--green);}
+.effort-med{background:var(--yellow-bg);color:var(--yellow);}
+.effort-high{background:var(--orange-bg);color:var(--orange);}
+.effort-major{background:var(--red-bg);color:var(--red);}
+
+.impact-bar{display:flex;gap:2px;margin:8px 0;}
+.impact-pip{width:20px;height:6px;border-radius:2px;background:var(--border);}
+.impact-pip.filled{background:var(--accent);}
+
+.spec-block{background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;font-size:13px;}
+.spec-block code{font-family:var(--mono);color:var(--accent);font-size:12px;}
+.spec-block .spec-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600;}
+
+.cost-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;}
+.cost-table th{text-align:left;padding:8px 12px;background:var(--bg-input);border-bottom:2px solid var(--border);color:var(--text);font-weight:600;font-size:11px;text-transform:uppercase;}
+.cost-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);}
+.cost-table .total td{font-weight:700;color:var(--accent);border-top:2px solid var(--accent);}
+
+.timeline-bar{display:flex;align-items:center;gap:4px;margin:12px 0;}
+.timeline-seg{height:8px;border-radius:4px;}
+.timeline-seg.done{background:var(--green);}
+.timeline-seg.active{background:var(--accent);}
+.timeline-seg.planned{background:var(--border);}
+
+.priority-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;}
+@media(max-width:768px){.priority-grid{grid-template-columns:1fr;}}
+
+.priority-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.priority-card h4{margin-top:0;}
+.priority-num{font-size:28px;font-weight:700;color:var(--accent);float:right;margin-top:-4px;}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-blue{background:var(--blue-bg);color:var(--blue);}
+.badge-purple{background:var(--purple-bg);color:var(--purple);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-header">
+    <h2>Playbook</h2>
+    <p>Aramsco Implementation</p>
+  </div>
+  <a href="../aramsco-audit.html">Back to Audit</a>
+  <a class="section-head">Overview</a>
+  <a href="#approach">Three-Tier Approach</a>
+  <a href="#priority">Priority Matrix</a>
+  <a class="section-head">Optimizations</a>
+  <a href="#sod-eod">1. SOD/EOD Quality</a>
+  <a href="#copy-paste">2. Copy-Paste Reports</a>
+  <a href="#coverage">3. Shift Coverage</a>
+  <a href="#onboarding">4. Onboarding Acceleration</a>
+  <a href="#price-desk">5. Price Desk Bottleneck</a>
+  <a href="#comms">6. Comms Consolidation</a>
+  <a href="#cross-training">7. Cross-Training</a>
+  <a href="#sentiment">8. Sentiment Redesign</a>
+  <a href="#help-signal">9. Help Signal Recovery</a>
+  <a href="#specialization">10. Role Specialization</a>
+  <a class="section-head">Execution</a>
+  <a href="#roadmap">90-Day Roadmap</a>
+  <a href="#costs">Cost Summary</a>
+</nav>
+
+<div class="content">
+<a href="aramsco-audit.html" class="back-link">&larr; Back to Audit Report</a>
+
+<h1>Implementation Playbook</h1>
+<p class="subtitle">Ten optimization opportunities. Three implementation tiers each. From manual fix today to full automation pipeline.</p>
+
+<!-- ============================== APPROACH ============================== -->
+<h2 id="approach">Three-Tier Approach</h2>
+
+<p>Every optimization in this playbook is presented at three implementation levels. Each tier delivers standalone value -- you do not need to reach Tier 3 to benefit from Tier 1.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:24px 0;">
+  <div class="tier-card manual">
+    <span class="tier-label t1">Tier 1: Manual Fix</span>
+    <h4 style="margin-top:8px;">Do It Today</h4>
+    <p style="font-size:13px;">Process changes, supervisor actions, template adjustments. Zero engineering cost. Immediate impact.</p>
+    <div style="font-size:12px;color:var(--green);font-weight:600;">Timeline: This week</div>
+  </div>
+  <div class="tier-card dashboard">
+    <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+    <h4 style="margin-top:8px;">Built and Delivered</h4>
+    <p style="font-size:13px;">Interactive HTML tools that visualize existing data, surface patterns, and enable data-driven decisions. Included in this audit package.</p>
+    <div style="font-size:12px;color:var(--blue);font-weight:600;">Timeline: Delivered</div>
+  </div>
+  <div class="tier-card pipeline">
+    <span class="tier-label t3">Tier 3: Full Pipeline</span>
+    <h4 style="margin-top:8px;">Automated System</h4>
+    <p style="font-size:13px;">API integrations, automated workflows, real-time dashboards. Requires engineering investment. Specifications and architecture provided.</p>
+    <div style="font-size:12px;color:var(--purple);font-weight:600;">Timeline: 30-90 days</div>
+  </div>
+</div>
+
+<!-- ============================== PRIORITY MATRIX ============================== -->
+<h2 id="priority">Priority Matrix</h2>
+
+<div class="priority-grid">
+  <div class="priority-card">
+    <div class="priority-num">1</div>
+    <h4 style="color:var(--red);">SOD/EOD Quality</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div></div>
+    <p style="font-size:12px;">76.8% avg compliance. Pete at 28%, Noev at 42%. Immediate supervisor intervention.</p>
+  </div>
+  <div class="priority-card">
+    <div class="priority-num">2</div>
+    <h4 style="color:var(--red);">Copy-Paste Reports</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip"></div></div>
+    <p style="font-size:12px;">4 team members submitting templated or near-identical reports. Zero intelligence value from 30%+ of reports.</p>
+  </div>
+  <div class="priority-card">
+    <div class="priority-num">3</div>
+    <h4 style="color:var(--orange);">Shift Coverage</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip"></div></div>
+    <p style="font-size:12px;">Zero weekend coverage. Zero after 20:00 ET. 2-3 people at shift edges.</p>
+  </div>
+  <div class="priority-card">
+    <div class="priority-num">4</div>
+    <h4 style="color:var(--orange);">Onboarding Speed</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip"></div><div class="impact-pip"></div></div>
+    <p style="font-size:12px;">2-3 month ramp is good but improvable. Gilbert's returning-employee fast ramp proves compressed timelines are possible.</p>
+  </div>
+  <div class="priority-card">
+    <div class="priority-num">5</div>
+    <h4 style="color:var(--orange);">Price Desk Bottleneck</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip"></div><div class="impact-pip"></div></div>
+    <p style="font-size:12px;">Recurring theme in pending items and SOD/EOD reports. Direct shipments delayed by approval queues.</p>
+  </div>
+  <div class="priority-card">
+    <div class="priority-num">6</div>
+    <h4 style="color:var(--yellow);">Comms Consolidation</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip"></div><div class="impact-pip"></div></div>
+    <p style="font-size:12px;">Slack + Teams + Meet fragmentation. Raymond is the only teammate with measurable Teams usage. No unified channel.</p>
+  </div>
+  <div class="priority-card">
+    <div class="priority-num">7</div>
+    <h4 style="color:var(--yellow);">Cross-Training</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip"></div><div class="impact-pip"></div><div class="impact-pip"></div></div>
+    <p style="font-size:12px;">Ged is the sole purchasing support person. Single points of failure across specialized roles.</p>
+  </div>
+  <div class="priority-card">
+    <div class="priority-num">8-10</div>
+    <h4 style="color:var(--yellow);">Sentiment + Help + Roles</h4>
+    <div class="impact-bar"><div class="impact-pip filled"></div><div class="impact-pip filled"></div><div class="impact-pip"></div><div class="impact-pip"></div><div class="impact-pip"></div></div>
+    <p style="font-size:12px;">Metric redesign, signal recovery, and formal role lanes. Medium effort, high long-term value.</p>
+  </div>
+</div>
+
+<!-- ============================== 1. SOD/EOD QUALITY ============================== -->
+<h2 id="sod-eod">1. SOD/EOD Reporting Quality</h2>
+
+<p>The daily reporting system generates 2,487 reports over 6 months, but quality and compliance vary enormously. Pete Aparicio files at 28%, Noev Ygay at 42%. Meanwhile, Ged Mercado and Dave Jovellanos maintain 88%+ with perfect SOD-to-EOD pairing. The gap is behavioral, not technical.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Supervisor escalation for Pete and Noev.</strong> Both have active sessions confirming they are working -- the gap is exclusively in report filing. A direct conversation about expectations with documented follow-up will close this within 2 weeks for most teammates.</li>
+    <li><strong>Set a minimum word count standard.</strong> Vin averages 10 words per report. Require 50-word minimums on EOD headline and next-shift fields. This eliminates single-word entries like "Calls" and "Monday done!" while remaining achievable.</li>
+    <li><strong>Publish a weekly compliance leaderboard.</strong> Share SOD/EOD filing rates in the team channel every Monday. Social accountability is the cheapest intervention. Marilou (91.7%) and Ged (88.3%) deserve recognition; Pete (28.3%) needs visibility.</li>
+    <li><strong>Pair high-detail reporters with low-detail ones.</strong> Ged writes structured multi-paragraph EODs. Vin writes 3 words. A 15-minute "report writing" buddy session can transfer the standard without formal training.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <h4>Tool: <a href="tools/sod-dashboard.html">Daily Report Quality Dashboard</a></h4>
+  <p>Already built and delivered. Shows per-person compliance rates, copy-paste detection, quality scores, and active alerts. Supervisors can filter by cohort and see which team members need immediate attention.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-med">MEDIUM EFFORT</span>
+  <h4>Automated Quality Scoring</h4>
+  <p>Real-time report quality scoring that flags low-effort submissions before they accumulate into patterns.</p>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Webhook listener on SOD/EOD submission endpoint. Each report is scored on: (1) word count, (2) similarity to previous 5 reports by same author (cosine similarity on TF-IDF vectors), (3) presence of specific details (order numbers, customer names, quantities), (4) field completeness. Score is written back to a quality metadata field and surfaced in a Slack notification to the supervisor if below threshold.</p>
+  </div>
+  <div class="spec-block">
+    <div class="spec-label">API Requirements</div>
+    <code>POST /api/v1/reports/webhook</code> -- incoming report payload<br>
+    <code>GET /api/v1/reports/{id}/quality</code> -- quality score retrieval<br>
+    <code>POST /api/v1/notifications/slack</code> -- alert dispatch<br>
+    <p style="margin-top:8px;margin-bottom:0;">Requires: Read access to report JSONB data, write access to quality metadata field, Slack webhook URL for supervisor channel.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Webhook listener + similarity engine</td><td>3-5 days engineering</td><td>$3,000-5,000</td></tr>
+    <tr><td>Quality scoring model (rule-based)</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr><td>Slack integration</td><td>1 day</td><td>$500-800</td></tr>
+    <tr><td>Dashboard integration</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr class="total"><td>Total</td><td>8-10 days</td><td>$6,500-9,800</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 2. COPY-PASTE ============================== -->
+<h2 id="copy-paste">2. Copy-Paste Report Elimination</h2>
+
+<p>Four team members submit reports with 59-90%+ duplication rates. Raymond Bonilla has filed 90+ consecutive near-identical reports since January 8. Dave Jovellanos maintains 85%+ duplication across 112 reports. These reports consume supervisor review time while delivering zero operational intelligence.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Require one unique detail per report.</strong> Mandate that each EOD must include at least one specific order number, customer name, or issue resolved that day. This breaks the template habit without burdening the team.</li>
+    <li><strong>Replace free-text fields with structured inputs for routine data.</strong> If the daily work is "processed orders and handled calls," capture that via dropdowns and number fields (orders processed: ___, calls handled: ___). Reserve free-text for exceptions and noteworthy items.</li>
+    <li><strong>Provide three example reports to the team.</strong> Show what "good" looks like. Ged's structured multi-paragraph EODs and Rove's detailed summaries are internal best practices that should be the standard.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <h4>Tool: <a href="tools/sod-dashboard.html">Daily Report Quality Dashboard</a></h4>
+  <p>The SOD Dashboard already includes copy-paste detection with per-person duplication rates and consecutive-duplicate alerts. Raymond and Dave are flagged with active warnings.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-med">MEDIUM EFFORT</span>
+  <h4>Real-Time Duplicate Detection</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">On each EOD submission, compute Jaccard similarity against the author's last 5 reports. If similarity exceeds 0.75, flag the report and send an inline prompt: "This report looks similar to your last entry. Can you add what was different about today?" The prompt appears before submission, not after -- this is a pre-submit intervention, not a post-hoc alert.</p>
+  </div>
+  <div class="spec-block">
+    <div class="spec-label">Technical Approach</div>
+    <p style="margin:0;">Client-side JavaScript in the report form. Store last 5 report texts in localStorage (or fetch via API). Compute token-level Jaccard similarity on form blur/submit. If threshold exceeded, show inline warning with editable suggestion. No server-side changes needed for the detection layer.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Client-side similarity engine</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr><td>Report history caching</td><td>1 day</td><td>$500-800</td></tr>
+    <tr><td>UX for inline warning</td><td>1 day</td><td>$800-1,200</td></tr>
+    <tr class="total"><td>Total</td><td>4 days</td><td>$2,800-4,000</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 3. SHIFT COVERAGE ============================== -->
+<h2 id="coverage">3. Shift Coverage Optimization</h2>
+
+<p>The team covers 08:00-20:00 ET on weekdays with a 3-band staggered model. Peak overlap is 11:00-17:00 with 10-12 people. Edges are thin: 2-3 people at 08:00-09:00 and 19:00-20:00. Weekends have effectively zero coverage despite schedule entries existing for 5+ team members. Saturday sessions in 6 months: 8 total.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Shift one Early member to 07:00 start.</strong> Ged or Pete (both currently 08:00) move to 07:00-16:00. Adds 1 hour of morning coverage with zero cost.</li>
+    <li><strong>Extend one Late member to 21:00.</strong> Renz (already logged 184h in March -- capacity exists) or Marl moves to 12:00-21:00. Adds 1 hour of West Coast coverage.</li>
+    <li><strong>Activate the existing weekend schedule.</strong> Anj, Gilbert, Liz, Marilou, and Raymond all have weekend schedule entries in the system. Enforce at least 2 people on Saturday rotation. Even 09:00-17:00 with 2 people beats zero.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <h4>Tool: <a href="tools/coverage-planner.html">Shift Coverage Planner</a></h4>
+  <p>Interactive coverage visualization with scenario modeling. Toggle individual team members on/off, view "Optimized," "Weekend Add," and "Extended Hours" scenarios against the current baseline. Heatmap shows coverage density by hour and day.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-high">HIGH EFFORT</span>
+  <h4>Dynamic Shift Optimization Engine</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Ingest historical call volume data (from Eclipse or phone system CDR), correlate with shift coverage data, and produce optimized shift schedules that minimize understaffing during high-demand windows. Constraint solver uses: (1) minimum coverage per hour, (2) maximum hours per person per week, (3) preferred shift assignments, (4) PTO calendar, (5) training schedules. Output is a weekly schedule recommendation reviewed by supervisors before publishing.</p>
+  </div>
+  <div class="spec-block">
+    <div class="spec-label">Data Requirements</div>
+    <code>Call volume by hour (CDR or IVR data)</code><br>
+    <code>Chat/email volume by hour (if applicable)</code><br>
+    <code>Schedule API read/write access</code><br>
+    <code>PTO calendar integration</code><br>
+    <code>Session data feed (existing)</code>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Call volume ingestion + ETL</td><td>5 days</td><td>$4,000-6,000</td></tr>
+    <tr><td>Constraint solver (OR-tools / PuLP)</td><td>8 days</td><td>$6,000-10,000</td></tr>
+    <tr><td>Schedule API integration</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr><td>Supervisor review UI</td><td>5 days</td><td>$4,000-6,000</td></tr>
+    <tr class="total"><td>Total</td><td>21 days</td><td>$16,000-25,000</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 4. ONBOARDING ============================== -->
+<h2 id="onboarding">4. Onboarding Acceleration</h2>
+
+<p>The October 2025 cohort (Anj, Marilou, Raymond) reached full production within 2-3 months. Gilbert Galban, a returning teammate, ramped in under 6 weeks. Jen Santos-Moron is 5 weeks in and still at 98% training. The ramp trajectory is solid but compressible -- Gilbert's fast ramp proves the floor is lower than the standard pipeline assumes.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Create a "first week production task" requirement.</strong> By Day 5, every new hire processes at least one real order with supervisor shadowing. This breaks the training-only bubble that Jen is currently in at Week 5.</li>
+    <li><strong>Assign a veteran buddy from Day 1.</strong> Pair each new hire with a high-performer in their target shift band. Ged (purchasing), Vin (phone CS), or Rove (order processing) depending on intended role.</li>
+    <li><strong>Compress Eclipse training modules.</strong> The training pipeline references "Absorb" LMS, "Basic Training InfoGuide," and multiple Eclipse modules. Identify which are prerequisites vs. which can be learned on the job. Target: 50% of training content completed in Week 1, remainder concurrent with production work.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <h4>Tool: <a href="tools/cs-performance-tracker.html">CS Performance Tracker</a></h4>
+  <p>The performance tracker shows per-person monthly hour ramps, KPI task distribution (training vs. production), and composite scores. Supervisors can track new hire progression from 98% training to production-majority work.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-med">MEDIUM EFFORT</span>
+  <h4>Automated Ramp Tracker</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Daily KPI ingestion classifies task entries as "training" or "production." Compute a production ratio per new hire per week. If production ratio is below expected curve (Week 1: 10%, Week 2: 25%, Week 3: 50%, Week 4: 75%, Week 6: 90%), alert the trainer and supervisor. Include session hours, task diversity (number of distinct task types), and first-time-accomplishment tracking from newsworthy fields.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>KPI task classifier</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr><td>Ramp curve engine + alerting</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr><td>Trainer dashboard view</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr class="total"><td>Total</td><td>7 days</td><td>$5,000-7,000</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 5. PRICE DESK ============================== -->
+<h2 id="price-desk">5. Price Desk Bottleneck Resolution</h2>
+
+<p>Price desk approvals surface repeatedly in Ged's pending items, in free-text EOD fields, and in SOD focus areas referencing "awaiting price desk." Direct shipment orders are delayed when pricing approval queues back up. This is the most frequently cited operational blocker in the data.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Establish a 2-hour SLA for price desk responses during business hours.</strong> Communicate this to the price desk team with escalation paths. The current state is unbounded queue time with no visibility.</li>
+    <li><strong>Create a shared tracker for pending approvals.</strong> A simple shared spreadsheet with: order number, requested date/time, requested by, status, approved date/time. This creates visibility and accountability.</li>
+    <li><strong>Pre-approve common pricing scenarios.</strong> If 80% of price desk requests are for standard catalog items with standard margins, create a pre-approved price matrix that CS can apply without escalation.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-med">FUTURE BUILD</span>
+  <h4>Price Desk Queue Tracker</h4>
+  <p>A purpose-built queue visibility tool is warranted but requires access to price desk workflow data that was not included in this audit's dataset. Recommend as a Phase 2 deliverable once price desk system access is granted.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-high">HIGH EFFORT</span>
+  <h4>Automated Price Approval Engine</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Rules engine that auto-approves pricing requests matching pre-defined criteria: (1) catalog item with standard margin, (2) customer with established pricing tier, (3) order value below threshold, (4) no special terms. Only non-standard requests route to human price desk. Target: 60-70% auto-approval rate, reducing queue by two-thirds.</p>
+  </div>
+  <div class="spec-block">
+    <div class="spec-label">Integration Points</div>
+    <code>Eclipse ERP pricing module (read/write)</code><br>
+    <code>Customer tier database</code><br>
+    <code>Product catalog with margin rules</code><br>
+    <code>Approval workflow engine</code>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Rules engine + criteria definition</td><td>10 days</td><td>$8,000-12,000</td></tr>
+    <tr><td>Eclipse integration</td><td>8 days</td><td>$6,000-10,000</td></tr>
+    <tr><td>Approval workflow + audit trail</td><td>5 days</td><td>$4,000-6,000</td></tr>
+    <tr><td>Supervisor override UI</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr class="total"><td>Total</td><td>26 days</td><td>$20,000-31,000</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 6. COMMS CONSOLIDATION ============================== -->
+<h2 id="comms">6. Communication Platform Consolidation</h2>
+
+<p>The team uses Slack (1.2h tracked for Jen), Microsoft Teams (4.9h tracked for Raymond), and Google Meet (referenced in meeting KPIs). This fragmentation means messages, files, and decisions are spread across platforms with no single source of truth. Raymond is the only teammate with measurable Teams usage, suggesting Aramsco-side meetings happen on Teams while the team's internal communication is on Slack.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Declare a primary platform.</strong> Pick one: Slack or Teams. Ensure all team communication, shift handoffs, and supervisor check-ins happen there. Use the secondary platform only for cross-organization meetings that require it.</li>
+    <li><strong>Create dedicated channels for shift handoffs.</strong> #aramsco-early, #aramsco-standard, #aramsco-late. Each shift posts a 2-line handoff summary at end of shift: what was completed, what is pending. This replaces the gap between EOD of one shift and SOD of the next.</li>
+    <li><strong>Consolidate meeting recordings.</strong> Whether meetings happen on Teams or Meet, recordings and notes should be posted to the same location (primary Slack channel or shared drive).</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">N/A</span>
+  <p>This optimization is process-driven, not data-driven. No dashboard tool needed -- the value comes from policy decisions and channel discipline.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-med">MEDIUM EFFORT</span>
+  <h4>Unified Communication Hub</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Slack-first architecture with: (1) automated shift-handoff bot that pulls today's EOD highlights from the reporting system and posts to the incoming shift's channel, (2) Teams bridge for Aramsco-side meetings (Slack-Teams connector), (3) unified search across all communication channels. The handoff bot eliminates the manual overhead of cross-shift communication.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Shift handoff Slack bot</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr><td>Slack-Teams bridge</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr><td>EOD auto-summary integration</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr class="total"><td>Total</td><td>8 days</td><td>$5,500-8,000</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 7. CROSS-TRAINING ============================== -->
+<h2 id="cross-training">7. Cross-Training Program</h2>
+
+<p>The team is organically specializing into distinct lanes: Ged in Purchasing Support (45 KPI entries, sole practitioner), Vin/Renz/Dave on phone CS, Noev/Rove/Marl in order processing, Liz in inside sales support. This creates efficiency but also creates single points of failure. If Ged is out, purchasing support has zero coverage.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Designate a backup for each specialized role.</strong> Ged (Purchasing) needs a trained backup -- Rove or Marl are the best candidates given their order processing experience and late-shift overlap. Pete (Manifest) needs a backup from the early shift.</li>
+    <li><strong>Schedule monthly cross-training shadow days.</strong> One day per month, each specialist's backup shadows them for 2 hours during the peak overlap window (11:00-17:00). Minimal disruption, builds competence over time.</li>
+    <li><strong>Document the top 10 purchasing workflows.</strong> Ged's pending items reveal recurring patterns: price desk requests, vendor invoice follow-ups, split orders, direct shipments. A simple runbook for each eliminates the "only Ged knows how to do this" risk.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <h4>Tool: <a href="tools/cs-performance-tracker.html">CS Performance Tracker</a></h4>
+  <p>The task distribution chart in the performance tracker shows the concentration of specialized tasks. Supervisors can see that Purchasing Support has 45 entries exclusively from Ged, confirming single-point-of-failure risks visually.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-med">MEDIUM EFFORT</span>
+  <h4>Skill Matrix + Auto-Routing</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Build a skill matrix from KPI task data: for each team member, compute competency scores per task type based on frequency, recency, and quality (derived from report quality scores). Use the matrix to: (1) identify cross-training gaps, (2) route incoming work to qualified handlers when the primary specialist is unavailable, (3) generate training recommendations. The routing layer sits between the incoming queue and agent assignment.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Skill matrix computation engine</td><td>4 days</td><td>$3,000-5,000</td></tr>
+    <tr><td>Auto-routing layer</td><td>5 days</td><td>$4,000-6,000</td></tr>
+    <tr><td>Training recommendation engine</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr class="total"><td>Total</td><td>12 days</td><td>$9,000-14,000</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 8. SENTIMENT REDESIGN ============================== -->
+<h2 id="sentiment">8. Sentiment Metric Redesign</h2>
+
+<p>97.3% of all mood reports are "3" (High). Zero team members have ever reported a day above neutral. The 3-point scale produces no actionable variance. The only statistically meaningful signal is Rove's 7 "feeling=1" days (6.0% low rate vs. 1.2% team average), mostly correlated with system outages.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Expand from 3-point to 5-point scale.</strong> 1-5 with labeled anchors: 1=Rough day, 2=Below average, 3=Normal, 4=Good day, 5=Great day. This creates room for positive differentiation that the current scale lacks.</li>
+    <li><strong>Reframe the question.</strong> Instead of "How do you feel?" ask "How productive was your day?" or "How well-supported did you feel today?" Productivity framing reduces the social desirability bias that suppresses honest mood reporting.</li>
+    <li><strong>Normalize non-3 responses.</strong> In team meetings, supervisors should share that reporting a 2 or 4 is expected and valued -- that consistent 3s actually make the metric less useful. Model this by asking about specific challenges.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <p>The CS Performance Tracker sentiment section already exposes the flatness problem visually. When the new scale is implemented, the same tool will show meaningful variance.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Sentiment Trend Alerting</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Once the 5-point scale is live, compute a 7-day rolling average per person. If the rolling average drops below 3.0 (indicating a sustained dip below "normal"), generate a supervisor alert. Also flag any 1-rating for immediate check-in. Correlate sentiment dips with external events (system outages, high-volume days) to distinguish personal issues from operational ones.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Rolling average computation</td><td>1 day</td><td>$500-800</td></tr>
+    <tr><td>Alert rules + Slack integration</td><td>1 day</td><td>$500-800</td></tr>
+    <tr><td>Correlation with operational events</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr class="total"><td>Total</td><td>4 days</td><td>$2,500-3,600</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 9. HELP SIGNAL ============================== -->
+<h2 id="help-signal">9. Help Signal Recovery</h2>
+
+<p>0.16% help request rate across 1,226 EOD reports. Two requests in six months from a 14-person team handling complex orders, system outages, and continuous onboarding. The mechanism is broken -- help is either stigmatized, unused, or bypassed through informal channels.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Rename "Need Help" to "Blocker Report."</strong> Reframe from personal weakness to operational intelligence. "I need help" carries cultural weight. "I have a blocker" is a professional status update.</li>
+    <li><strong>Make it specific with categories.</strong> Replace the binary yes/no with: "No blockers," "Waiting on price desk," "System access issue," "Need training on [topic]," "Customer escalation." This transforms the field from a cry for help into a structured operations signal.</li>
+    <li><strong>Supervisors should model usage.</strong> In the next team meeting, supervisors should share an example of their own blocker or challenge. Cultural permission to report difficulty must come from leadership, not from policy documents.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <p>The CS Performance Tracker already shows the 0.16% rate as a highlighted finding. Once the mechanism is redesigned, blocker categories will surface as operational intelligence in future dashboard iterations.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Automated Blocker Routing</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">When a blocker category is selected in the EOD, auto-route it: "Waiting on price desk" notifies the price desk channel, "System access" creates an IT ticket, "Need training" alerts the trainer. The person filing the blocker gets a confirmation that their issue was routed. This closes the feedback loop that currently does not exist.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Category selection UI update</td><td>1 day</td><td>$500-800</td></tr>
+    <tr><td>Routing rules + integrations</td><td>2 days</td><td>$1,500-2,000</td></tr>
+    <tr><td>Confirmation + tracking</td><td>1 day</td><td>$500-800</td></tr>
+    <tr class="total"><td>Total</td><td>4 days</td><td>$2,500-3,600</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 10. ROLE SPECIALIZATION ============================== -->
+<h2 id="specialization">10. Formal Role Specialization</h2>
+
+<p>The team is already specializing organically: Ged in purchasing, Vin/Renz/Dave on phones, Noev/Rove/Marl in orders, Liz/Pete in sales support. But this specialization is implicit -- it emerges from task log analysis, not from formal role definitions, training tracks, or performance metrics aligned to role expectations.</p>
+
+<div class="tier-card manual">
+  <span class="tier-label t1">Tier 1: Manual Fix</span>
+  <span class="effort-tag effort-low">LOW EFFORT</span>
+  <h4>Actions</h4>
+  <ul>
+    <li><strong>Name the roles.</strong> Create 4-5 formal role titles: Purchasing Coordinator, Phone CS Agent, Order Processing Specialist, Inside Sales Support, Training (temporary). Assign each team member to their primary role.</li>
+    <li><strong>Align KPI expectations to roles.</strong> A Phone CS Agent should be measured on call volume and transfer rates. A Purchasing Coordinator should be measured on order cycle time and pending items clearance. The current flat "Customer Support" KPI task covers everyone identically regardless of actual work.</li>
+    <li><strong>Create role-specific SOD/EOD templates.</strong> The Purchasing Coordinator template asks about pending orders, vendor follow-ups, and price desk items. The Phone CS template asks about call volume, transfers, and escalations. This produces targeted intelligence instead of generic free-text.</li>
+  </ul>
+</div>
+
+<div class="tier-card dashboard">
+  <span class="tier-label t2">Tier 2: Dashboard Tool</span>
+  <span class="effort-tag effort-low">DELIVERED</span>
+  <p>Both the CS Performance Tracker (role column, task distribution chart) and the Coverage Planner (shift bands by person) already reflect the emerging specialization. Formalizing roles makes these tools more actionable.</p>
+</div>
+
+<div class="tier-card pipeline">
+  <span class="tier-label t3">Tier 3: Full Pipeline</span>
+  <span class="effort-tag effort-high">HIGH EFFORT</span>
+  <h4>Role-Based Performance Engine</h4>
+  <div class="spec-block">
+    <div class="spec-label">Architecture</div>
+    <p style="margin:0;">Define role profiles with weighted KPIs. For each role, set targets (e.g., Phone CS: 80+ calls/day, transfer rate below 15%, avg handle time under 4 min). Compute a role-specific performance score that replaces the current flat composite. Enable supervisors to see how each person performs against their role's specific expectations, not a generic team average. Feed into compensation, promotion, and training decisions.</p>
+  </div>
+  <table class="cost-table">
+    <tr><th>Component</th><th>Effort</th><th>Est. Cost</th></tr>
+    <tr><td>Role profile definition engine</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr><td>Role-specific KPI computation</td><td>5 days</td><td>$4,000-6,000</td></tr>
+    <tr><td>Performance dashboard per role</td><td>5 days</td><td>$4,000-6,000</td></tr>
+    <tr><td>Reporting + export module</td><td>3 days</td><td>$2,000-3,000</td></tr>
+    <tr class="total"><td>Total</td><td>16 days</td><td>$12,000-18,000</td></tr>
+  </table>
+</div>
+
+<!-- ============================== 90-DAY ROADMAP ============================== -->
+<h2 id="roadmap">90-Day Roadmap</h2>
+
+<div class="card">
+  <h3>Week 1-2: Quick Wins</h3>
+  <div class="timeline-bar">
+    <div class="timeline-seg active" style="flex:2;"></div>
+    <div class="timeline-seg planned" style="flex:4;"></div>
+    <div class="timeline-seg planned" style="flex:6;"></div>
+  </div>
+  <ul style="font-size:13px;">
+    <li>Pete and Noev supervisor conversations on reporting compliance</li>
+    <li>Publish weekly compliance leaderboard</li>
+    <li>Shift one Early member to 07:00, one Late to 21:00</li>
+    <li>Activate weekend rotation (2 people minimum on Saturdays)</li>
+    <li>Declare primary communication platform</li>
+    <li>Rename "Need Help" to "Blocker Report" with categories</li>
+    <li>Designate backup for Ged (Purchasing) and Pete (Manifest)</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Week 3-6: Process Improvements</h3>
+  <div class="timeline-bar">
+    <div class="timeline-seg done" style="flex:2;"></div>
+    <div class="timeline-seg active" style="flex:4;"></div>
+    <div class="timeline-seg planned" style="flex:6;"></div>
+  </div>
+  <ul style="font-size:13px;">
+    <li>Implement 50-word minimum on EOD fields</li>
+    <li>Expand sentiment scale from 3-point to 5-point</li>
+    <li>Create role-specific SOD/EOD templates (4 variants)</li>
+    <li>Establish 2-hour SLA for price desk responses</li>
+    <li>Create shared price desk approval tracker</li>
+    <li>Build pre-approved price matrix for standard items</li>
+    <li>Schedule first cross-training shadow days</li>
+    <li>Name formal roles and align KPI expectations</li>
+    <li>Graduate Jen to Standard shift with production tasks</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Week 7-12: Automation Foundation</h3>
+  <div class="timeline-bar">
+    <div class="timeline-seg done" style="flex:2;"></div>
+    <div class="timeline-seg done" style="flex:4;"></div>
+    <div class="timeline-seg active" style="flex:6;"></div>
+  </div>
+  <ul style="font-size:13px;">
+    <li>Deploy real-time report quality scoring (Tier 3, Item 1)</li>
+    <li>Deploy client-side duplicate detection (Tier 3, Item 2)</li>
+    <li>Build shift handoff Slack bot (Tier 3, Item 6)</li>
+    <li>Deploy automated blocker routing (Tier 3, Item 9)</li>
+    <li>Deploy sentiment trend alerting (Tier 3, Item 8)</li>
+    <li>Scope and begin onboarding ramp tracker (Tier 3, Item 4)</li>
+    <li>Scope dynamic shift optimization (Tier 3, Item 3 -- requires call volume data)</li>
+  </ul>
+</div>
+
+<!-- ============================== COST SUMMARY ============================== -->
+<h2 id="costs">Cost Summary</h2>
+
+<table class="cost-table">
+  <tr><th>Optimization</th><th>Tier 1 (Manual)</th><th>Tier 2 (Dashboard)</th><th>Tier 3 (Pipeline)</th></tr>
+  <tr><td>1. SOD/EOD Quality</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$6,500-9,800</td></tr>
+  <tr><td>2. Copy-Paste Reports</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$2,800-4,000</td></tr>
+  <tr><td>3. Shift Coverage</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$16,000-25,000</td></tr>
+  <tr><td>4. Onboarding Acceleration</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$5,000-7,000</td></tr>
+  <tr><td>5. Price Desk Bottleneck</td><td>$0</td><td>Phase 2</td><td>$20,000-31,000</td></tr>
+  <tr><td>6. Comms Consolidation</td><td>$0</td><td>N/A</td><td>$5,500-8,000</td></tr>
+  <tr><td>7. Cross-Training</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$9,000-14,000</td></tr>
+  <tr><td>8. Sentiment Redesign</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$2,500-3,600</td></tr>
+  <tr><td>9. Help Signal Recovery</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$2,500-3,600</td></tr>
+  <tr><td>10. Role Specialization</td><td>$0</td><td><span class="badge badge-green">Delivered</span></td><td>$12,000-18,000</td></tr>
+  <tr class="total"><td><strong>Total</strong></td><td><strong>$0</strong></td><td><strong>7 tools delivered</strong></td><td><strong>$81,800-124,000</strong></td></tr>
+</table>
+
+<div class="card" style="margin-top:24px;">
+  <h3>Key Takeaway</h3>
+  <p>Tier 1 manual fixes cost nothing and deliver immediate improvement. Tier 2 dashboard tools are already built and delivered with this audit. Tier 3 full pipelines range from $2,500 (sentiment alerting) to $31,000 (price desk automation). The recommended sequencing prioritizes the highest-impact, lowest-cost automations first: report quality scoring, duplicate detection, and blocker routing deliver the most value per dollar in the first 90 days.</p>
+</div>
+
+</div>
+
+<script>
+// Nav active state
+const sections = document.querySelectorAll('h2[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

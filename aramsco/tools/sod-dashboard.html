@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Report Quality Dashboard | Aramsco</title>
+<style>
+:root{--bg:#0a0a0a;--bg-card:#111113;--bg-card-hover:#18181b;--bg-input:#1a1a1d;--border:#2a2a2e;--text:#e4e4e7;--text-dim:#a1a1aa;--text-muted:#71717a;--accent:#5eead4;--accent-bg:rgba(94,234,212,0.08);--green:#4ade80;--green-bg:rgba(74,222,128,0.12);--yellow:#facc15;--yellow-bg:rgba(250,204,21,0.12);--orange:#fb923c;--orange-bg:rgba(251,146,60,0.12);--red:#f87171;--red-bg:rgba(248,113,113,0.08);--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--mono:'SF Mono',Menlo,Consolas,monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;min-height:100vh;padding:32px;}
+.container{max-width:1200px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px;letter-spacing:-0.5px;}
+.subtitle{color:var(--text-muted);font-size:13px;margin-bottom:32px;}
+h2{font-size:18px;font-weight:600;margin-top:40px;margin-bottom:16px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:8px;}
+h3{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:8px;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:32px;}
+.stat-box{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.stat-box .value{font-size:32px;font-weight:700;color:var(--accent);}
+.stat-box .label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+th{text-align:left;padding:10px 12px;background:var(--bg-input);border-bottom:2px solid var(--border);color:var(--text);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;position:sticky;top:0;cursor:pointer;}
+th:hover{color:var(--accent);}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.badge-orange{background:var(--orange-bg);color:var(--orange);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.progress{background:var(--bg-input);border-radius:4px;height:6px;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;margin-left:8px;}
+.progress .fill{height:100%;border-radius:4px;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin:16px 0;}
+.filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.filter-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg-card);color:var(--text-dim);transition:all 0.2s;}
+.filter-btn:hover{background:var(--bg-card-hover);color:var(--text);}
+.filter-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);}
+.alert{background:var(--red-bg);border:1px solid rgba(248,113,113,0.2);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:13px;color:var(--red);}
+.warn{background:var(--yellow-bg);border:1px solid rgba(250,204,21,0.2);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:13px;color:var(--yellow);}
+.detail-panel{display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-top:16px;}
+.detail-panel.visible{display:block;}
+a{color:var(--accent);}
+.back-link{display:inline-block;margin-bottom:24px;color:var(--text-muted);text-decoration:none;font-size:13px;}
+.back-link:hover{color:var(--accent);}
+@media(max-width:768px){body{padding:16px;}.stat-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="../aramsco-audit.html" class="back-link">&larr; Back to Audit Report</a>
+<h1>Daily Report Quality Dashboard</h1>
+<p class="subtitle">Operational report compliance, quality scores, and copy-paste detection across the Aramsco Go2 team</p>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="value">2,487</div><div class="label">Total Reports</div></div>
+  <div class="stat-box"><div class="value">14</div><div class="label">Team Members</div></div>
+  <div class="stat-box"><div class="value">76.8%</div><div class="label">Avg Compliance</div></div>
+  <div class="stat-box"><div class="value">4</div><div class="label">Copy-Paste Offenders</div></div>
+  <div class="stat-box"><div class="value">1</div><div class="label">Reporting Blackout</div></div>
+</div>
+
+<div id="alerts-section">
+<h2>Active Alerts</h2>
+<div class="alert"><strong>CRITICAL:</strong> Pete Aparicio -- 0 reports filed since January 6, 2026 (63+ work days). Session data confirms active work. Immediate supervisor attention required.</div>
+<div class="warn"><strong>WARNING:</strong> Raymond Bonilla -- 90+ consecutive identical reports detected. Template collapse since January 8.</div>
+<div class="warn"><strong>WARNING:</strong> Dave Jovellanos -- 85%+ report duplication rate. 112 reports with near-zero content variation.</div>
+<div class="warn"><strong>WARNING:</strong> Vin Conde -- 59% copy-paste rate. Average 10 words per report across 112 entries.</div>
+</div>
+
+<h2>Team Quality Scorecard</h2>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterTable('all',this)">All</button>
+  <button class="filter-btn" onclick="filterTable('veteran',this)">Veterans</button>
+  <button class="filter-btn" onclick="filterTable('mid',this)">Mid-Tenure</button>
+  <button class="filter-btn" onclick="filterTable('new',this)">New Hires</button>
+  <button class="filter-btn" onclick="filterTable('alert',this)">Alerts Only</button>
+</div>
+
+<div style="overflow-x:auto;">
+<table id="quality-table">
+<thead>
+<tr>
+  <th onclick="sortTable(0)">Name</th>
+  <th onclick="sortTable(1)">Tenure</th>
+  <th onclick="sortTable(2)">Reports</th>
+  <th onclick="sortTable(3)">Compliance</th>
+  <th onclick="sortTable(4)">Copy-Paste %</th>
+  <th onclick="sortTable(5)">Avg Words</th>
+  <th onclick="sortTable(6)">Grade</th>
+  <th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr data-cohort="veteran" data-alert="false"><td><strong>Ged Mercado</strong></td><td>4.3 yr</td><td>113</td><td>100%<div class="progress"><div class="fill" style="width:100%;background:var(--green);"></div></div></td><td>0%</td><td>82</td><td><span class="badge badge-green">A</span></td><td><span class="badge badge-green">Excellent</span></td></tr>
+<tr data-cohort="veteran" data-alert="false"><td><strong>Rove Ancajas</strong></td><td>3.5 yr</td><td>118</td><td>102%<div class="progress"><div class="fill" style="width:100%;background:var(--green);"></div></div></td><td>1.7%</td><td>34</td><td><span class="badge badge-green">B+</span></td><td><span class="badge badge-green">Good</span></td></tr>
+<tr data-cohort="new" data-alert="false"><td><strong>Marilou Carbon</strong></td><td>5.5 mo</td><td>224</td><td>91.7%<div class="progress"><div class="fill" style="width:91.7%;background:var(--green);"></div></div></td><td>Low</td><td>45+</td><td><span class="badge badge-green">A</span></td><td><span class="badge badge-green">Star</span></td></tr>
+<tr data-cohort="mid" data-alert="false"><td><strong>Marl Branzuela</strong></td><td>3.2 yr</td><td>98</td><td>96.1%<div class="progress"><div class="fill" style="width:96.1%;background:var(--green);"></div></div></td><td>Low</td><td>50+</td><td><span class="badge badge-green">B+</span></td><td><span class="badge badge-green">Good</span></td></tr>
+<tr data-cohort="mid" data-alert="false"><td><strong>Renz Velasquez</strong></td><td>2.4 yr</td><td>110</td><td>98.2%<div class="progress"><div class="fill" style="width:98.2%;background:var(--green);"></div></div></td><td>~30%</td><td>25</td><td><span class="badge badge-yellow">C+</span></td><td><span class="badge badge-yellow">OK</span></td></tr>
+<tr data-cohort="new" data-alert="false"><td><strong>Anj Dayon-Perez</strong></td><td>5.5 mo</td><td>188</td><td>86.2%<div class="progress"><div class="fill" style="width:86.2%;background:var(--yellow);"></div></div></td><td>~70%</td><td>15</td><td><span class="badge badge-yellow">C</span></td><td><span class="badge badge-yellow">Degraded</span></td></tr>
+<tr data-cohort="new" data-alert="false"><td><strong>Gilbert Galban</strong></td><td>3 mo</td><td>105</td><td>90%<div class="progress"><div class="fill" style="width:90%;background:var(--green);"></div></div></td><td>Low</td><td>30</td><td><span class="badge badge-green">B</span></td><td><span class="badge badge-green">Good</span></td></tr>
+<tr data-cohort="new" data-alert="false"><td><strong>Jen Santos-Moron</strong></td><td>5 wk</td><td>35</td><td>66.7%<div class="progress"><div class="fill" style="width:66.7%;background:var(--yellow);"></div></div></td><td>Low</td><td>30+</td><td><span class="badge badge-green">Early/Good</span></td><td><span class="badge badge-green">Ramping</span></td></tr>
+<tr data-cohort="mid" data-alert="false"><td><strong>Noev Ygay</strong></td><td>4 yr</td><td>77</td><td>59.7%<div class="progress"><div class="fill" style="width:59.7%;background:var(--orange);"></div></div></td><td>~40%</td><td>12</td><td><span class="badge badge-orange">D</span></td><td><span class="badge badge-orange">Concern</span></td></tr>
+<tr data-cohort="mid" data-alert="true"><td><strong>Dave Jovellanos</strong></td><td>2.4 yr</td><td>112</td><td>100%<div class="progress"><div class="fill" style="width:100%;background:var(--green);"></div></div></td><td>85%+</td><td>8</td><td><span class="badge badge-red">D</span></td><td><span class="badge badge-orange">Empty Filing</span></td></tr>
+<tr data-cohort="veteran" data-alert="true"><td><strong>Liz Olenius</strong></td><td>5 yr</td><td>109</td><td>104%<div class="progress"><div class="fill" style="width:100%;background:var(--green);"></div></div></td><td>58%</td><td>20</td><td><span class="badge badge-orange">D</span></td><td><span class="badge badge-orange">Copy-Paste</span></td></tr>
+<tr data-cohort="veteran" data-alert="true"><td><strong>Vin Conde</strong></td><td>3.7 yr</td><td>112</td><td>101%<div class="progress"><div class="fill" style="width:100%;background:var(--green);"></div></div></td><td>59%</td><td>10</td><td><span class="badge badge-red">F</span></td><td><span class="badge badge-red">Template Only</span></td></tr>
+<tr data-cohort="new" data-alert="true"><td><strong>Raymond Bonilla</strong></td><td>5.5 mo</td><td>218</td><td>90%<div class="progress"><div class="fill" style="width:90%;background:var(--green);"></div></div></td><td>85%+</td><td>15</td><td><span class="badge badge-red">F</span></td><td><span class="badge badge-red">Template Only</span></td></tr>
+<tr data-cohort="veteran" data-alert="true"><td><strong>Pete Aparicio</strong></td><td>5 yr</td><td>19</td><td>17%<div class="progress"><div class="fill" style="width:17%;background:var(--red);"></div></div></td><td>0%</td><td>59</td><td><span class="badge badge-red">F (compliance)</span></td><td><span class="badge badge-red">BLACKOUT</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Quality Distribution</h2>
+<div class="card">
+<h3>Report Quality vs. Compliance Rate</h3>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">The key insight: compliance rate and quality are independent variables. Pete has 0% copy-paste but 17% compliance. Dave has 100% compliance but 85% copy-paste. The system measures the wrong thing.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+<div>
+<h4 style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">High Quality + High Compliance</h4>
+<div style="padding:8px;background:var(--green-bg);border-radius:6px;font-size:13px;">Ged Mercado, Rove Ancajas, Marilou Carbon, Marl Branzuela</div>
+</div>
+<div>
+<h4 style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">High Quality + Low Compliance</h4>
+<div style="padding:8px;background:var(--orange-bg);border-radius:6px;font-size:13px;">Pete Aparicio (great content when he files, but rarely files)</div>
+</div>
+<div>
+<h4 style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Low Quality + High Compliance</h4>
+<div style="padding:8px;background:var(--yellow-bg);border-radius:6px;font-size:13px;">Dave Jovellanos, Vin Conde, Liz Olenius, Raymond Bonilla</div>
+</div>
+<div>
+<h4 style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Low Quality + Low Compliance</h4>
+<div style="padding:8px;background:var(--red-bg);border-radius:6px;font-size:13px;">Noev Ygay (minimal content + 42% EOD compliance)</div>
+</div>
+</div>
+</div>
+
+<h2>Monthly Trend</h2>
+<div class="card">
+<table>
+<tr><th>Month</th><th>Total Reports</th><th>Growth</th><th>Active Reporters</th></tr>
+<tr><td>Oct 2025</td><td>243</td><td>--</td><td>11</td></tr>
+<tr><td>Nov 2025</td><td>384</td><td style="color:var(--green);">+58%</td><td>14</td></tr>
+<tr><td>Dec 2025</td><td>388</td><td style="color:var(--green);">+1%</td><td>13</td></tr>
+<tr><td>Jan 2026</td><td>397</td><td style="color:var(--green);">+2%</td><td>14</td></tr>
+<tr><td>Feb 2026</td><td>451</td><td style="color:var(--green);">+14%</td><td>14</td></tr>
+<tr><td>Mar 2026</td><td>506</td><td style="color:var(--green);">+12%</td><td>14</td></tr>
+</table>
+<p style="color:var(--text-muted);font-size:13px;">Report volume has more than doubled from October to March, reflecting new hires ramping and team-wide compliance improving. Content quality remains the gap.</p>
+</div>
+
+<hr style="border:none;border-top:1px solid var(--border);margin:48px 0;">
+<p style="text-align:center;color:var(--text-muted);font-size:12px;">SOD Quality Dashboard &middot; Aramsco Go2 Team &middot; Data: Oct 2025 - Apr 2026</p>
+</div>
+
+<script>
+function filterTable(cohort,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#quality-table tbody tr').forEach(row=>{
+    if(cohort==='all'){row.style.display='';}
+    else if(cohort==='alert'){row.style.display=row.dataset.alert==='true'?'':'none';}
+    else{row.style.display=row.dataset.cohort===cohort?'':'none';}
+  });
+}
+let sortDir={};
+function sortTable(col){
+  const table=document.getElementById('quality-table');
+  const tbody=table.querySelector('tbody');
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  sortDir[col]=!sortDir[col];
+  rows.sort((a,b)=>{
+    let av=a.cells[col].textContent.trim();
+    let bv=b.cells[col].textContent.trim();
+    let an=parseFloat(av.replace(/[^0-9.-]/g,''));
+    let bn=parseFloat(bv.replace(/[^0-9.-]/g,''));
+    if(!isNaN(an)&&!isNaN(bn)){return sortDir[col]?an-bn:bn-an;}
+    return sortDir[col]?av.localeCompare(bv):bv.localeCompare(av);
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+</script>
+</body>
+</html>

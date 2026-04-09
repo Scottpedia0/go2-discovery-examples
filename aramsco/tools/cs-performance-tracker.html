@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Performance Tracker | Aramsco</title>
+<style>
+:root{--bg:#0a0a0a;--bg-card:#111113;--bg-card-hover:#18181b;--bg-input:#1a1a1d;--border:#2a2a2e;--text:#e4e4e7;--text-dim:#a1a1aa;--text-muted:#71717a;--accent:#5eead4;--accent-bg:rgba(94,234,212,0.08);--green:#4ade80;--green-bg:rgba(74,222,128,0.12);--yellow:#facc15;--yellow-bg:rgba(250,204,21,0.12);--orange:#fb923c;--orange-bg:rgba(251,146,60,0.12);--red:#f87171;--red-bg:rgba(248,113,113,0.08);--blue:#60a5fa;--blue-bg:rgba(96,165,250,0.12);--purple:#a78bfa;--purple-bg:rgba(167,139,250,0.12);--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--mono:'SF Mono',Menlo,Consolas,monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;min-height:100vh;padding:32px;}
+.container{max-width:1400px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px;letter-spacing:-0.5px;}
+.subtitle{color:var(--text-muted);font-size:13px;margin-bottom:32px;}
+h2{font-size:18px;font-weight:600;margin-top:32px;margin-bottom:16px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:8px;}
+h3{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:8px;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;}
+.stat-box{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.stat-box .value{font-size:28px;font-weight:700;color:var(--accent);}
+.stat-box .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;}
+.stat-box .delta{font-size:11px;margin-top:4px;font-weight:600;}
+.stat-box .delta.up{color:var(--green);}
+.stat-box .delta.down{color:var(--red);}
+.stat-box .delta.flat{color:var(--text-muted);}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin:16px 0;}
+.back-link{display:inline-block;margin-bottom:24px;color:var(--text-muted);text-decoration:none;font-size:13px;}
+.back-link:hover{color:var(--accent);}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
+.controls label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+.controls select{background:var(--bg-input);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-size:13px;font-family:var(--font);}
+.controls select:focus{outline:none;border-color:var(--accent);}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-btn{padding:5px 12px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);transition:all 0.15s;}
+.filter-btn:hover{background:var(--bg-card-hover);color:var(--text);}
+.filter-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;}
+th{text-align:left;padding:10px 12px;background:var(--bg-input);border-bottom:2px solid var(--border);color:var(--text);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;user-select:none;position:sticky;top:0;}
+th:hover{color:var(--accent);}
+th.sorted-asc::after{content:" \u25B2";color:var(--accent);}
+th.sorted-desc::after{content:" \u25BC";color:var(--accent);}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+tr.expanded td{background:var(--bg-card-hover);}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.badge-orange{background:var(--orange-bg);color:var(--orange);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-blue{background:var(--blue-bg);color:var(--blue);}
+.badge-purple{background:var(--purple-bg);color:var(--purple);}
+.progress{background:var(--bg-input);border-radius:4px;height:6px;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;margin-left:8px;}
+.progress .fill{height:100%;border-radius:4px;}
+.spark{display:inline-flex;align-items:end;gap:1px;height:24px;vertical-align:middle;}
+.spark-bar{width:6px;border-radius:1px;background:var(--accent);opacity:0.7;transition:opacity 0.15s;}
+.spark-bar:hover{opacity:1;}
+.detail-row{display:none;}
+.detail-row.visible{display:table-row;}
+.detail-row td{padding:16px 20px;background:var(--bg-card);border-bottom:2px solid var(--border);}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.detail-mini{text-align:center;}
+.detail-mini .mini-val{font-size:20px;font-weight:700;color:var(--accent);}
+.detail-mini .mini-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-top:2px;}
+.chart-area{position:relative;height:120px;margin:12px 0;display:flex;align-items:end;gap:2px;}
+.chart-bar{flex:1;background:var(--accent);border-radius:3px 3px 0 0;opacity:0.6;transition:opacity 0.15s;position:relative;min-width:8px;}
+.chart-bar:hover{opacity:1;}
+.chart-bar .tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--bg-card);border:1px solid var(--border);padding:4px 8px;border-radius:4px;font-size:10px;color:var(--text);white-space:nowrap;z-index:10;}
+.chart-bar:hover .tip{display:block;}
+.chart-labels{display:flex;gap:2px;margin-top:4px;}
+.chart-labels span{flex:1;text-align:center;font-size:9px;color:var(--text-muted);min-width:8px;}
+@media(max-width:768px){body{padding:16px;}.stat-grid{grid-template-columns:repeat(2,1fr);}.detail-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="../aramsco-audit.html" class="back-link">&larr; Back to Audit Report</a>
+<h1>CS Performance Tracker</h1>
+<p class="subtitle">KPI aggregation, compliance metrics, and per-person performance dashboard for the Aramsco Go2 team</p>
+
+<div class="stat-grid" id="top-stats"></div>
+
+<div class="controls">
+  <div>
+    <label>Time Range</label><br>
+    <select id="range-select">
+      <option value="6mo" selected>Full 6 Months</option>
+      <option value="3mo">Last 3 Months</option>
+      <option value="1mo">Last Month (Mar 2026)</option>
+    </select>
+  </div>
+  <div>
+    <label>Metric Focus</label><br>
+    <select id="metric-select">
+      <option value="composite" selected>Composite Score</option>
+      <option value="compliance">Report Compliance</option>
+      <option value="hours">Session Hours</option>
+      <option value="attendance">Attendance Rate</option>
+      <option value="sentiment">Sentiment</option>
+    </select>
+  </div>
+  <div>
+    <label>Sort</label><br>
+    <select id="sort-select">
+      <option value="composite-desc" selected>Score (High to Low)</option>
+      <option value="composite-asc">Score (Low to High)</option>
+      <option value="name-asc">Name (A-Z)</option>
+      <option value="tenure-desc">Tenure (Most)</option>
+    </select>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+  <button class="filter-btn" onclick="setFilter('veteran',this)">Veterans (3+ yr)</button>
+  <button class="filter-btn" onclick="setFilter('mid',this)">Mid-Tenure</button>
+  <button class="filter-btn" onclick="setFilter('new',this)">New Hires</button>
+  <button class="filter-btn" onclick="setFilter('flag',this)">Flags Only</button>
+</div>
+
+<h2>Team Performance</h2>
+<div style="overflow-x:auto;">
+<table>
+<thead>
+<tr>
+  <th>Name</th>
+  <th>Role</th>
+  <th>Composite</th>
+  <th>Compliance</th>
+  <th>Attendance</th>
+  <th>Avg Hrs/Day</th>
+  <th>Session Hours</th>
+  <th>Sentiment</th>
+  <th>Monthly Trend</th>
+  <th>Flags</th>
+</tr>
+</thead>
+<tbody id="perf-body"></tbody>
+</table>
+</div>
+
+<h2>Team KPI Breakdown</h2>
+<div class="card">
+  <h3>Task Distribution (804 KPI Entries)</h3>
+  <div class="chart-area" id="task-chart"></div>
+  <div class="chart-labels" id="task-labels"></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+  <div class="card">
+    <h3>Monthly Report Volume</h3>
+    <div class="chart-area" id="volume-chart"></div>
+    <div class="chart-labels" id="volume-labels"></div>
+  </div>
+  <div class="card">
+    <h3>Monthly Sentiment</h3>
+    <div class="chart-area" id="mood-chart" style="height:80px;"></div>
+    <div class="chart-labels" id="mood-labels"></div>
+  </div>
+</div>
+
+<h2>Operational Intelligence</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <div class="card">
+    <h3>Transfer Causes (142 Entries)</h3>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">Calls reaching CS that require escalation to other departments. Indicates routing optimization opportunity.</p>
+    <table>
+      <tr><td style="color:var(--text);">Tech / Parts / Service</td><td style="text-align:right;">89</td><td style="text-align:right;"><span class="badge badge-red">63%</span></td></tr>
+      <tr><td style="color:var(--text);">Pricing / Price Desk</td><td style="text-align:right;">23</td><td style="text-align:right;"><span class="badge badge-orange">16%</span></td></tr>
+      <tr><td style="color:var(--text);">Warehouse / Shipping</td><td style="text-align:right;">18</td><td style="text-align:right;"><span class="badge badge-yellow">13%</span></td></tr>
+      <tr><td style="color:var(--text);">Other / Unclassified</td><td style="text-align:right;">12</td><td style="text-align:right;"><span class="badge badge-blue">8%</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Bottleneck Signals</h3>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">Recurring themes from Pending Items and free-text KPI fields.</p>
+    <table>
+      <tr><td style="color:var(--text);">Price Desk Approvals</td><td style="text-align:right;"><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td style="color:var(--text);">Vendor Invoice Follow-up</td><td style="text-align:right;"><span class="badge badge-orange">MEDIUM</span></td></tr>
+      <tr><td style="color:var(--text);">Direct Shipment Tracking</td><td style="text-align:right;"><span class="badge badge-orange">MEDIUM</span></td></tr>
+      <tr><td style="color:var(--text);">Eclipse System Availability</td><td style="text-align:right;"><span class="badge badge-yellow">RESOLVED</span></td></tr>
+      <tr><td style="color:var(--text);">Split Order Monitoring</td><td style="text-align:right;"><span class="badge badge-yellow">LOW</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h3>Win Rate & Help Request Signal</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div>
+      <div style="font-size:48px;font-weight:700;color:var(--green);">96.2%</div>
+      <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;margin-top:4px;">Daily Win Rate</div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:8px;">1,180 of 1,226 EOD reports claim a daily win. High uniformity suggests the metric captures effort rather than exceptional achievement. Consider redefining "win" criteria to create meaningful variance.</p>
+    </div>
+    <div>
+      <div style="font-size:48px;font-weight:700;color:var(--red);">0.16%</div>
+      <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;margin-top:4px;">Help Request Rate</div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:8px;">2 help requests across 1,226 reports (14 people, 6 months). This rate is not credible for a team handling complex orders with 5 members under 6 months tenure. Help is either sought through informal channels or the mechanism carries stigma that suppresses honest use.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const DATA = [
+  {name:"Ged Mercado",role:"Purchasing Support",cohort:"veteran",tenureYrs:4.3,
+   sodRate:88.3,eodRate:88.3,attendance:87.6,avgHrs:8.0,totalHrs:904,sentiment:2.96,winRate:97,
+   sessions:226,days:113,kpiEntries:45,primaryTask:"Purchasing Support",
+   monthly:[{m:"Oct",hrs:136,reports:24},{m:"Nov",hrs:160,reports:38},{m:"Dec",hrs:152,reports:36},{m:"Jan",hrs:152,reports:36},{m:"Feb",hrs:152,reports:38},{m:"Mar",hrs:176,reports:42}],
+   flags:[]},
+  {name:"Pete Aparicio",role:"Inside Sales Support",cohort:"veteran",tenureYrs:5.0,
+   sodRate:31.7,eodRate:28.3,attendance:84.5,avgHrs:8.0,totalHrs:872,sentiment:3.0,winRate:100,
+   sessions:217,days:109,kpiEntries:93,primaryTask:"Manifest",
+   monthly:[{m:"Oct",hrs:0,reports:0},{m:"Nov",hrs:0,reports:0},{m:"Dec",hrs:0,reports:0},{m:"Jan",hrs:168,reports:8},{m:"Feb",hrs:168,reports:5},{m:"Mar",hrs:176,reports:4}],
+   flags:["28% EOD compliance","Lowest report rate on team"]},
+  {name:"Liz Olenius",role:"CS / Former Lead Gen",cohort:"veteran",tenureYrs:5.0,
+   sodRate:87.6,eodRate:85.3,attendance:81.4,avgHrs:7.8,totalHrs:819,sentiment:2.93,winRate:94,
+   sessions:208,days:105,kpiEntries:31,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:156,reports:30},{m:"Nov",hrs:144,reports:34},{m:"Dec",hrs:128,reports:32},{m:"Jan",hrs:136,reports:32},{m:"Feb",hrs:128,reports:36},{m:"Mar",hrs:144,reports:36}],
+   flags:["Lowest sentiment (2.93)","Role transition in progress"]},
+  {name:"Noev Ygay",role:"Order Processing",cohort:"veteran",tenureYrs:4.0,
+   sodRate:59.7,eodRate:41.9,attendance:63.6,avgHrs:8.0,totalHrs:656,sentiment:2.95,winRate:93,
+   sessions:164,days:82,kpiEntries:14,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:128,reports:16},{m:"Nov",hrs:152,reports:18},{m:"Dec",hrs:136,reports:14},{m:"Jan",hrs:0,reports:0},{m:"Feb",hrs:121,reports:14},{m:"Mar",hrs:176,reports:22}],
+   flags:["42% EOD compliance","64% attendance","Jan absence"]},
+  {name:"Vin Conde",role:"Phone CS",cohort:"veteran",tenureYrs:3.7,
+   sodRate:86.7,eodRate:85.9,attendance:86.0,avgHrs:8.0,totalHrs:888,sentiment:2.99,winRate:97,
+   sessions:221,days:111,kpiEntries:109,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:152,reports:30},{m:"Nov",hrs:160,reports:36},{m:"Dec",hrs:144,reports:34},{m:"Jan",hrs:152,reports:36},{m:"Feb",hrs:152,reports:38},{m:"Mar",hrs:176,reports:40}],
+   flags:[]},
+  {name:"Rove Ancajas",role:"Order Processing",cohort:"mid",tenureYrs:3.5,
+   sodRate:89.8,eodRate:87.5,attendance:89.9,avgHrs:8.0,totalHrs:928,sentiment:2.88,winRate:95,
+   sessions:230,days:116,kpiEntries:28,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:152,reports:32},{m:"Nov",hrs:160,reports:38},{m:"Dec",hrs:160,reports:38},{m:"Jan",hrs:160,reports:38},{m:"Feb",hrs:152,reports:40},{m:"Mar",hrs:176,reports:40}],
+   flags:["Lowest sentiment (2.88)","7 feeling=1 days"]},
+  {name:"Marl Branzuela",role:"Order Processing",cohort:"mid",tenureYrs:3.2,
+   sodRate:67.4,eodRate:72.1,attendance:79.1,avgHrs:8.0,totalHrs:816,sentiment:2.95,winRate:95,
+   sessions:203,days:102,kpiEntries:18,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:136,reports:20},{m:"Nov",hrs:152,reports:28},{m:"Dec",hrs:136,reports:26},{m:"Jan",hrs:144,reports:28},{m:"Feb",hrs:136,reports:32},{m:"Mar",hrs:168,reports:34}],
+   flags:["72% EOD compliance"]},
+  {name:"Dave Jovellanos",role:"Phone CS",cohort:"mid",tenureYrs:2.4,
+   sodRate:87.5,eodRate:87.5,attendance:86.8,avgHrs:8.0,totalHrs:896,sentiment:2.99,winRate:97,
+   sessions:224,days:112,kpiEntries:92,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:152,reports:32},{m:"Nov",hrs:160,reports:38},{m:"Dec",hrs:152,reports:36},{m:"Jan",hrs:152,reports:38},{m:"Feb",hrs:152,reports:38},{m:"Mar",hrs:176,reports:44}],
+   flags:["85% report duplication"]},
+  {name:"Renz Velasquez",role:"Phone CS",cohort:"mid",tenureYrs:2.4,
+   sodRate:81.4,eodRate:81.4,attendance:86.8,avgHrs:8.0,totalHrs:896,sentiment:2.97,winRate:96,
+   sessions:223,days:112,kpiEntries:95,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:152,reports:28},{m:"Nov",hrs:160,reports:34},{m:"Dec",hrs:152,reports:32},{m:"Jan",hrs:152,reports:34},{m:"Feb",hrs:152,reports:36},{m:"Mar",hrs:184,reports:42}],
+   flags:["184h in March (above ceiling)"]},
+  {name:"Anj Dayon-Perez",role:"Customer Support",cohort:"new",tenureYrs:0.46,
+   sodRate:86.2,eodRate:82.6,attendance:72.9,avgHrs:8.0,totalHrs:752,sentiment:2.98,winRate:97,
+   sessions:187,days:94,kpiEntries:67,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:40,reports:8},{m:"Nov",hrs:128,reports:28},{m:"Dec",hrs:153,reports:32},{m:"Jan",hrs:152,reports:34},{m:"Feb",hrs:152,reports:36},{m:"Mar",hrs:128,reports:30}],
+   flags:["Mar dip to 128h"]},
+  {name:"Marilou Carbon",role:"Customer Support",cohort:"new",tenureYrs:0.46,
+   sodRate:91.7,eodRate:90.1,attendance:91.5,avgHrs:7.6,totalHrs:893,sentiment:2.96,winRate:96,
+   sessions:231,days:118,kpiEntries:22,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:56,reports:12},{m:"Nov",hrs:141,reports:32},{m:"Dec",hrs:152,reports:36},{m:"Jan",hrs:160,reports:38},{m:"Feb",hrs:160,reports:40},{m:"Mar",hrs:176,reports:42}],
+   flags:[]},
+  {name:"Raymond Bonilla",role:"Customer Support",cohort:"new",tenureYrs:0.46,
+   sodRate:90.0,eodRate:89.2,attendance:85.3,avgHrs:7.9,totalHrs:871,sentiment:2.97,winRate:96,
+   sessions:221,days:110,kpiEntries:24,primaryTask:"Customer Support",
+   monthly:[{m:"Oct",hrs:57,reports:12},{m:"Nov",hrs:120,reports:28},{m:"Dec",hrs:157,reports:34},{m:"Jan",hrs:161,reports:36},{m:"Feb",hrs:152,reports:38},{m:"Mar",hrs:176,reports:42}],
+   flags:["90+ identical reports"]},
+  {name:"Gilbert Galban",role:"Customer Support",cohort:"new",tenureYrs:0.25,
+   sodRate:90.0,eodRate:83.3,attendance:95.0,avgHrs:7.9,totalHrs:453,sentiment:3.0,winRate:98,
+   sessions:120,days:57,kpiEntries:27,primaryTask:"Customer Support",
+   monthly:[{m:"Jan",hrs:96,reports:16},{m:"Feb",hrs:160,reports:30},{m:"Mar",hrs:176,reports:34}],
+   flags:[]},
+  {name:"Jen Santos-Moron",role:"Training",cohort:"new",tenureYrs:0.1,
+   sodRate:66.7,eodRate:63.0,attendance:70.4,avgHrs:8.1,totalHrs:154,sentiment:3.0,winRate:94,
+   sessions:62,days:19,kpiEntries:4,primaryTask:"Training",
+   monthly:[{m:"Mar",hrs:154,reports:18}],
+   flags:["In training","3.3 sessions/day (fragmented)"]}
+];
+
+let currentFilter='all';
+let currentSort='composite-desc';
+
+function compositeScore(d){
+  const complianceScore=((d.sodRate+d.eodRate)/2)/100;
+  const attendanceScore=Math.min(d.attendance/100,1);
+  const hoursScore=Math.min(d.avgHrs/8.5,1);
+  const sentimentScore=(d.sentiment-1)/2;
+  return Math.round((complianceScore*0.3+attendanceScore*0.3+hoursScore*0.2+sentimentScore*0.2)*100);
+}
+
+function getFiltered(){
+  let arr=[...DATA];
+  if(currentFilter==='veteran') arr=arr.filter(d=>d.tenureYrs>=3);
+  if(currentFilter==='mid') arr=arr.filter(d=>d.tenureYrs>=1&&d.tenureYrs<3);
+  if(currentFilter==='new') arr=arr.filter(d=>d.tenureYrs<1);
+  if(currentFilter==='flag') arr=arr.filter(d=>d.flags.length>0);
+
+  const range=document.getElementById('range-select').value;
+  // range affects display but data is pre-aggregated
+
+  const sort=document.getElementById('sort-select').value;
+  if(sort==='composite-desc') arr.sort((a,b)=>compositeScore(b)-compositeScore(a));
+  if(sort==='composite-asc') arr.sort((a,b)=>compositeScore(a)-compositeScore(b));
+  if(sort==='name-asc') arr.sort((a,b)=>a.name.localeCompare(b.name));
+  if(sort==='tenure-desc') arr.sort((a,b)=>b.tenureYrs-a.tenureYrs);
+
+  return arr;
+}
+
+function setFilter(f,el){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function render(){
+  renderTopStats();
+  renderPerfTable();
+  renderTaskChart();
+  renderVolumeChart();
+  renderMoodChart();
+}
+
+function renderTopStats(){
+  const el=document.getElementById('top-stats');
+  const avgCompliance=DATA.reduce((s,d)=>(s+(d.sodRate+d.eodRate)/2),0)/DATA.length;
+  const avgAttendance=DATA.reduce((s,d)=>s+d.attendance,0)/DATA.length;
+  const totalHrs=DATA.reduce((s,d)=>s+d.totalHrs,0);
+  const avgSentiment=DATA.reduce((s,d)=>s+d.sentiment,0)/DATA.length;
+  const totalReports=2487;
+  const flagCount=DATA.filter(d=>d.flags.length>0).length;
+
+  el.innerHTML=`
+    <div class="stat-box"><div class="value">${totalReports.toLocaleString()}</div><div class="label">Total Reports</div><div class="delta up">+108% Oct-Mar</div></div>
+    <div class="stat-box"><div class="value">${Math.round(avgCompliance)}%</div><div class="label">Avg Compliance</div><div class="delta ${avgCompliance>80?'up':'down'}">${avgCompliance>80?'Acceptable':'Below target'}</div></div>
+    <div class="stat-box"><div class="value">${Math.round(avgAttendance)}%</div><div class="label">Avg Attendance</div><div class="delta flat">Range: 64-95%</div></div>
+    <div class="stat-box"><div class="value">${totalHrs.toLocaleString()}h</div><div class="label">Total Session Hours</div><div class="delta up">6 months</div></div>
+    <div class="stat-box"><div class="value">${avgSentiment.toFixed(2)}</div><div class="label">Avg Sentiment</div><div class="delta flat">3-point scale</div></div>
+    <div class="stat-box"><div class="value">${flagCount}</div><div class="label">Active Flags</div><div class="delta ${flagCount>3?'down':'up'}">${flagCount} members</div></div>
+    <div class="stat-box"><div class="value">96.2%</div><div class="label">Win Rate</div><div class="delta flat">1,180 / 1,226</div></div>
+    <div class="stat-box"><div class="value">0.16%</div><div class="label">Help Request Rate</div><div class="delta down">Signal suppression</div></div>
+  `;
+}
+
+function sparkline(monthly,field){
+  if(!monthly||monthly.length===0) return '';
+  const vals=monthly.map(m=>m[field]);
+  const max=Math.max(...vals,1);
+  let html='<div class="spark">';
+  vals.forEach(v=>{
+    const h=Math.max(2,Math.round((v/max)*24));
+    html+=`<div class="spark-bar" style="height:${h}px;" title="${v}"></div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderPerfTable(){
+  const tbody=document.getElementById('perf-body');
+  const arr=getFiltered();
+  let html='';
+  arr.forEach((d,i)=>{
+    const score=compositeScore(d);
+    const scoreBadge=score>=85?'badge-green':score>=70?'badge-yellow':score>=55?'badge-orange':'badge-red';
+    const compAvg=((d.sodRate+d.eodRate)/2).toFixed(0);
+    const compBadge=compAvg>=85?'badge-green':compAvg>=70?'badge-yellow':'badge-red';
+    const attBadge=d.attendance>=85?'badge-green':d.attendance>=75?'badge-yellow':'badge-red';
+    const sentColor=d.sentiment>=2.97?'var(--text-dim)':d.sentiment>=2.93?'var(--yellow)':'var(--red)';
+    const flagsHtml=d.flags.length>0?d.flags.map(f=>`<span class="badge badge-red" style="margin:1px;">${f}</span>`).join(' '):'<span style="color:var(--text-muted);font-size:11px;">None</span>';
+
+    html+=`<tr onclick="toggleDetail(${i})" style="cursor:pointer;" id="row-${i}">
+      <td style="color:var(--text);font-weight:500;">${d.name}</td>
+      <td><span class="badge badge-blue">${d.role}</span></td>
+      <td><span class="badge ${scoreBadge}">${score}</span></td>
+      <td><span class="badge ${compBadge}">${compAvg}%</span></td>
+      <td><span class="badge ${attBadge}">${d.attendance}%</span></td>
+      <td>${d.avgHrs}h</td>
+      <td>${d.totalHrs}h</td>
+      <td style="color:${sentColor};">${d.sentiment.toFixed(2)}</td>
+      <td>${sparkline(d.monthly,'hrs')}</td>
+      <td>${flagsHtml}</td>
+    </tr>
+    <tr class="detail-row" id="detail-${i}">
+      <td colspan="10">
+        <div class="detail-grid">
+          <div class="detail-mini"><div class="mini-val">${d.sessions}</div><div class="mini-label">Sessions</div></div>
+          <div class="detail-mini"><div class="mini-val">${d.days}</div><div class="mini-label">Days Active</div></div>
+          <div class="detail-mini"><div class="mini-val">${d.kpiEntries}</div><div class="mini-label">KPI Entries</div></div>
+          <div class="detail-mini"><div class="mini-val">${d.winRate}%</div><div class="mini-label">Win Rate</div></div>
+          <div class="detail-mini"><div class="mini-val">${d.primaryTask}</div><div class="mini-label">Primary Task</div></div>
+          <div class="detail-mini"><div class="mini-val">${d.tenureYrs<1?(d.tenureYrs*12).toFixed(0)+'mo':d.tenureYrs+'y'}</div><div class="mini-label">Tenure</div></div>
+        </div>
+        <div style="margin-top:12px;">
+          <h3 style="font-size:12px;margin-bottom:8px;">Monthly Hours</h3>
+          <div style="display:flex;gap:8px;">
+            ${(d.monthly||[]).map(m=>`<div style="text-align:center;"><div style="font-size:16px;font-weight:700;color:var(--accent);">${m.hrs}</div><div style="font-size:10px;color:var(--text-muted);">${m.m}</div></div>`).join('')}
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  });
+  tbody.innerHTML=html;
+}
+
+function toggleDetail(i){
+  const row=document.getElementById(`detail-${i}`);
+  const parent=document.getElementById(`row-${i}`);
+  if(row.classList.contains('visible')){
+    row.classList.remove('visible');
+    parent.classList.remove('expanded');
+  } else {
+    // close others
+    document.querySelectorAll('.detail-row.visible').forEach(r=>r.classList.remove('visible'));
+    document.querySelectorAll('tr.expanded').forEach(r=>r.classList.remove('expanded'));
+    row.classList.add('visible');
+    parent.classList.add('expanded');
+  }
+}
+
+function renderTaskChart(){
+  const tasks=[
+    {name:"Customer Support",count:421,color:"var(--accent)"},
+    {name:"Manifest",count:93,color:"var(--blue)"},
+    {name:"Training",count:73,color:"var(--yellow)"},
+    {name:"Break",count:64,color:"var(--text-muted)"},
+    {name:"Purchasing",count:45,color:"var(--green)"},
+    {name:"Meeting",count:30,color:"var(--purple)"},
+    {name:"Admin",count:30,color:"var(--orange)"},
+    {name:"1:1 w/ EM",count:23,color:"var(--blue)"},
+    {name:"Cold Outreach",count:10,color:"var(--red)"},
+    {name:"Lead Scraping",count:10,color:"var(--red)"},
+    {name:"Other",count:5,color:"var(--text-muted)"}
+  ];
+  const max=Math.max(...tasks.map(t=>t.count));
+  const chart=document.getElementById('task-chart');
+  const labels=document.getElementById('task-labels');
+  chart.innerHTML=tasks.map(t=>{
+    const h=Math.max(4,Math.round((t.count/max)*120));
+    return `<div class="chart-bar" style="height:${h}px;background:${t.color};"><div class="tip">${t.name}: ${t.count}</div></div>`;
+  }).join('');
+  labels.innerHTML=tasks.map(t=>`<span>${t.name.split(' ')[0]}</span>`).join('');
+}
+
+function renderVolumeChart(){
+  const months=[
+    {m:"Oct",sod:127,eod:116},
+    {m:"Nov",sod:193,eod:191},
+    {m:"Dec",sod:199,eod:189},
+    {m:"Jan",sod:197,eod:200},
+    {m:"Feb",sod:230,eod:221},
+    {m:"Mar",sod:257,eod:249}
+  ];
+  const max=Math.max(...months.map(m=>m.sod+m.eod));
+  const chart=document.getElementById('volume-chart');
+  const labels=document.getElementById('volume-labels');
+  chart.innerHTML=months.map(m=>{
+    const h=Math.max(4,Math.round(((m.sod+m.eod)/max)*120));
+    return `<div class="chart-bar" style="height:${h}px;flex:2;"><div class="tip">${m.m}: ${m.sod} SOD + ${m.eod} EOD = ${m.sod+m.eod}</div></div>`;
+  }).join('');
+  labels.innerHTML=months.map(m=>`<span>${m.m}</span>`).join('');
+}
+
+function renderMoodChart(){
+  const months=[
+    {m:"Oct",avg:2.95,low:0},
+    {m:"Nov",avg:2.98,low:1},
+    {m:"Dec",avg:2.97,low:2},
+    {m:"Jan",avg:2.94,low:6},
+    {m:"Feb",avg:2.93,low:4},
+    {m:"Mar",avg:2.98,low:2}
+  ];
+  const chart=document.getElementById('mood-chart');
+  const labels=document.getElementById('mood-labels');
+  // Normalize around 2.9-3.0 range
+  chart.innerHTML=months.map(m=>{
+    const h=Math.max(4,Math.round(((m.avg-2.85)/0.15)*80));
+    const color=m.avg<2.95?'var(--yellow)':'var(--accent)';
+    return `<div class="chart-bar" style="height:${h}px;background:${color};flex:2;"><div class="tip">${m.m}: ${m.avg.toFixed(2)} avg, ${m.low} low days</div></div>`;
+  }).join('');
+  labels.innerHTML=months.map(m=>`<span>${m.m}</span>`).join('');
+}
+
+// Init
+document.getElementById('range-select').addEventListener('change',render);
+document.getElementById('metric-select').addEventListener('change',render);
+document.getElementById('sort-select').addEventListener('change',render);
+render();
+</script>
+</body>
+</html>

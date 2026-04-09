@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shift Coverage Planner | Aramsco</title>
+<style>
+:root{--bg:#0a0a0a;--bg-card:#111113;--bg-card-hover:#18181b;--bg-input:#1a1a1d;--border:#2a2a2e;--text:#e4e4e7;--text-dim:#a1a1aa;--text-muted:#71717a;--accent:#5eead4;--accent-bg:rgba(94,234,212,0.08);--green:#4ade80;--green-bg:rgba(74,222,128,0.12);--yellow:#facc15;--yellow-bg:rgba(250,204,21,0.12);--orange:#fb923c;--orange-bg:rgba(251,146,60,0.12);--red:#f87171;--red-bg:rgba(248,113,113,0.08);--blue:#60a5fa;--blue-bg:rgba(96,165,250,0.12);--purple:#a78bfa;--purple-bg:rgba(167,139,250,0.12);--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--mono:'SF Mono',Menlo,Consolas,monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;min-height:100vh;padding:32px;}
+.container{max-width:1400px;margin:0 auto;}
+h1{font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px;letter-spacing:-0.5px;}
+.subtitle{color:var(--text-muted);font-size:13px;margin-bottom:32px;}
+h2{font-size:18px;font-weight:600;margin-top:32px;margin-bottom:16px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:8px;}
+h3{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:8px;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:32px;}
+.stat-box{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.stat-box .value{font-size:32px;font-weight:700;color:var(--accent);}
+.stat-box .label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;}
+.stat-box.red .value{color:var(--red);}
+.stat-box.yellow .value{color:var(--yellow);}
+.stat-box.green .value{color:var(--green);}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin:16px 0;}
+.back-link{display:inline-block;margin-bottom:24px;color:var(--text-muted);text-decoration:none;font-size:13px;}
+.back-link:hover{color:var(--accent);}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
+.controls label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+.controls select,.controls input[type="date"]{background:var(--bg-input);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-size:13px;font-family:var(--font);}
+.controls select:focus,.controls input:focus{outline:none;border-color:var(--accent);}
+.toggle-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.toggle-btn{padding:5px 10px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);transition:all 0.15s;user-select:none;}
+.toggle-btn:hover{background:var(--bg-card-hover);color:var(--text);}
+.toggle-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);}
+.toggle-btn.early{border-color:#3b82f6;}
+.toggle-btn.early.active{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.toggle-btn.standard{border-color:#a78bfa;}
+.toggle-btn.standard.active{background:rgba(167,139,250,0.15);color:#a78bfa;}
+.toggle-btn.late{border-color:#f472b6;}
+.toggle-btn.late.active{background:rgba(244,114,182,0.15);color:#f472b6;}
+
+/* Heatmap */
+.heatmap-wrap{overflow-x:auto;margin:16px 0;}
+.heatmap{display:grid;grid-template-columns:100px repeat(15,1fr);gap:1px;font-size:11px;min-width:800px;}
+.heatmap .header{background:var(--bg-input);color:var(--text-muted);padding:8px 6px;text-align:center;font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:0.5px;}
+.heatmap .row-label{background:var(--bg-card);padding:8px 10px;color:var(--text-dim);font-weight:500;display:flex;align-items:center;font-size:12px;}
+.heatmap .cell{padding:8px 4px;text-align:center;font-weight:600;font-size:12px;border-radius:2px;position:relative;cursor:default;transition:all 0.15s;}
+.heatmap .cell:hover{transform:scale(1.05);z-index:2;}
+.cell.c0{background:#1a1a1d;color:#555;}
+.cell.c1{background:rgba(248,113,113,0.15);color:var(--red);}
+.cell.c2{background:rgba(251,146,60,0.15);color:var(--orange);}
+.cell.c3{background:rgba(250,204,21,0.12);color:var(--yellow);}
+.cell.c4{background:rgba(74,222,128,0.08);color:var(--green);}
+.cell.c5{background:rgba(74,222,128,0.12);color:var(--green);}
+.cell.c6{background:rgba(94,234,212,0.12);color:var(--accent);}
+.cell.c7{background:rgba(94,234,212,0.18);color:var(--accent);}
+.cell.c8{background:rgba(94,234,212,0.22);color:var(--accent);}
+.cell.c9{background:rgba(94,234,212,0.28);color:var(--accent);}
+.cell.c10,.cell.c11,.cell.c12,.cell.c13,.cell.c14{background:rgba(94,234,212,0.32);color:var(--accent);}
+
+/* Timeline */
+.timeline-wrap{overflow-x:auto;margin:16px 0;}
+.timeline{min-width:900px;}
+.timeline-row{display:flex;align-items:center;margin-bottom:3px;}
+.timeline-name{width:120px;flex-shrink:0;font-size:12px;color:var(--text-dim);padding-right:8px;text-align:right;font-weight:500;}
+.timeline-bar-area{flex:1;position:relative;height:28px;background:var(--bg-input);border-radius:4px;}
+.timeline-bar{position:absolute;height:100%;border-radius:4px;opacity:0.85;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#000;cursor:default;transition:opacity 0.15s;}
+.timeline-bar:hover{opacity:1;}
+.timeline-bar.early{background:#3b82f6;}
+.timeline-bar.standard{background:#a78bfa;}
+.timeline-bar.late{background:#f472b6;}
+.timeline-bar.training{background:#facc15;}
+.timeline-hours{display:flex;margin-left:120px;margin-top:4px;margin-bottom:8px;}
+.timeline-hours span{flex:1;text-align:center;font-size:9px;color:var(--text-muted);min-width:0;}
+
+/* Gap indicators */
+.gap-zone{position:absolute;top:0;height:100%;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(248,113,113,0.08) 3px,rgba(248,113,113,0.08) 6px);pointer-events:none;z-index:0;}
+.gap-label{position:absolute;top:50%;transform:translateY(-50%);font-size:9px;color:var(--red);font-weight:600;letter-spacing:0.3px;z-index:1;}
+
+/* Legend */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0;font-size:12px;color:var(--text-dim);}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.legend-swatch{width:16px;height:10px;border-radius:2px;}
+.legend-swatch.early{background:#3b82f6;}
+.legend-swatch.standard{background:#a78bfa;}
+.legend-swatch.late{background:#f472b6;}
+.legend-swatch.training{background:#facc15;}
+.legend-swatch.gap{background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(248,113,113,0.3) 2px,rgba(248,113,113,0.3) 4px);}
+
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;}
+th{text-align:left;padding:10px 12px;background:var(--bg-input);border-bottom:2px solid var(--border);color:var(--text);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-blue{background:var(--blue-bg);color:var(--blue);}
+.badge-purple{background:var(--purple-bg);color:var(--purple);}
+.alert{background:var(--red-bg);border:1px solid rgba(248,113,113,0.2);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:13px;color:var(--red);}
+.warn{background:var(--yellow-bg);border:1px solid rgba(250,204,21,0.2);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:13px;color:var(--yellow);}
+.info{background:var(--blue-bg);border:1px solid rgba(96,165,250,0.2);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:13px;color:var(--blue);}
+@media(max-width:768px){body{padding:16px;}.stat-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="../aramsco-audit.html" class="back-link">&larr; Back to Audit Report</a>
+<h1>Shift Coverage Planner</h1>
+<p class="subtitle">Interactive coverage visualization for the 14-person Aramsco Go2 team across three shift bands</p>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="value">14</div><div class="label">Team Members</div></div>
+  <div class="stat-box"><div class="value">3</div><div class="label">Shift Bands</div></div>
+  <div class="stat-box green"><div class="value">13h</div><div class="label">Daily Window</div></div>
+  <div class="stat-box red"><div class="value">0</div><div class="label">Weekend Coverage</div></div>
+  <div class="stat-box yellow"><div class="value">11-17</div><div class="label">Peak Hours (ET)</div></div>
+</div>
+
+<div class="controls">
+  <div>
+    <label>Day</label><br>
+    <select id="day-select">
+      <option value="weekday" selected>Weekday (Mon-Fri)</option>
+      <option value="saturday">Saturday</option>
+      <option value="sunday">Sunday</option>
+    </select>
+  </div>
+  <div>
+    <label>Scenario</label><br>
+    <select id="scenario-select">
+      <option value="current" selected>Current State</option>
+      <option value="optimized">Optimized (Proposed)</option>
+      <option value="weekend">Weekend Coverage Add</option>
+      <option value="extended">Extended Hours</option>
+    </select>
+  </div>
+  <div>
+    <label>Highlight</label><br>
+    <select id="highlight-select">
+      <option value="none">None</option>
+      <option value="gaps">Coverage Gaps</option>
+      <option value="peak">Peak Overlap</option>
+      <option value="thin">Thin Coverage (&lt;4)</option>
+    </select>
+  </div>
+</div>
+
+<h3>Team Roster</h3>
+<div class="toggle-row" id="roster-toggles"></div>
+
+<h2>Timeline View</h2>
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch early"></div>Early (08:00-17:00)</div>
+  <div class="legend-item"><div class="legend-swatch standard"></div>Standard (09:00-18:00)</div>
+  <div class="legend-item"><div class="legend-swatch late"></div>Late (11:00-20:00)</div>
+  <div class="legend-item"><div class="legend-swatch training"></div>Training</div>
+  <div class="legend-item"><div class="legend-swatch gap"></div>Coverage Gap</div>
+</div>
+
+<div class="timeline-wrap">
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<h2>Coverage Heatmap</h2>
+<div class="heatmap-wrap">
+  <div class="heatmap" id="heatmap"></div>
+</div>
+
+<h2>Coverage Gaps</h2>
+<div id="gap-alerts"></div>
+
+<h2>Roster Detail</h2>
+<div style="overflow-x:auto;">
+<table id="roster-table">
+<thead>
+<tr><th>Name</th><th>Shift Band</th><th>Hours (ET)</th><th>Tenure</th><th>Attendance</th><th>Avg Hrs/Day</th><th>Status</th></tr>
+</thead>
+<tbody id="roster-body"></tbody>
+</table>
+</div>
+
+<h2>Optimization Recommendations</h2>
+<div id="recommendations"></div>
+
+</div>
+
+<script>
+const TEAM = [
+  {name:"Ged Mercado",shift:"early",start:8,end:17,tenure:"4.3y",attendance:87.6,avgHrs:8.0,status:"active",cohort:"veteran"},
+  {name:"Pete Aparicio",shift:"early",start:8,end:17,tenure:"5y",attendance:84.5,avgHrs:8.0,status:"active",cohort:"veteran"},
+  {name:"Vin Conde",shift:"early",start:8,end:17,tenure:"3.7y",attendance:86.0,avgHrs:8.0,status:"active",cohort:"veteran"},
+  {name:"Noev Ygay",shift:"early",start:8,end:17,tenure:"4y",attendance:63.6,avgHrs:8.0,status:"flag",cohort:"veteran"},
+  {name:"Gilbert Galban",shift:"early",start:9,end:18,tenure:"3mo",attendance:95.0,avgHrs:7.9,status:"active",cohort:"new"},
+  {name:"Anj Dayon-Perez",shift:"standard",start:9,end:18,tenure:"5.5mo",attendance:72.9,avgHrs:8.0,status:"active",cohort:"new"},
+  {name:"Dave Jovellanos",shift:"standard",start:9,end:18,tenure:"2.4y",attendance:86.8,avgHrs:8.0,status:"active",cohort:"mid"},
+  {name:"Raymond Bonilla",shift:"standard",start:10,end:19,tenure:"5.5mo",attendance:85.3,avgHrs:7.9,status:"active",cohort:"new"},
+  {name:"Rove Ancajas",shift:"late",start:11,end:20,tenure:"3.5y",attendance:89.9,avgHrs:8.0,status:"active",cohort:"mid"},
+  {name:"Renz Velasquez",shift:"late",start:11,end:20,tenure:"2.4y",attendance:86.8,avgHrs:8.0,status:"active",cohort:"mid"},
+  {name:"Marl Branzuela",shift:"late",start:11,end:20,tenure:"3.2y",attendance:79.1,avgHrs:8.0,status:"active",cohort:"mid"},
+  {name:"Liz Olenius",shift:"late",start:11,end:20,tenure:"5y",attendance:81.4,avgHrs:7.8,status:"active",cohort:"veteran"},
+  {name:"Marilou Carbon",shift:"late",start:11,end:20,tenure:"5.5mo",attendance:91.5,avgHrs:7.6,status:"active",cohort:"new"},
+  {name:"Jen Santos-Moron",shift:"training",start:10,end:19,tenure:"5wk",attendance:70.4,avgHrs:8.1,status:"training",cohort:"new"}
+];
+
+const SCENARIOS = {
+  current: null,
+  optimized: [
+    {name:"Noev Ygay",shift:"early",start:7,end:16},
+    {name:"Ged Mercado",shift:"early",start:7,end:16},
+    {name:"Renz Velasquez",shift:"late",start:12,end:21},
+    {name:"Marl Branzuela",shift:"late",start:12,end:21}
+  ],
+  weekend: [
+    {name:"[Weekend A]",shift:"standard",start:9,end:17,isNew:true},
+    {name:"[Weekend B]",shift:"late",start:12,end:20,isNew:true}
+  ],
+  extended: [
+    {name:"Ged Mercado",shift:"early",start:7,end:16},
+    {name:"Pete Aparicio",shift:"early",start:7,end:16},
+    {name:"Renz Velasquez",shift:"late",start:12,end:21},
+    {name:"Liz Olenius",shift:"late",start:12,end:21},
+    {name:"Marl Branzuela",shift:"late",start:12,end:21}
+  ]
+};
+
+let activeMembers = new Set(TEAM.map(t=>t.name));
+const HOURS = Array.from({length:15},(_,i)=>i+7); // 07:00 to 21:00
+
+function init(){
+  buildRosterToggles();
+  render();
+  document.getElementById('day-select').addEventListener('change',render);
+  document.getElementById('scenario-select').addEventListener('change',render);
+  document.getElementById('highlight-select').addEventListener('change',render);
+}
+
+function buildRosterToggles(){
+  const wrap=document.getElementById('roster-toggles');
+  wrap.innerHTML='';
+  TEAM.forEach(m=>{
+    const btn=document.createElement('button');
+    btn.className=`toggle-btn ${m.shift} active`;
+    btn.textContent=m.name.split(' ')[0];
+    btn.title=`${m.name} — ${m.shift} shift (${m.start}:00-${m.end}:00 ET)`;
+    btn.onclick=()=>{
+      if(activeMembers.has(m.name)){activeMembers.delete(m.name);btn.classList.remove('active');}
+      else{activeMembers.add(m.name);btn.classList.add('active');}
+      render();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function getEffectiveTeam(){
+  const scenario=document.getElementById('scenario-select').value;
+  const day=document.getElementById('day-select').value;
+  let team=TEAM.filter(m=>activeMembers.has(m.name)).map(m=>({...m}));
+
+  // Apply scenario overrides
+  if(SCENARIOS[scenario]){
+    SCENARIOS[scenario].forEach(ov=>{
+      if(ov.isNew){
+        team.push({...ov,tenure:'new',attendance:100,avgHrs:8,status:'proposed',cohort:'new'});
+      } else {
+        const idx=team.findIndex(t=>t.name===ov.name);
+        if(idx>=0){Object.assign(team[idx],ov);}
+      }
+    });
+  }
+
+  // Weekend filter
+  if(day==='saturday'||day==='sunday'){
+    // Only Gilbert + proposed weekend staff
+    team=team.filter(m=>m.name==='Gilbert Galban'||m.status==='proposed');
+  }
+
+  return team;
+}
+
+function computeCoverage(team){
+  const coverage={};
+  HOURS.forEach(h=>{coverage[h]=0;});
+  team.forEach(m=>{
+    for(let h=m.start;h<m.end;h++){
+      if(coverage[h]!==undefined) coverage[h]++;
+    }
+  });
+  return coverage;
+}
+
+function render(){
+  const team=getEffectiveTeam();
+  const coverage=computeCoverage(team);
+  const highlight=document.getElementById('highlight-select').value;
+
+  renderTimeline(team,highlight);
+  renderHeatmap(coverage,highlight);
+  renderGapAlerts(coverage);
+  renderRosterTable(team);
+  renderRecommendations(coverage);
+}
+
+function renderTimeline(team,highlight){
+  const el=document.getElementById('timeline');
+  const minH=7, maxH=21, range=maxH-minH;
+
+  let html='<div class="timeline-hours">';
+  for(let h=minH;h<=maxH;h++){
+    html+=`<span>${h.toString().padStart(2,'0')}:00</span>`;
+  }
+  html+='</div>';
+
+  // Gap zones background
+  const gapStartPre=0; // pre-8am
+  const gapEnd21=((21-minH)/range)*100;
+
+  team.sort((a,b)=>a.start-b.start||a.end-b.end);
+
+  team.forEach(m=>{
+    const left=((m.start-minH)/range)*100;
+    const width=((m.end-m.start)/range)*100;
+    const shiftClass=m.status==='proposed'?m.shift:m.shift;
+    const firstName=m.name.split(' ')[0];
+    html+=`<div class="timeline-row">
+      <div class="timeline-name">${firstName}</div>
+      <div class="timeline-bar-area">
+        <div class="timeline-bar ${shiftClass}" style="left:${left}%;width:${width}%;" title="${m.name}: ${m.start}:00-${m.end}:00 ET">${m.start}-${m.end}</div>
+      </div>
+    </div>`;
+  });
+
+  el.innerHTML=html;
+}
+
+function renderHeatmap(coverage,highlight){
+  const el=document.getElementById('heatmap');
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const day=document.getElementById('day-select').value;
+
+  let html='<div class="header"></div>';
+  HOURS.forEach(h=>{html+=`<div class="header">${h}:00</div>`;});
+
+  days.forEach(d=>{
+    const isWeekend=(d==='Sat'||d==='Sun');
+    html+=`<div class="row-label">${d}</div>`;
+    HOURS.forEach(h=>{
+      let count;
+      if(isWeekend){
+        // Weekend: only Gilbert 09-18
+        count=(h>=9&&h<18)?1:0;
+        if(document.getElementById('scenario-select').value==='weekend'&&!isWeekend){count=coverage[h]||0;}
+      } else {
+        count=coverage[h]||0;
+        // Thu/Fri ~15% reduction
+        if(d==='Thu'||d==='Fri') count=Math.max(0,Math.round(count*0.87));
+      }
+
+      let cls='c'+Math.min(count,14);
+      let extra='';
+      if(highlight==='gaps'&&count===0) extra='border:2px solid var(--red);';
+      if(highlight==='thin'&&count>0&&count<4) extra='border:2px solid var(--orange);';
+      if(highlight==='peak'&&count>=8) extra='border:2px solid var(--accent);';
+
+      html+=`<div class="cell ${cls}" style="${extra}" title="${d} ${h}:00 - ${count} people">${count}</div>`;
+    });
+  });
+
+  el.innerHTML=html;
+}
+
+function renderGapAlerts(coverage){
+  const el=document.getElementById('gap-alerts');
+  const scenario=document.getElementById('scenario-select').value;
+  let html='';
+
+  // Pre-coverage gap
+  if((coverage[7]||0)===0){
+    html+=`<div class="alert"><strong>ZERO COVERAGE:</strong> Before 08:00 ET. No team members scheduled. East Coast early-morning orders and emergency calls are unaddressed.</div>`;
+  }
+
+  // Post-coverage gap
+  if((coverage[20]||0)===0){
+    html+=`<div class="alert"><strong>ZERO COVERAGE:</strong> After 20:00 ET. West Coast customers calling after 5pm PT have no support.</div>`;
+  }
+
+  // Weekend
+  const day=document.getElementById('day-select').value;
+  if(day==='weekday'){
+    html+=`<div class="warn"><strong>WEEKEND GAP:</strong> Saturday and Sunday have at most 1 person scheduled (Gilbert, 09:00-17:00). Actual weekend sessions in the last 6 months: 10 total. Effectively zero weekend support.</div>`;
+  }
+
+  // Thin coverage hours
+  const thinHours=HOURS.filter(h=>(coverage[h]||0)>0&&(coverage[h]||0)<4);
+  if(thinHours.length>0){
+    html+=`<div class="warn"><strong>THIN COVERAGE:</strong> Hours with fewer than 4 people: ${thinHours.map(h=>h+':00').join(', ')} ET. A single absence creates critical understaffing.</div>`;
+  }
+
+  // Peak calculation
+  const peakHours=HOURS.filter(h=>(coverage[h]||0)>=8);
+  if(peakHours.length>0){
+    html+=`<div class="info"><strong>PEAK OVERLAP:</strong> ${peakHours.length} hours with 8+ people online (${peakHours[0]}:00-${peakHours[peakHours.length-1]+1}:00 ET). This is your optimal window for team meetings, training sessions, and cross-training.</div>`;
+  }
+
+  if(scenario!=='current'){
+    html+=`<div class="info"><strong>SCENARIO ACTIVE:</strong> You are viewing the "${scenario}" scenario. Proposed changes are shown in the timeline. Compare coverage numbers against the Current State baseline.</div>`;
+  }
+
+  if(!html) html='<div class="info">No coverage gaps detected for this configuration.</div>';
+  el.innerHTML=html;
+}
+
+function renderRosterTable(team){
+  const tbody=document.getElementById('roster-body');
+  let html='';
+  team.forEach(m=>{
+    const bandClass=m.shift==='early'?'badge-blue':m.shift==='standard'?'badge-purple':m.shift==='training'?'badge-yellow':'badge-green';
+    const statusBadge=m.status==='flag'?'<span class="badge badge-red">FLAG</span>':
+                      m.status==='training'?'<span class="badge badge-yellow">TRAINING</span>':
+                      m.status==='proposed'?'<span class="badge badge-purple">PROPOSED</span>':
+                      '<span class="badge badge-green">ACTIVE</span>';
+    const attClass=m.attendance<70?'color:var(--red)':m.attendance<80?'color:var(--orange)':'color:var(--text-dim)';
+    html+=`<tr>
+      <td style="color:var(--text);font-weight:500;">${m.name}</td>
+      <td><span class="badge ${bandClass}">${m.shift.charAt(0).toUpperCase()+m.shift.slice(1)}</span></td>
+      <td>${m.start}:00 - ${m.end}:00 ET</td>
+      <td>${m.tenure}</td>
+      <td style="${attClass}">${m.attendance}%</td>
+      <td>${m.avgHrs}h</td>
+      <td>${statusBadge}</td>
+    </tr>`;
+  });
+  tbody.innerHTML=html;
+}
+
+function renderRecommendations(coverage){
+  const el=document.getElementById('recommendations');
+  const scenario=document.getElementById('scenario-select').value;
+
+  let html=`
+  <div class="card">
+    <h3>Immediate Actions (This Week)</h3>
+    <ul style="color:var(--text-dim);font-size:13px;padding-left:20px;">
+      <li><strong>Stagger one Early shift to 07:00 ET</strong> to capture first-hour East Coast volume. Ged or Pete are the best candidates based on their existing 08:00 start and veteran reliability.</li>
+      <li><strong>Extend one Late shift to 21:00 ET</strong> to cover West Coast 5-6pm window. Renz (already logged 184h in March) or Marl are natural fits.</li>
+      <li><strong>Address Noev's 63.6% attendance</strong> before any schedule optimization. Current gaps are unpredictable and undermine planning.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Medium-Term (30-60 Days)</h3>
+    <ul style="color:var(--text-dim);font-size:13px;padding-left:20px;">
+      <li><strong>Implement weekend rotation.</strong> 2 people on Saturday (09:00-17:00 + 12:00-20:00) covers 11 hours. Rotate across the 6 members whose schedules already include weekend entries (Anj, Gilbert, Liz, Marilou, Raymond, Rove).</li>
+      <li><strong>Graduate Jen Santos-Moron to Standard shift</strong> once training completes (~4 weeks). This adds depth to the 09:00-18:00 band where Dave currently carries significant load alone.</li>
+      <li><strong>Build a formal on-call protocol</strong> for the 21:00-08:00 ET dead zone. Even if coverage is not provided, incoming requests should be captured and queued for the Early shift.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Strategic (Quarter)</h3>
+    <ul style="color:var(--text-dim);font-size:13px;padding-left:20px;">
+      <li><strong>Move to a 4-band model:</strong> Early (07:00-16:00), Core (09:00-18:00), Late (12:00-21:00), Float (variable). The Float band handles PTO coverage and peak surge.</li>
+      <li><strong>Target 15-hour weekday coverage</strong> (07:00-22:00 ET) which captures 95% of US business activity including West Coast.</li>
+      <li><strong>Formalize the emerging role specialization</strong> (Purchasing: Ged, Phone CS: Vin/Renz/Dave, Order Processing: Noev/Rove/Marl, Inside Sales: Liz/Pete) and align shift assignments to role demand curves.</li>
+    </ul>
+  </div>`;
+
+  if(scenario==='optimized'){
+    html+=`<div class="card" style="border-color:var(--accent);">
+      <h3>Optimized Scenario Impact</h3>
+      <p style="font-size:13px;">This scenario shifts Noev and Ged to 07:00-16:00 and extends Renz and Marl to 12:00-21:00. Net effect: <strong>+2 hours of coverage at each end</strong> (07:00-08:00 and 20:00-21:00), expanding from 13h to 15h daily coverage with zero additional headcount.</p>
+    </div>`;
+  }
+  if(scenario==='weekend'){
+    html+=`<div class="card" style="border-color:var(--accent);">
+      <h3>Weekend Add Scenario Impact</h3>
+      <p style="font-size:13px;">Adding 2 rotating weekend shifts covers Saturday and Sunday 09:00-20:00 (11 hours). Using existing team on rotation means <strong>no additional hiring required</strong>. Each person covers ~2 weekend days per month.</p>
+    </div>`;
+  }
+
+  el.innerHTML=html;
+}
+
+init();
+</script>
+</div>
+</body>
+</html>
