@@ -554,7 +554,104 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
       </div>
     </div>
 
-    <p>The five skills cover <strong>data access</strong> (querying Go2's Postgres and BigQuery databases), <strong>operational discovery</strong> (profiling team members and accounts), <strong>output verification</strong> (using a second AI model to audit results), <strong>daily monitoring automations</strong> (a weekday session breathing monitor and a nightly remission/decline check), and a <strong>daily support scraper</strong>.</p>
+    <p>The five skills cover <strong>data access</strong> (querying Go2's Postgres and BigQuery databases), <strong>operational discovery</strong> (profiling team members and accounts), <strong>output verification</strong> (using a second AI model to audit results), <strong>daily monitoring automations</strong> (a weekday session breathing monitor and a nightly remission/decline check), and a <strong>daily support scraper</strong> (automatically emails Scott when you hit a wall).</p>
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- YOUR TEAM -->
+  <section class="section">
+    <div class="section-heading">Your Team at a Glance</div>
+
+    <h2>The 14 people in the system</h2>
+
+    <div class="rules">
+      <div class="rule">
+        <span class="rule-n" style="font-size:14px;">Leads</span>
+        <div class="rule-body">
+          <strong>Bev Campos, Javi Joseph</strong>
+          <span>Your two leads. Bev focuses on PRs and calibration. Javi carries real TM accounts while running RIOT squad. Both are in the database.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n" style="font-size:14px;">EMs</span>
+        <div class="rule-body">
+          <strong>Alex, BC, Bea, Emman, Harlon, JB, Jeruz, JP, Pao, Patrick, Yani</strong>
+          <span>Your 11 engagement managers. All Philippines-based except JB (India). Night shift covering US hours. Each runs 10-20 BW 1:1s per cycle.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n" style="font-size:14px;">You</span>
+        <div class="rule-body">
+          <strong>Frenchie Evangelista &mdash; Head of Engage</strong>
+          <span>You're in the system too. Your SODs, EODs, and session data are all queryable. Claude can show you your own patterns.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-break"></div>
+
+  <!-- THINGS YOU CAN SAY -->
+  <section class="section">
+    <div class="section-heading">Things You Can Say to Claude</div>
+
+    <h2>You don't need to learn commands. Just talk.</h2>
+
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"Check on Emman"</strong>
+          <span>Pulls his recent SODs, EODs, session data, and any flags. Quick health check.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"Who hasn't filed their EOD today?"</strong>
+          <span>Queries the database for today's missing reports. Gives you names.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"Run a discovery on Villa and House"</strong>
+          <span>Triggers the full operational discovery pipeline &mdash; extracts data, analyzes per person, builds a report and tools.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"Draft a DEA observation from this transcript"</strong>
+          <span>Paste a call transcript and Claude writes the structured observation notes for you.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"Show me BW completion rates this cycle"</strong>
+          <span>Pulls worklog data and shows who's on track, who's behind, and who's rescheduling.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"Help me write PRs for Yani's team"</strong>
+          <span>Pre-fills templates with teammate data from the database. You review and edit.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"What are the trends in my team's EOD complaints this month?"</strong>
+          <span>Scans all free-text fields from the last 30 days. Shows recurring themes, frustrations, and flags.</span>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="rule-body">
+          <strong>"Build me a tracker for [anything]"</strong>
+          <span>Claude builds HTML tools you open in Chrome. BW tracker, DEA progress, coaching themes &mdash; whatever you need.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="aside">
+      <p><strong>The pattern:</strong> You describe what you want in the same words you'd use to explain it to a new EM. Claude figures out the database queries, the formatting, and the output. If it gets it wrong, just say "that's not what I meant" and describe it differently.</p>
+    </div>
   </section>
 
   <div class="section-break"></div>
