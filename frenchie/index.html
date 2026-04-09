@@ -529,7 +529,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
   <section class="section">
     <div class="section-heading">What You Have</div>
 
-    <h2>Everything loaded and ready</h2>
+    <h2>What we're setting up for you</h2>
 
     <div class="stats">
       <div class="stat">
@@ -576,15 +576,30 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
     <div class="setup-step">
       <div class="setup-step-header">
         <span class="setup-step-n">2</span>
-        <span class="setup-step-title">Connect your apps</span>
+        <span class="setup-step-title">Two things your computer needs (2 min, one time ever)</span>
       </div>
-      <p>In Claude Code, go to <strong>Settings &gt; Connectors</strong>. Enable <strong>Google Drive</strong>, <strong>Gmail</strong>, <strong>Calendar</strong>, and <strong>Chrome</strong>. These take 30 seconds each and give Claude direct access to your Google apps. Sign in with your go2.io Google account when prompted.</p>
+      <p>Claude Code needs these to run. Open <strong>Terminal</strong> (on Mac, search "Terminal" in Spotlight) and paste these one at a time:</p>
+      <p>First, install Homebrew (a package manager):</p>
+      <div class="paste-block"><button class="copy-btn" onclick="copyBlock(this)"><span class="copy-icon">Copy</span><span class="check-icon">Copied</span></button>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</div>
+      <p>Then install two tools:</p>
+      <div class="paste-block"><button class="copy-btn" onclick="copyBlock(this)"><span class="copy-icon">Copy</span><span class="check-icon">Copied</span></button>brew install git node</div>
+      <p>If either says "already installed" &mdash; great. Close Terminal. You never have to do this again.</p>
+      <p>If anything goes wrong, paste the error into Claude Code and it will tell you exactly what to do.</p>
     </div>
 
     <!-- STEP 3 -->
     <div class="setup-step">
       <div class="setup-step-header">
         <span class="setup-step-n">3</span>
+        <span class="setup-step-title">Connect your apps</span>
+      </div>
+      <p>In Claude Code, go to <strong>Settings &gt; Connectors</strong>. Enable <strong>Google Drive</strong>, <strong>Gmail</strong>, <strong>Calendar</strong>, and <strong>Chrome</strong>. These take 30 seconds each and give Claude direct access to your Google apps. Sign in with your go2.io Google account when prompted.</p>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="setup-step">
+      <div class="setup-step-header">
+        <span class="setup-step-n">4</span>
         <span class="setup-step-title">Paste the starter prompt</span>
       </div>
       <p>Copy the entire block below and paste it into Claude Code. You do not need to understand everything in here &mdash; the system does. Just paste it and follow along.</p>
@@ -625,19 +640,19 @@ d. **Help me with something else** — I'll describe what I need and you figure 
 Whenever you want to come back to these options, just say "menu." And if you ever get stuck, just describe what you want in plain language — I'll figure out how to build it.</div>
     </div>
 
-    <!-- STEP 4 -->
+    <!-- STEP 5 -->
     <div class="setup-step">
       <div class="setup-step-header">
-        <span class="setup-step-n">4</span>
+        <span class="setup-step-n">5</span>
         <span class="setup-step-title">Pick what you want to do first</span>
       </div>
       <p>After the system checks pass, it will give you four options. Start wherever feels most useful. Most people start with option <strong>A</strong> &mdash; seeing their team's current status &mdash; because it gives you something real to look at immediately.</p>
     </div>
 
-    <!-- STEP 5 -->
+    <!-- STEP 6 -->
     <div class="setup-step">
       <div class="setup-step-header">
-        <span class="setup-step-n">5</span>
+        <span class="setup-step-n">6</span>
         <span class="setup-step-title">Try things. Break things. Ask questions.</span>
       </div>
       <p>There is no way to break the production data &mdash; your access is read-only on the database side. Experiment freely. If something does not work, describe what happened in the Slack thread and either Larry or Scott will sort it out.</p>
