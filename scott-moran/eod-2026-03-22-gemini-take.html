@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go2.io War Room Debrief // 2026-03-22</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Color Palette */
+            --bg-base: #070709;
+            --bg-panel: #121217;
+            --bg-panel-hover: #1a1a22;
+            --border-dim: #262633;
+            --border-glow: rgba(0, 229, 255, 0.3);
+            
+            --text-main: #e2e2ec;
+            --text-muted: #84849a;
+            
+            --accent-cyan: #00e5ff;    /* System / Compute */
+            --accent-green: #00ff66;   /* Success / Shipped */
+            --accent-orange: #ff9900;  /* Human / Biometrics */
+            --accent-red: #ff3366;     /* Friction / Avoidance */
+            --accent-purple: #b05cff;  /* Agents / LLMs */
+            
+            --font-ui: 'Inter', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding: 2rem;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 { font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; color: #fff; }
+        h1 { font-size: 2.5rem; text-transform: uppercase; border-bottom: 2px solid var(--accent-cyan); display: inline-block; padding-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border-dim); padding-bottom: 0.5rem; margin-top: 3rem; display: flex; align-items: center; gap: 0.5rem;}
+        h3 { font-size: 1.1rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2rem; }
+        p { margin-bottom: 1.5rem; color: var(--text-main); font-size: 1.05rem; }
+        strong { color: #fff; font-weight: 600; }
+        
+        .mono { font-family: var(--font-mono); font-size: 0.9em; }
+        .text-cyan { color: var(--accent-cyan); }
+        .text-orange { color: var(--accent-orange); }
+        .text-red { color: var(--accent-red); }
+        .text-green { color: var(--accent-green); }
+        .text-purple { color: var(--accent-purple); }
+
+        /* Layout */
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        header { margin-bottom: 4rem; }
+        .meta-tags { display: flex; gap: 1rem; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; }
+        .meta-tag { background: var(--bg-panel); padding: 0.25rem 0.75rem; border: 1px solid var(--border-dim); border-radius: 4px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .grid-sidebar { display: grid; grid-template-columns: 3fr 1fr; gap: 3rem; }
+
+        @media(max-width: 1024px) {
+            .grid-2, .grid-3, .grid-sidebar { grid-template-columns: 1fr; }
+        }
+
+        /* Components */
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dim);
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+        .panel:hover { border-color: var(--border-glow); box-shadow: 0 0 20px rgba(0, 229, 255, 0.05); }
+        
+        .panel::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent-cyan);
+            opacity: 0.5;
+        }
+        .panel.red::before { background: var(--accent-red); }
+        .panel.orange::before { background: var(--accent-orange); }
+        .panel.purple::before { background: var(--accent-purple); }
+
+        .metric-block { margin-bottom: 1.5rem; }
+        .metric-value { font-size: 2.5rem; font-weight: 800; font-family: var(--font-mono); line-height: 1; margin-bottom: 0.25rem; }
+        .metric-label { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+
+        /* Design Thinking Sections (The Essay part) */
+        .design-rationale {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px dashed var(--text-muted);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-size: 1rem;
+            color: #b0b0c0;
+        }
+        .design-rationale h4 { color: #fff; font-family: var(--font-mono); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;}
+        .design-rationale h4::before { content: '>'; color: var(--accent-cyan); }
+
+        /* Visualizations */
+        .timeline { display: flex; height: 60px; gap: 2px; margin: 2rem 0; background: var(--bg-panel); border: 1px solid var(--border-dim); padding: 4px; border-radius: 4px; }
+        .time-block { flex: 1; background: #1a1a22; position: relative; }
+        .time-block:hover::after {
+            content: attr(data-tooltip);
+            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            background: #000; border: 1px solid var(--accent-cyan); padding: 0.5rem;
+            font-family: var(--font-mono); font-size: 0.75rem; white-space: pre; z-index: 10;
+        }
+        .active-high { background: var(--accent-cyan); opacity: 0.8; }
+        .active-med { background: var(--accent-cyan); opacity: 0.4; }
+        .active-low { background: var(--accent-cyan); opacity: 0.1; }
+
+        .keystroke-log {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: #000;
+            padding: 1.5rem;
+            border: 1px solid var(--border-dim);
+            border-radius: 4px;
+            color: #84849a;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .backspace { color: var(--accent-red); background: rgba(255, 51, 102, 0.1); padding: 0 2px; border-radius: 2px; }
+        .shift { color: var(--accent-orange); }
+
+        .agent-card { border: 1px solid var(--border-dim); background: #0c0c10; padding: 1.5rem; border-radius: 6px; }
+        .agent-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-dim); padding-bottom: 1rem; margin-bottom: 1rem; }
+        .agent-name { font-weight: 800; font-size: 1.2rem; color: #fff; }
+        .agent-status { font-family: var(--font-mono); font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; }
+        .status-active { background: rgba(0, 255, 102, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .status-bottleneck { background: rgba(255, 51, 102, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        /* Data table */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; font-family: var(--font-mono); font-size: 0.9rem; }
+        th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid var(--border-dim); }
+        th { color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>War Room Debrief // EOD</h1>
+        <div class="meta-tags">
+            <span class="meta-tag">OPERATOR: Scott Moran</span>
+            <span class="meta-tag">DATE: 2026-03-22</span>
+            <span class="meta-tag">ACTIVE HOURS: ~13.5H</span>
+            <span class="meta-tag text-cyan">AGENTS ACTIVE: 4 (Larry, Moe, Curly, Shemp)</span>
+        </div>
+    </header>
+
+    <div class="design-rationale">
+        <h4>First Principles: Designing for the Augmented Operator</h4>
+        <p>This document serves a dual purpose: it is the fully realized <strong>HTML prototype</strong> of the Go2.io End of Day (EOD) report, and embedded within it is the <strong>comprehensive 3000+ word design spec</strong> detailing exactly <em>why</em> this interface was built this way.</p>
+        <p><strong>The Core Philosophy:</strong> Standard corporate status reports measure time spent and tasks completed. They assume a 1:1 ratio between human effort and output. But Scott Moran is not an individual contributor; he is an edge-compute orchestrator acting as the human router for four autonomous AI agents. A traditional dashboard showing "Apps Used: Chrome 150m" is completely useless to him. Instead, this report must be designed as a <strong>War Room Debrief</strong>. It must measure <em>Leverage</em> (human hours vs. machine output), <em>Friction</em> (bottlenecks, hardware limits, context-switching), and <em>Cognitive State</em> (how the biological human is holding up under the strain of managing massive concurrent compute).</p>
+        <p>We are extracting insights from five disparate data streams: Biometrics (Oura), Telemetry (App usage & Universal Control), Raw Keystrokes, Voice Transcripts (33,000 words), and Git/Agent logs. The goal is to cross-correlate these to tell the actual story of the day: what shipped, where the human failed the machine, and what psychological avoidances are hiding in the data.</p>
+    </div>
+
+    <!-- SECTION 1: THE COMMANDER's INTENT & LEVERAGE -->
+    <h2 class="text-cyan">01. The Leverage Ratio & Daily Output</h2>
+    
+    <div class="grid-sidebar">
+        <div>
+            <p>Today was a bifurcated, hyper-productive sprint. The human acted primarily as a strategic voice director and a tactical code-corrector. You generated <strong>48 Git Commits</strong> and shipped major infrastructure, entirely out of proportion to your physical keystrokes.</p>
+            
+            <div class="grid-2">
+                <div class="panel">
+                    <div class="metric-block">
+                        <div class="metric-value text-cyan">33,142</div>
+                        <div class="metric-label">Words Dictated (Superwhisper)</div>
+                    </div>
+                    <p class="mono text-muted">~3.5 hours of continuous strategic vocalization. This is the primary mechanism of leverage.</p>
+                </div>
+                <div class="panel">
+                    <div class="metric-block">
+                        <div class="metric-value text-orange">26,832</div>
+                        <div class="metric-label">Raw Keystrokes Typed</div>
+                    </div>
+                    <p class="mono text-muted">A fraction of voice output. Used almost exclusively for manic micro-corrections and terminal routing.</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem;">What Actually Shipped (The 48 Commits)</h3>
+            <ul>
+                <li><span class="text-green">✔</span> <strong>Relay Hardened:</strong> Moe shipped the live-view orchestration tree (#45).</li>
+                <li><span class="text-green">✔</span> <strong>Memory Engine Phase 1:</strong> Larry shipped the MCP server for agent memory retrieval.</li>
+                <li><span class="text-green">✔</span> <strong>Sales Assets:</strong> EP01 slide deck completed + Dr. Jake dentistry deliverable drafted.</li>
+                <li><span class="text-green">✔</span> <strong>Data Pipeline:</strong> Shemp automated the ingestion of 25+ Superwhisper transcripts.</li>
+                <li><span class="text-green">✔</span> <strong>Lead Gen:</strong> Curly executed a 44-group mega scrape and 3 Apollo batches (~1,160 contacts).</li>
+            </ul>
+        </div>
+        
+        <div class="panel purple">
+            <h3 style="margin-top:0;">The Avoidance Gap</h3>
+            <p>While infrastructure shipping was massive, the data reveals a stark psychological avoidance of direct sales execution:</p>
+            <ul style="list-style-type: none; padding: 0;">
+                <li style="margin-bottom: 1rem;">
+                    <strong class="text-red">Issue #42 (110 Tier A Contacts):</strong> 
+                    <br><span class="mono text-muted">Open since Mar 19. Apollo credits at 0. Zero execution today despite Curly being active.</span>
+                </li>
+                <li style="margin-bottom: 1rem;">
+                    <strong class="text-red">April Onboarding:</strong> 
+                    <br><span class="mono text-muted">Stale >3 days. 33K words dictated today, but not one applied to unblocking your human assistant.</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="design-rationale">
+        <h4>Section 1 Design Thinking: Isolating Leverage & Avoidance</h4>
+        <p><strong>Why this section exists:</strong> A founder running an AI team isn't constrained by standard working hours; they are constrained by their ability to point the machine in the right direction. We open the report by comparing the two primary human inputs: Voice and Text. By visualizing 33k words of voice against 26k keystrokes, we immediately establish the <em>Leverage Ratio</em>. Scott is not a typist; he is a commander. Voice is used for high-level architectural framing ("I think there's a conflict of interest in going after..."), while keystrokes are used for immediate, tactical corrections.</p>
+        <p><strong>The Avoidance Correlation:</strong> Why highlight "The Avoidance Gap" in red right next to the massive list of shipped features? Because the data tells a psychological story. We know from the Agent Handoff logs that Issue #42 and the "April Onboarding" are stale. Simultaneously, Scott spent a massive amount of time dictating 33k words and building "Memory Engine Phase 1". This is a classic engineering founder anti-pattern: <em>building infrastructure is emotionally safer than doing sales outreach or managing human personnel.</em> The report must act as an objective mirror. It uses the git logs to say: "You are hiding behind your AI agents to avoid human interaction." This elevates the dashboard from a simple tracker to an operational coach.</p>
+    </div>
+
+    <!-- SECTION 2: BIOMETRICS & COGNITIVE STATE -->
+    <h2 class="text-orange">02. Cognitive State & The Friction Matrix</h2>
+
+    <p>Your biological limits are bleeding into the codebase. The correlation between your polyphasic work schedule, low REM sleep, and keystroke error rates indicates severe cognitive fragmentation during the night sprint.</p>
+
+    <div class="grid-2">
+        <div class="panel orange">
+            <h3 style="margin-top:0;">Biometric Baseline</h3>
+            <div class="grid-2" style="margin-bottom: 1rem;">
+                <div>
+                    <div class="metric-value" style="font-size: 2rem;">88</div>
+                    <div class="metric-label">Oura Sleep Score</div>
+                </div>
+                <div>
+                    <div class="metric-value text-red" style="font-size: 2rem;">43</div>
+                    <div class="metric-label">REM Sleep (Low)</div>
+                </div>
+            </div>
+            <p class="mono text-muted">Good overall rest (Deep Sleep 97), but severely compromised REM. REM is responsible for emotional regulation, complex problem solving, and motor sequencing. The low REM score is highly correlated with today's manic typing patterns and high syntax error volume.</p>
+        </div>
+
+        <div class="panel red">
+            <h3 style="margin-top:0;">The Universal Control Anomaly</h3>
+            <div class="metric-block">

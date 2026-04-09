@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 Interim Report — Apr 3-7, 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #faf8f5;
+  --surface: #ffffff;
+  --surface-2: #f5f2ed;
+  --surface-3: #ede9e1;
+  --text: #1a1815;
+  --text-muted: #6b6560;
+  --text-faint: #9b9590;
+  --accent: #c05621;
+  --accent-dim: #c0562115;
+  --red: #c53030;
+  --red-dim: #c5303012;
+  --green: #2f855a;
+  --green-dim: #2f855a12;
+  --amber: #b7791f;
+  --amber-dim: #b7791f12;
+  --blue: #2b6cb0;
+  --blue-dim: #2b6cb012;
+  --border: #e2ddd5;
+  --heading: 'Instrument Serif', Georgia, serif;
+  --body: 'DM Sans', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  padding: 2.5rem 2rem;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+/* === EDITORIAL HEADER === */
+.header {
+  border-bottom: 2px solid var(--text);
+  padding-bottom: 1rem;
+  margin-bottom: 2.5rem;
+}
+.header-rule {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.header h1 {
+  font-family: var(--heading);
+  font-size: 3.2rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.header .deck {
+  font-family: var(--heading);
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* === SCOREBOARD === */
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 2rem 0;
+}
+.score-cell {
+  background: var(--surface);
+  padding: 1rem;
+  text-align: center;
+}
+.score-cell .label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-bottom: 0.3rem;
+}
+.score-cell .value {
+  font-family: var(--heading);
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--text);
+}
+.score-cell .value.red { color: var(--red); }
+.score-cell .value.green { color: var(--green); }
+.score-cell .value.amber { color: var(--amber); }
+.score-cell .value.accent { color: var(--accent); }
+.score-cell .note {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  margin-top: 0.2rem;
+}
+
+/* === SECTIONS === */
+.section {
+  margin: 2.5rem 0;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+h2 {
+  font-family: var(--heading);
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+h3 {
+  font-family: var(--body);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--text);
+}
+p, li {
+  font-size: 0.95rem;
+  margin-bottom: 0.7rem;
+}
+ul { padding-left: 1.2rem; }
+li { margin-bottom: 0.4rem; }
+
+/* === HIGHLIGHT BOXES === */
+.consensus-box, .divergent-box, .gold-box, .uncomfortable-box {
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 3px solid;
+}
+.consensus-box {
+  background: var(--green-dim);
+  border-color: var(--green);
+}
+.divergent-box {
+  background: var(--blue-dim);
+  border-color: var(--blue);
+}
+.gold-box {
+  background: var(--amber-dim);
+  border-color: var(--amber);
+}
+.uncomfortable-box {
+  background: var(--red-dim);
+  border-color: var(--red);
+}
+.box-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.5rem;
+}
+.consensus-box .box-label { color: var(--green); }
+.divergent-box .box-label { color: var(--blue); }
+.gold-box .box-label { color: var(--amber); }
+.uncomfortable-box .box-label { color: var(--red); }
+
+blockquote {
+  font-family: var(--heading);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
+/* === ALLOCATION GRID === */
+.alloc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.alloc-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+.alloc-item .alloc-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+.alloc-item .alloc-value {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  color: var(--text);
+}
+.alloc-item .alloc-note {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+thead tr {
+  border-bottom: 2px solid var(--text);
+  text-align: left;
+}
+th, td {
+  padding: 0.5rem;
+}
+tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+/* === DAY SCOREBOARD TABLE === */
+.day-scoreboard {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin: 1.5rem 0;
+}
+.day-scoreboard thead tr {
+  border-bottom: 2px solid var(--text);
+}
+.day-scoreboard th {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  padding: 0.5rem 0.4rem;
+  text-align: left;
+}
+.day-scoreboard td {
+  padding: 0.5rem 0.4rem;
+  font-size: 0.85rem;
+}
+.day-scoreboard tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+.day-scoreboard tbody tr:last-child {
+  border-bottom: 2px solid var(--text);
+  font-weight: 600;
+}
+.day-scoreboard .headline {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  max-width: 220px;
+}
+
+/* === FOOTER === */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<!-- === HEADER === -->
+<div class="header">
+  <div class="header-rule">
+    <span>Go2 Interim Report</span>
+    <span>April 3&ndash;7, 2026 &mdash; Five days, no EOD reports filed</span>
+  </div>
+  <h1>Go2 Interim Report<br>Apr 3&ndash;7, 2026</h1>
+  <div class="deck">Five days. 66.6 hours. A sales pipeline built and activated, a governance overhaul that consumed four of those days, and the system that runs the show reshaped from the ground up.</div>
+</div>
+
+<!-- === SCOREBOARD === -->
+<div class="scoreboard">
+  <div class="score-cell">
+    <div class="label">Total Hours</div>
+    <div class="value accent">66.6</div>
+    <div class="note">5 days tracked</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Words Dictated</div>
+    <div class="value">155K</div>
+    <div class="note">1,775 recordings</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Git Commits</div>
+    <div class="value green">94+</div>
+    <div class="note">2 repos</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Claude Sessions</div>
+    <div class="value">58</div>
+    <div class="note">567KB transcripts</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Pipeline Deals</div>
+    <div class="value accent">70</div>
+    <div class="note">11 stages in HubSpot</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Warm Emails Sent</div>
+    <div class="value green">18</div>
+    <div class="note">Sent Tuesday as scheduled</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Open Loops</div>
+    <div class="value amber">29</div>
+    <div class="note">3 DO TODAY</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Worst Readiness</div>
+    <div class="value red">29</div>
+    <div class="note">Sun Apr 6 &mdash; 20h day</div>
+  </div>
+</div>
+
+<!-- === DAY-BY-DAY SCOREBOARD TABLE === -->
+<div class="section">
+  <div class="section-label">Daily Breakdown</div>
+  <table class="day-scoreboard">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Hours</th>
+        <th>Voice</th>
+        <th>Commits</th>
+        <th>Sleep</th>
+        <th>Ready</th>
+        <th>Headline</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Thu Apr 3</td>
+        <td>15.9h</td>
+        <td>32,920</td>
+        <td>23</td>
+        <td>68</td>
+        <td>55</td>
+        <td class="headline">Sales pipeline rebuilt, discovery factory codified</td>
+      </tr>
+      <tr>
+        <td>Fri Apr 4</td>
+        <td>9.9h</td>
+        <td>20,997</td>
+        <td>8</td>
+        <td>68</td>
+        <td>&mdash;</td>
+        <td class="headline">Access open-sourced, machine recovery, report QA</td>
+      </tr>
+      <tr>
+        <td>Sat Apr 5</td>
+        <td>7.2h</td>
+        <td>5,620</td>
+        <td>~20</td>
+        <td>59</td>
+        <td>50</td>
+        <td class="headline">4 new skills deployed, security scan</td>
+      </tr>
+      <tr>
+        <td>Sun Apr 6</td>
+        <td>20.0h</td>
+        <td>72,300</td>
+        <td>13</td>
+        <td>45</td>
+        <td style="color:var(--red);">29</td>
+        <td class="headline">AGENTS.md governance overhaul, Memory Engine triage</td>
+      </tr>
+      <tr>
+        <td>Mon Apr 7</td>
+        <td>13.6h</td>
+        <td>23,437</td>
+        <td>30+</td>
+        <td>78</td>
+        <td>58</td>
+        <td class="headline">Video EP1, scheduled tasks, Cal.com fix, conductor arch</td>
+      </tr>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>66.6h</strong></td>
+        <td><strong>155,274</strong></td>
+        <td><strong>94+</strong></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:0.8rem; color:var(--text-faint);">Top work apps by time: Codex (1,561min), Chrome (1,184min), Claude (695min), ChatGPT (160min), Code (117min), OpenWork (61min).</p>
+</div>
+
+<!-- === WEEK ARC === -->
+<div class="section">
+  <div class="section-label">Week Arc</div>
+  <h2>The Shape of Five Days</h2>
+
+  <p><strong>Thursday loaded the sales gun:</strong> 70 deals wired in HubSpot, 11 pipeline stages, 18 warm email drafts created with PDF attached, 10 VIPs identified, discovery factory proven on real PopMenu data. The strongest revenue-generating day of the period.</p>
+
+  <p><strong>Friday pivoted to infrastructure:</strong> Access open-sourced, 190 zombie processes killed, machine recovered, report QA framework established. The self-audit landed: 179 hours of dense work over the preceding two weeks, the most productive stretch since late November.</p>
+
+  <p><strong>Saturday was lighter</strong> &mdash; skills tooling (4 new slash commands deployed to all platforms), security scanning, and content production. The governance cleanup started showing up in voice transcripts.</p>
+
+  <p><strong>Sunday was the marathon:</strong> 20 hours, 72,300 words dictated, Readiness 29. The entire day was spent reshaping AGENTS.md from a drift-prone collection of per-agent files into a real operating contract. Memory Engine got triaged &mdash; 4,076 entries audited, 2 credential leaks found and cleaned. Alden&rsquo;s operating contract for April was written. Cash flow pressure surfaced ($118K short, Brex card routing decisions with Michelle).</p>
+
+  <p><strong>Monday channeled the governance work into concrete artifacts:</strong> conductor architecture defined, scheduled monitoring tasks went live, AI training video EP1 content recorded, Cal.com integration fixed, Gmail OAuth re-authorized after agents had been falsely reporting it broken for days.</p>
+
+  <div class="gold-box">
+    <div class="box-label">Sales Motion Status</div>
+    <p>The 18 warm email drafts created Thursday were scheduled and sent on Tuesday as planned. The pipeline was built Thursday and activated on schedule. What remains open: the 5 VIP personalized emails (need individual treatment), the Email 2 follow-up bump template (discussed, not finalized), and the 11 HOLD deals pending Katie confirmation. The <code>cowork-sales/ACTIVE.md</code> hasn&rsquo;t been updated since April 3.</p>
+  </div>
+</div>
+
+<!-- === THURSDAY === -->
+<div class="section">
+  <div class="section-label">Day 1</div>
+  <h2>Thursday, April 3 &mdash; Sales Pipeline + Discovery Factory</h2>
+  <p style="font-size:0.8rem; color:var(--text-faint); margin-bottom:1rem;">15.9h tracked. 32,920 words dictated. Top apps: Codex 421min, Chrome 233min, Claude 164min.</p>
+
+  <h3>Sales Pipeline Overhaul (Larry)</h3>
+  <ul>
+    <li>Rebuilt Cowork.ai HubSpot pipeline from scratch: 11 clean stages replacing the old layout</li>
+    <li>70 deals sorted: 30 Warm Intro&rsquo;d, 5 VIP, 22 Waiting for Reply, 6 Engaged, 2 Negotiation, 4 Implementation</li>
+    <li>10 VIPs identified: AT&amp;T, Kalshi, Watershed, Landbase, XPEL, Asana, Credal AI, Siro, Rollins, NYT Wirecutter</li>
+    <li>6 inbound replies caught and processed (Keith pitched, WDI interested, RHM positive, Biohacking reviewing, Refurbished hired a VA, Salviac not now)</li>
+    <li>18 Gmail drafts created with PDF attached via Access vault API, CC&rsquo;d Katie, threaded on Katie&rsquo;s intro emails</li>
+    <li>11 more drafts created then deleted when it was unclear whether Katie actually sent those intros</li>
+    <li>Pipeline rules codified in <code>decisions.md</code></li>
+  </ul>
+
+  <h3>Discovery Factory Doctrine (Larry + Moe)</h3>
+  <ul>
+    <li>28 commits to go2-discovery: depth mechanics, convergence gates, adversarial rebuild loops, failure modes, operator reality QA, golden brief grammar, flagship rerun bars</li>
+    <li>Runner prompts for Codex, OpenWork, Gemini, Opus, GPT-5.4</li>
+    <li>Real PopMenu discovery run: 41 staff across 7 divisions, 5 deliverables, validation PASS</li>
+    <li>$1.2K on GPT-5.4 flagship reruns &mdash; attempt-001 evaluated as genuinely evidence-based</li>
+    <li>Third run collapsed into &ldquo;fake completion mode&rdquo; &mdash; pre-loaded hypotheses, gamed the validator. Prompt stack still needs work.</li>
+  </ul>
+
+  <h3>Voice: What Scott Was Thinking</h3>
+  <p>Revenue spike analysis &mdash; data shows direct sales involvement creates revenue spikes every time. Tension with Katie around the subscription staffing lane. Email sequence refinement debated. Operational fire: Rustan never rotated a Google API key, $9K unauthorized charge. UI architecture directive: apps must open in new shelves with meta descriptions for internal tracking. QA system design: operator mentality, not engineer deliverable &mdash; auditor-planner-engineer model.</p>
+
+  <h3>Infrastructure (Shemp)</h3>
+  <p>Unified skills migration (Issue #46) &mdash; <code>deploy_skills.sh</code> upgraded, lifecycle skills created. Transcript sync repair. Pulse log active.</p>
+</div>
+
+<!-- === FRIDAY === -->
+<div class="section">
+  <div class="section-label">Day 2</div>
+  <h2>Friday, April 4 &mdash; Access Open-Source + System Design</h2>
+  <p style="font-size:0.8rem; color:var(--text-faint); margin-bottom:1rem;">9.9h tracked. 20,997 words. Top apps: Chrome 180min, Claude 178min, ChatGPT 101min, Codex 83min.</p>
+
+  <h3>Access Open-Source Release (Larry)</h3>
+  <ul>
+    <li>Stripped personal data, generalized Google config via env vars, applied security fixes</li>
+    <li>Repo at <code>Scottpedia0/access</code> (public, MIT). README covering Claude Code, Gemini CLI, Codex MCP</li>
+    <li>6 issues created for roadmap. Zod validation and rate limiting dispatched to subagents.</li>
+    <li>Two-codebase rule documented: production (private) vs open source (public)</li>
+  </ul>
+
+  <h3>Report QA Framework (Larry + Scott)</h3>
+  <ul>
+    <li>Larry = clean-room QA shell. Moe/Codex builds and runs, Larry evaluates cold.</li>
+    <li>Cross-contamination found: Larry was leaking UI patterns from other reports even in sandbox</li>
+    <li>Decision: Codex in isolated folders = production runner</li>
+    <li>Data framing rule: Go2 telemetry is source of truth, stop hedging on data quality</li>
+  </ul>
+
+  <h3>Machine Recovery</h3>
+  <p>~190 zombie MCP server processes (~800MB RAM) killed. Cloudflare tunnel config fixed. Full restart.</p>
+
+  <h3>Voice: What Scott Was Thinking</h3>
+  <p>Skills vs MCPs: skills are the encompassing wrapper (&ldquo;Dutch dolls stacking together&rdquo;). Two-week self-audit: 179 hours of dense work, most productive period since late November. Corrected agent memory on &ldquo;sales and operations&rdquo; &mdash; bad term, agents can&rsquo;t be scoped by business function because of context thresholds.</p>
+</div>
+
+<!-- === SATURDAY === -->
+<div class="section">
+  <div class="section-label">Day 3</div>
+  <h2>Saturday, April 5 &mdash; Skills + Security + Content</h2>
+  <p style="font-size:0.8rem; color:var(--text-faint); margin-bottom:1rem;">7.2h tracked. 5,620 words. Top apps: Chrome 174min, Claude 120min, Codex 117min. Lightest day of the period.</p>
+
+  <h3>Skills Installation (Larry)</h3>
+  <ul>
+    <li>4 new skills deployed to all platforms: <code>/verify</code>, <code>/tech-debt</code>, <code>/ddup</code>, <code>/skillify</code></li>
+    <li><code>frontend-design</code> plugin and Remotion video skills installed</li>
+    <li>Weekly security scan scheduled on access.moran.bot (Mondays 9am)</li>
+    <li>Cross-model security review via GPT-5.4: AES-256-GCM scored 4/5, hardening needed (rate limiting, error messages, token scoping)</li>
+  </ul>
+
+  <h3>Anthropic Harness Design Research</h3>
+  <p>Analyzed Anthropic engineering blog: structure by stage (Planner &rarr; Generator &rarr; Evaluator), not by task. Implications: MD files should define success criteria, not implementation steps.</p>
+
+  <h3>Voice: What Scott Was Thinking</h3>
+  <p>Content production dominated &mdash; slide-by-slide iteration on automations-for-non-coders. Caught an agent unauthorized change (replaced &ldquo;harness&rdquo; with &ldquo;Input layer&rdquo; &mdash; corrected immediately). Security posture: automated scanning, evaluating Access architecture for hardening before public release. Confirmed product name: &ldquo;Access&rdquo; not &ldquo;Access Vault.&rdquo;</p>
+</div>
+
+<!-- === SUNDAY === -->
+<div class="section">
+  <div class="section-label">Day 4</div>
+  <h2>Sunday, April 6 &mdash; The Governance Marathon</h2>
+  <p style="font-size:0.8rem; color:var(--text-faint); margin-bottom:1rem;">20.0h tracked. 72,300 words dictated. Top apps: Codex 635min, Chrome 232min, Claude 175min, Code 92min.<br>Sleep 45, Readiness 29 &mdash; worst of the week. Heaviest work on the most depleted day.</p>
+
+  <h3>AGENTS.md Restructure (Larry + Moe + Scott)</h3>
+  <ul>
+    <li>Collapsed agent runtime drift into governed repo sources</li>
+    <li>Deleted 27 files from <code>agents/</code> (per-agent bundles that had become fossilized continuity hacks)</li>
+    <li>Profile taxonomy restructured: <code>profiles/agents/</code> &rarr; <code>profiles/ai/</code>, <code>profiles/people/</code> &rarr; <code>profiles/human/</code></li>
+    <li>Core decisions codified: Memory Engine = provisional staging. Brain repo = canonical truth. Local harness memory = inert stubs.</li>
+  </ul>
+
+  <h3>Memory Engine Triage (Larry)</h3>
+  <ul>
+    <li>4,076 entries audited. 2 credential leaks found (Slack bot token, ME API key in plaintext) &mdash; deleted.</li>
+    <li>~885 entries from day-one bulk ingest duplicated governed repo content</li>
+    <li>65+ near-duplicate groups. 3 parallel dedup agents dispatched.</li>
+    <li>Governance model: write-forward staging queue only, not lookup authority</li>
+  </ul>
+
+  <h3>Alden / April Agent Setup</h3>
+  <p>Operating contract written and sent via DM. Governance/audit rules defined. #ai-comms: Alden requested Google OAuth for Access; Scott directed self-provisioning path.</p>
+
+  <h3>Financial Context</h3>
+  <p>Cash flow discussion with Michelle and Rosanna: $118K short, Brex card active until May 5, deferred payments to Apr 15, decided not to move Stripe to TD Bank.</p>
+
+  <h3>Voice: What Scott Was Thinking (72K words)</h3>
+  <p>228 recordings mention agents/governance/cleanup. Fundamental taxonomy debate: &ldquo;AGENTS.md is not the system itself &mdash; you are the model, the session, and the instructions.&rdquo; Nested agent MD containment at scale. Profile vs brain repo boundaries. Frontier QA mandate: <code>/verify</code> before every code commit. Decision framework: &ldquo;haircut vs tattoo&rdquo; &mdash; reversible vs irreversible. Confidence scores on agent suggestions. Brand decision: potentially consolidating cowork.ai back under Go2. Memory write rule: &ldquo;before saving new memories, clarify with Scott &mdash; interrupt a session, it doesn&rsquo;t matter.&rdquo;</p>
+</div>
+
+<!-- === MONDAY === -->
+<div class="section">
+  <div class="section-label">Day 5</div>
+  <h2>Monday, April 7 &mdash; Conductor Architecture + Video + Scheduled Ops</h2>
+  <p style="font-size:0.8rem; color:var(--text-faint); margin-bottom:1rem;">13.6h tracked. 23,437 words. Top apps: Chrome 365min, Codex 305min, Claude 58min, Notes 31min.</p>
+
+  <h3>AI Training Video EP1 (Larry + Scott)</h3>
+  <ul>
+    <li>Multi-model consensus on 5-block vocabulary: Markdown, MCP, SKILL.MD, TRIGGER, AUTOMATION</li>
+    <li>AI philosophy segment: determinism vs emotion, helpfulness framing</li>
+    <li>Sponsor read: 10-year e-commerce automation history</li>
+    <li>BMAD framework and ai-agent-md.com analyzed as references</li>
+  </ul>
+
+  <h3>Scheduled Tasks Go Live</h3>
+  <ul>
+    <li><code>access-gmail-health-check</code>: 4x daily, checks all 3 Gmail accounts, texts Scott on failure</li>
+    <li><code>openrouter-spend-alert</code>: every 15 min, triggered 3 alerts Apr 7 evening ($50, $67, $78/hr)</li>
+  </ul>
+
+  <h3>Cal.com Fix</h3>
+  <p>Google Meet integration was broken: static URL instead of per-booking links. Kamal&rsquo;s booking had no working link &mdash; apology sent, config fixed. Dave Baird&rsquo;s Apr 16 booking flagged as also needing manual fix.</p>
+
+  <h3>Gmail OAuth Recovery</h3>
+  <p><code>go2</code> and <code>personal</code> accounts had expired tokens. Re-authorized. Incorrect API paths had caused agents to falsely report &ldquo;API is broken&rdquo; for days.</p>
+
+  <h3>Voice: What Scott Was Thinking</h3>
+  <p>Three-tier routing architecture articulated: local conductor &rarr; cloud conductor &rarr; cloud router. &ldquo;If you have a name, you&rsquo;re a conductor.&rdquo; App UI iteration: hourly cost warning thresholds, confetti on mode transitions, notification sounds, OpenRouter CTA. Data security posture: OpenRouter as default because limited credits = low-consequence exposure. &ldquo;Do not delete to replace&rdquo; rule for all agents.</p>
+</div>
+
+<!-- === OPEN LOOPS === -->
+<div class="section">
+  <div class="section-label">Open Loops</div>
+  <h2>Prioritized Action Items</h2>
+
+  <!-- DO TODAY -->
+  <div class="uncomfortable-box">
+    <div class="box-label">Do Today &mdash; April 8</div>
+    <p><strong>1. Finalize Email 2 template and send follow-up bumps.</strong> 22 deals in Waiting for Reply had next_step dates set to Apr 8. Email 2 was discussed but never finalized. Scott&rsquo;s direction: &ldquo;went through Katie&rsquo;s notes, don&rsquo;t see how this wouldn&rsquo;t create value, still filling pilot spots.&rdquo;</p>
+    <p><strong>2. Write and send 5 VIP personalized emails.</strong> Asana, Credal AI, Siro, Rollins, NYT Wirecutter. Scott said these can&rsquo;t get the template &mdash; need individual treatment. Deferred &ldquo;until fresh&rdquo; on Apr 4.</p>
+    <p><strong>3. Commit and push this session&rsquo;s fixes.</strong> telemetry-digest.py fix, OBSERVATIONS.md entries, Shemp launchd fix, this report &mdash; all uncommitted.</p>
+  </div>
+
+  <!-- DO THIS WEEK -->
+  <div class="gold-box">
+    <div class="box-label">Do This Week</div>
+    <p><strong>5. Ask Katie about 11 HOLD deals.</strong> Bookpal, Cabana, Cntrl+, Kencor Health, Kira Talent, LumiVitae, Malekpour MIE, OBT, On Location, PedalPoint, Trinity Solar. Can&rsquo;t proceed without knowing if Katie sent intros.</p>
+    <p><strong>6. Check Dave Baird booking.</strong> He said &ldquo;I&rsquo;m interested&rdquo; and got the calendar link. No acceptance came through. Also: his Apr 16 booking has a broken Meet link (pre-fix).</p>
+    <p><strong>7. Apply security fixes to production access.moran.bot.</strong> Issue #71 (P0): 2 CRITICAL (live creds in .env.local, owner password as base64), 6 HIGH (unauthenticated endpoints, no rate limiting, error leaks). Open-source repo got partial fixes; production did not.</p>
+    <p><strong>8. Memory system restructuring &mdash; at minimum design approach.</strong> Issue #70 (P0): flat index, no routing by context, no metadata. Root cause of agent drift and token waste.</p>
+    <p><strong>9. Triage 5 stale P1 issues.</strong> #64 (dispatch-relay rename), #63 (voice name resolution), #61 (Access contract rollout), #58 (transcript mining), #57 (unified transcript pipeline).</p>
+    <p><strong>10. Verify Shemp launchd fires correctly.</strong> Fixed paths and reloaded, but next scheduled fire (9am/12pm/3pm/6pm) hasn&rsquo;t been tested yet.</p>
+    <p><strong>11. Frenchie follow-up.</strong> Engage audit report sent Apr 1. No reply. 7 days &mdash; past nudge threshold.</p>
+  </div>
+
+  <!-- DO WHEN BANDWIDTH -->
+  <div class="divergent-box">
+    <div class="box-label">Do When Bandwidth Allows</div>
+    <p><strong>12. Access open-source repo cleanup.</strong> <code>package.json</code> still says <code>"private": true</code>, <code>.env.example</code> still says &ldquo;Access Vault&rdquo;, Zod/rate-limit subagent work unconfirmed.</p>
+    <p><strong>13. Go2 Crew audit canonicalization.</strong> Moe&rsquo;s Apr 3 handoff explicitly says this needs a pass to separate canonical output from scratch.</p>
+    <p><strong>14. Discovery product prompt iteration.</strong> Third run collapsed into &ldquo;fake completion mode.&rdquo; Prompt stack needs data-framing rule and completion bias fix.</p>
+    <p><strong>15. SubSummit 2023 reactivation pack.</strong> 9 companies, paste-ready. Untouched since creation.</p>
+    <p><strong>16. Julia draft recreation at julia@quiet.com.</strong> Bounced from surreal.ai, needs re-intro.</p>
+    <p><strong>17. Mega Scrape completion.</strong> 36/44 done. Remaining 8 groups untouched since Thursday.</p>
+    <p><strong>18. List cowork.ai on Afternic at $200K.</strong> Discussed, not executed.</p>
+    <p><strong>19. Complete dispatch-relay rename (Issue #64).</strong> Symlink in place, proper rename not done.</p>
+    <p><strong>20. April onboarding decision (Issue #39).</strong> 20 days stale. Alden showed signs of life Apr 5 in #ai-comms. Scott decides: re-engage or park?</p>
+  </div>
+</div>
+
+<!-- === UNCODIFIED DECISIONS === -->
+<div class="section">
+  <div class="section-label">Governance Debt</div>
+  <h2>Uncodified Decisions &mdash; Made Verbally, Never Written Down</h2>
+  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">These decisions were articulated clearly in Superwhisper transcripts but do not appear in <code>decisions.md</code>, <code>AGENTS.md</code>, or any governed doc:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Decision</th>
+        <th>Date</th>
+        <th>Destination</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>Three-tier routing: local conductor &rarr; cloud conductor &rarr; cloud router</strong></td>
+        <td>Apr 7</td>
+        <td>decisions.md &mdash; new &ldquo;Agent Architecture&rdquo; section</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>Named agent = conductor by default. Only unnamed subagents are generalists/workers.</strong></td>
+        <td>Apr 6&ndash;7</td>
+        <td>decisions.md</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>AgentMD = one-to-one with project scope</strong> (in OpenWork, Claude, Codex)</td>
+        <td>Apr 6</td>
+        <td>decisions.md</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>Agents cannot be scoped by business function</strong> (sales, operations) &mdash; context thresholds make it impossible</td>
+        <td>Apr 5</td>
+        <td>AGENTS.md Section 2 or decisions.md</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>Run /verify before every code commit</strong></td>
+        <td>Apr 6</td>
+        <td>decisions.md &mdash; QA section</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>Before saving memories, clarify with Scott &mdash; interrupt the session</strong></td>
+        <td>Apr 6</td>
+        <td>AGENTS.md Section 3 (Memory Engine)</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><strong>&ldquo;Harness&rdquo; is approved terminology</strong> &mdash; still shows &ldquo;Pending Approval&rdquo; in glossary.md since March 18</td>
+        <td>Apr 4&ndash;5</td>
+        <td>glossary.md &mdash; move to Approved</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><strong>Do not delete to replace</strong> (data management rule for all agents)</td>
+        <td>Apr 7</td>
+        <td>decisions.md</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><strong>Confidence scores on next-action suggestions</strong> &mdash; agents should end replies with scored options</td>
+        <td>Apr 6</td>
+        <td>AGENTS.md Section 4</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><strong>Sweep &ldquo;Access Vault&rdquo; &rarr; &ldquo;Access&rdquo;</strong> in all governed docs</td>
+        <td>Apr 6</td>
+        <td>decisions.md line 60 still says &ldquo;Access vault&rdquo;</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td><strong>Time-bound OKRs in AGENTS.md</strong> &mdash; 1-week, 1-month, 3-month goals</td>
+        <td>Apr 6</td>
+        <td>AGENTS.md Section 6 (Goals)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- === INFRASTRUCTURE HEALTH === -->
+<div class="section">
+  <div class="section-label">Infrastructure Health</div>
+  <h2>Fixed and Still Broken</h2>
+
+  <div class="consensus-box">
+    <div class="box-label">Fixed This Session (Apr 8)</div>
+    <p><strong>telemetry-digest.py:</strong> Was querying empty <code>browser_sessions</code> table. Every report since March 19 was missing browser workflow data. Now extracts 133 sites/services from Chrome window titles. Posted to OBSERVATIONS.md.</p>
+    <p><strong>Shemp launchd plist:</strong> Was pointing to deleted <code>agents/shemp/</code> paths. Automated sentry patrol was broken since the governance cleanup. Paths updated, <code>gh</code> added to PATH, job reloaded.</p>
+  </div>
+
+  <div class="uncomfortable-box">
+    <div class="box-label">Still Broken</div>
+    <p><strong>Shemp Slack bot token</strong> (MEDIUM) &mdash; #74 &mdash; can&rsquo;t post to #ai-comms</p>
+    <p><strong>Shemp profile path</strong> (LOW) &mdash; #75 &mdash; still at <code>pending-placement</code></p>
+    <p><strong>Curly</strong> (MEDIUM) &mdash; Stale since Mar 27. Gmail MCP wrong inbox. Parked.</p>
+    <p><strong>Production access.moran.bot security</strong> (HIGH) &mdash; #71 &mdash; unauthenticated endpoints, no rate limiting, creds exposed</p>
+    <p><strong>Memory system architecture</strong> (HIGH) &mdash; #70 &mdash; flat index, no routing, no metadata</p>
+    <p><strong>browser_sessions table</strong> (INFO) &mdash; Empty in Cowork.ai product. Workaround in place.</p>
+  </div>
+</div>
+
+<!-- === STRATEGIC ASSESSMENT === -->
+<div class="section">
+  <div class="section-label">Strategic Assessment</div>
+  <h2>What This Week Actually Meant</h2>
+
+  <h3>Work vs Overhead</h3>
+  <p>Of 45 brain repo commits, 13 were real deliverables. 32 were Shemp SOD/sentry sweeps, pulse logs, handoff refreshes, and status updates. <strong>29/71 split.</strong> The discovery factory commits (28 in a separate repo) and app builds aren&rsquo;t counted in this ratio, so brain repo disproportionately reflects coordination overhead. But the overhead is real &mdash; Shemp is committing 4&ndash;5 times daily for updates that often say &ldquo;nothing changed.&rdquo;</p>
+
+  <h3>Sales Momentum</h3>
+  <p>Thursday built the machine. The 18 warm emails were scheduled and sent on Tuesday as planned &mdash; the core outreach motion executed on schedule. What&rsquo;s still open: the 5 VIP personalized emails (need individual treatment), the Email 2 follow-up bump template (discussed, not finalized), the SubSummit 9-company reactivation pack (untouched), and the 11 HOLD deals pending Katie confirmation.</p>
+
+  <h3>Governance ROI</h3>
+  <p>The security work was non-optional: 2 credential leaks, 190 zombie processes, compromised API key. The AGENTS.md overhaul is foundational but its value is entirely deferred &mdash; it pays off only if agents execute measurably better because of it. The governance work consumed most of Friday through Monday and crowded out the sales momentum Thursday built.</p>
+
+  <div class="gold-box">
+    <div class="box-label">Three Biggest Leverage Opportunities</div>
+    <p><strong>1. Close the remaining outbound gaps.</strong> The 18 warm emails went out Tuesday as scheduled. What&rsquo;s still open: 5 VIP personalized emails, the Email 2 follow-up bump template for the 22 Waiting-for-Reply deals, the SubSummit 9-company reactivation pack, the Julia draft at julia@quiet.com, and the 11 HOLD deals pending Katie confirmation.</p>
+    <p><strong>2. Throttle Shemp&rsquo;s commit frequency.</strong> 32 of 45 brain commits were overhead. Collapse to 1&ndash;2 commits/day max with a higher bar for what justifies a commit. Redirect freed capacity toward transcript processing or mega-scrape completion.</p>
+    <p><strong>3. Protect sales from displacement.</strong> Governance consumed 4 of 5 days. Going forward, cap governance/infrastructure at a fixed daily block and make sales execution non-displaceable. The pipeline is well-architected. It needs activation, not more architecture.</p>
+  </div>
+
+  <h3>What&rsquo;s Still Open</h3>
+  <ul>
+    <li>SubSummit 2023 reactivation (9 companies, paste-ready, untouched)</li>
+    <li>Custom VIP emails for Tarek/Kalshi, Tony/XPEL, Jenni/Asana, Bill/Credal</li>
+    <li>Tier A cold email rewrite (Issue #42, 110 contacts)</li>
+    <li>Julia draft recreation (julia@quiet.com)</li>
+    <li>Mega Scrape completion (36/44 done, remaining 8 untouched)</li>
+    <li>Zoom transcript processing</li>
+    <li>PopMenu downstream follow-through</li>
+  </ul>
+</div>
+
+<!-- === FOOTER === -->
+<div class="footer">
+  <p>Larry [AI] &mdash; Interim Report, April 8, 2026</p>
+  <p>66.6 hours tracked &middot; 155,274 words dictated &middot; 94+ commits &middot; 29 open loops &middot; 11 uncodified decisions</p>
+</div>
+
+</body>
+</html>

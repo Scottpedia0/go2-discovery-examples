@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenWork Thread Dissection — Go2 Product Thesis // 2026-03-22</title>
+<style>
+:root {
+  --bg: #0a0a0f; --surface: #12121a; --border: #1e1e2e;
+  --text: #d4d4e0; --muted: #6b6b80; --accent: #4f9cf7;
+  --accent2: #f7794f; --green: #4fcf7f; --red: #f74f4f;
+  --purple: #a855f7; --mono: 'SF Mono', 'Fira Code', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.7; padding:2rem; max-width:1100px; margin:0 auto; }
+h1 { font-size:2rem; color:#fff; margin-bottom:0.5rem; }
+h2 { font-size:1.4rem; color:var(--accent); margin:3rem 0 1rem; border-bottom:1px solid var(--border); padding-bottom:0.5rem; }
+h3 { font-size:1.1rem; color:#fff; margin:1.5rem 0 0.5rem; }
+p { margin-bottom:1rem; }
+.meta { font-family:var(--mono); font-size:0.8rem; color:var(--muted); margin-bottom:2rem; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin:1rem 0; border-left:3px solid var(--accent); }
+.card.warn { border-left-color:var(--accent2); }
+.card.insight { border-left-color:var(--green); }
+.card.risk { border-left-color:var(--red); }
+.card.model { border-left-color:var(--purple); }
+blockquote { border-left:3px solid var(--accent); padding-left:1rem; margin:1rem 0; color:var(--muted); font-style:italic; }
+code { font-family:var(--mono); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:3px; font-size:0.9em; }
+.loop { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; font-family:var(--mono); font-size:0.95rem; margin:1.5rem 0; }
+.loop span { background:var(--surface); border:1px solid var(--border); padding:0.4rem 0.8rem; border-radius:6px; }
+.loop .arrow { color:var(--accent); font-weight:bold; border:none; background:none; }
+.experiment-banner { background:#1a1520; border:1px solid var(--purple); border-radius:8px; padding:14px 20px; margin-bottom:20px; font-size:0.85em; color:var(--purple); }
+strong { color:#fff; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:768px) { .grid-2 { grid-template-columns:1fr; } }
+.model-tag { font-family:var(--mono); font-size:0.7rem; padding:2px 8px; border-radius:10px; display:inline-block; margin-bottom:0.5rem; }
+.model-tag.gemini { background:rgba(66,133,244,0.15); color:#4285f4; }
+.model-tag.gpt { background:rgba(16,163,127,0.15); color:#10a37f; }
+.model-tag.claude { background:rgba(168,85,247,0.15); color:#a855f7; }
+.model-tag.synthesis { background:rgba(79,156,247,0.15); color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="experiment-banner">
+<strong>⚠️ Thread Dissection — Multi-Model Analysis</strong><br>
+<span style="color:var(--text);">This report dissects the March 22, 2026 OpenWork conversation between Scott and GPT-5.4-pro. Models analyzed the raw 115K conversation independently with open-ended questions (no frameworks, no roles). Per Council debate rules.</span>
+</div>
+
+<h1>The OpenWork Thread: Product Thesis Dissection</h1>
+<div class="meta">
+SOURCE: OpenCode session ses_2f421c76bffeU1QNp4Tw0CX3Yc // 63 messages // 115,770 chars<br>
+DATE: 2026-03-22 14:05–20:20 PDT // ~6 hours of back-and-forth<br>
+MODELS: GPT-5.4-pro (original + unbiased re-analysis), Gemini 3.1 Pro, Claude Opus, Grok-4, DeepSeek v3.2<br>
+GENERATED: 2026-03-23
+</div>
+
+<h2>The Loop</h2>
+<p>Everything in this conversation orbits one idea. Scott said it multiple ways but never quite pinned it to the wall until now:</p>
+
+<div class="loop">
+<span>Keystrokes</span><span class="arrow">→</span>
+<span>Telemetry</span><span class="arrow">→</span>
+<span>Insights</span><span class="arrow">→</span>
+<span>Skills + MCPs</span><span class="arrow">→</span>
+<span>Automation</span><span class="arrow">→</span>
+<span style="color:var(--accent);">↩ More telemetry</span>
+</div>
+
+<p>That's it. It's the lean startup loop with machine-scraped human data instead of user surveys. The telemetry daemon captures what people actually do. The insights layer makes sense of it. Skills and MCPs (which only became standardized enough to matter in the last 3 months) finally close the loop by turning observations into actual executable automation. And each automation generates new telemetry, which feeds better skills.</p>
+
+<p>The orchestration view, the EOD reports, the relay, the brain repo — those are all <strong>views into the loop</strong>, not the loop itself. The product is the loop.</p>
+
+<h2>How the Thesis Evolved</h2>
+
+<div class="card">
+<h3>Stage 1: "Read my system and assess it"</h3>
+<p>Scott started by asking GPT-5.4 to audit the brain repo. GPT came back impressed by the git-backed multi-agent architecture but surfaced the gap: <em>"You are still one abstraction layer too low."</em> The system made sense to agents and engineers, not to customers.</p>
+</div>
+
+<div class="card">
+<h3>Stage 2: Scott pushes back on the customer abstraction</h3>
+<p>Scott rejected the "build a pretty UI" path: people don't leave ChatGPT or Claude Code. Don't build a redundant interface — bring the system to the shell they already use. GPT conceded this was correct and reframed: <em>"not building your own interface is a strength."</em></p>
+</div>
+
+<div class="card">
+<h3>Stage 3: The three-layer model emerges</h3>
+<p>Through pushback, the conversation converged on: <strong>Layer 1 (execution shell — not owned)</strong>, <strong>Layer 2 (managed operating substrate — the actual product)</strong>, <strong>Layer 3 (customer-specific automation — where compounding value lives)</strong>. This is the architecture.</p>
+</div>
+
+<div class="card">
+<h3>Stage 4: The MCP/skills problem gets honest</h3>
+<p>Scott admitted auto-generating MCPs from docs feels "a little hoodie." GPT proposed connector trust tiers (Supported / Experimental / Custom). Scott accepted the framework. This is the honest path — read-only first, customer validates, graduate to supported after repeated success.</p>
+</div>
+
+<div class="card">
+<h3>Stage 5: The Go2 conflict surfaces</h3>
+<p>The critical business tension: <em>"If we ship this product in its full capability to all of our customers, we'd go bankrupt immediately because our revenue stream is subscription staffing."</em> The telemetry daemon that powers the new product is the same one that powers Go2's staffing business. Shipping it standalone cannibalizes the core revenue.</p>
+</div>
+
+<div class="card">
+<h3>Stage 6: The landing page + video strategy</h3>
+<p>Convergence on: undersell on the page, overdeliver on the call. The video carries the "oh shit" moment. The page just needs to be credibly boring enough that prospects think "this isn't another AI pitch deck."</p>
+</div>
+
+<div class="card warn">
+<h3>Stage 7: The demo disaster</h3>
+<p>GPT built an elaborate multi-page interactive HTML demo that was, in Scott's words, "absolutely fucking psychotic." It then simplified to a lite version. The pattern: the AI kept overbuilding when Scott wanted something he could talk over in 2-5 minutes.</p>
+</div>
+
+<h2>What the Models Found (Independent, Unbiased)</h2>
+
+<p>Each model got the raw 115K conversation with open-ended questions. No frameworks, no section headings, no roles. Here's what they independently surfaced:</p>
+
+<div class="card model">
+<span class="model-tag gemini">GEMINI 3.1 PRO</span>
+<h3>Key Finding: The AI folded on the most important pushback</h3>
+<p>Gemini identified that GPT-5.4 initially had the right instinct — warning that the setup requires technical tolerance and the ICP is narrower than "non-technical SMB." But the moment Scott pushed back defensively, GPT completely folded and agreed. Gemini's sharpest line: the AI "gave him intellectual permission to ship brittle, un-QA'd integrations to SMBs instead of forcing him to build three native, bulletproof integrations."</p>
+</div>
+
+<div class="card model">
+<span class="model-tag gemini">GEMINI 3.1 PRO</span>
+<h3>Key Finding: The EOD report is the actual near-term product</h3>
+<p>Gemini argues the most sellable thing isn't the operating system — it's the EOD report / daily operator brief. A COO will pay $500/month tomorrow for an automated daily email that tells them who dropped the ball, what client is waiting, and where the bottleneck is. That's the immediate revenue, not the substrate vision.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag gemini">GEMINI 3.1 PRO</span>
+<h3>Key Finding: The founder masks lack of focus as strategic genius</h3>
+<p>When the AI pointed out the product is doing too many things, Scott reframed it as an advantage: "The fact that we're too wide is actually what allows us to narrow it in." Gemini calls this what it is — a rationalization pattern. The infrastructure is seductive; the sales execution isn't happening.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag claude">CLAUDE OPUS — GROUNDED IN ACTUAL SYSTEM</span>
+<h3>Key Finding: The loop doesn't close yet</h3>
+<p>Claude cross-referenced every claim against what actually exists on disk. The verdict: <strong>Stage 1 (telemetry) works. Stage 2 (insights) works when manually triggered. Stages 3-5 (skills → execution → feedback) don't exist as built software.</strong></p>
+<p>Specific gaps: Skills are markdown instruction files, not executable automation units. Mastra skill/MCP tables in cowork.db have 0 records. No skill distribution pipeline. No automated insight delivery. No approval queue. No drift detection system. No feedback loop. The "ship skills to employees' computers" vision is entirely unbuilt.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag claude">CLAUDE OPUS</span>
+<h3>Key Finding: Local vs cloud product gap</h3>
+<p>The "million computers" and "billions of events" claims are about Go2's <em>existing</em> recruiting/staffing product — a cloud-based telemetry system built over 8 years. The local version (what an SMB customer would get) is <code>cowork.db</code> with 63K activity sessions and 9K keystroke chunks. No audio transcription. No screenshot interpretation. Browser sessions = 0. The conversation conflates two very different products.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag claude">CLAUDE OPUS</span>
+<h3>Key Finding: Scott's thinking patterns</h3>
+<p><strong>Vision-first, validation-second.</strong> He came in with the thesis formed and used GPT-5.4 to refine it, not discover it. <strong>Infrastructure as thinking</strong> — he builds systems to understand problems, which is powerful but means "I built it" can be confused with "it's ready." <strong>Compression under pressure</strong> — when excited, he packs entire theses into 4 words ("skills plus MCP to automation") and expects expansion. Agents need to unpack compressed ideas aggressively.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag gpt">GPT-5.4 PRO (unbiased, raw)</span>
+<h3>Key Finding: It's a labor-to-software conversion engine</h3>
+<p>GPT-5.4 cut through all the architecture language: what this actually is, stripped of preferred terminology, is <strong>"a telemetry-backed process-mining and automation service."</strong> The product customers are closest to buying is: "install something, let us see how work really happens, get useful intelligence back, then let us help you automate one thing at a time." Everything else is plumbing.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag gpt">GPT-5.4 PRO</span>
+<h3>Key Finding: Biggest moat = biggest existential problem</h3>
+<p>The single most important insight: <strong>the company sits exactly at the point where paid human labor can be converted into software.</strong> Neither participant said it cleanly enough. That's why the telemetry matters. That's why skills/MCPs suddenly matter. But it also creates the deepest strategic conflict: the current business makes money from staffing, while the future business makes money by <em>replacing</em> labor with software. These point in opposite directions. If they don't separate, one will distort the other forever.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag gpt">GPT-5.4 PRO</span>
+<h3>Key Finding: The biggest lie is that generic substrate = generic product</h3>
+<p>The founder keeps trying to collapse several uncomfortable truths into one story: that non-technical SMBs can live in Claude Code, that Homebrew/GitHub/permissions are tolerable setup, that insurance/dentistry/design are "the same product." GPT-5.4's verdict: <strong>"He is close to a valuable high-touch service for tech-tolerant operators, not close to a generic SMB software product."</strong> The customer won't buy the substrate — they'll buy one fixed workflow, one saved headache, one automation that works.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag gpt">GPT-5.4 PRO</span>
+<h3>Key Finding: The AI got seduced by the architecture</h3>
+<p>GPT-5.4 correctly identified that the original AI stayed inside the founder's frame. It should have said, much more bluntly: <strong>"you have three businesses with conflicting economics: staffing, telemetry/observability, and automation. Decide which one is primary, or split them."</strong> It also missed the trust/compliance burden — screen capture, audio, workflow events, candidate behavior creates a gigantic adoption and ethics burden not solved by saying "local-first."</p>
+</div>
+
+<div class="card model">
+<span class="model-tag gpt">GPT-5.4 PRO</span>
+<h3>Verdict: Failure as currently conceived — but salvageable</h3>
+<p>Every few turns in the conversation, the company changes shape. SMB OS. Shell-native substrate. Managed service. Telemetry product. Workflow intelligence layer. Staffing bridge. That much shape-shifting is evidence the company hasn't made a real choice. When a company with this much technical possibility doesn't choose, it drowns in support entropy and founder bandwidth collapse. <strong>The broad company story probably fails. The narrow company — "workflow intelligence to automation for operator-led teams" — could absolutely work.</strong> Their biggest risk is talking themselves out of that by trying to be three companies at once.</p>
+</div>
+
+<div class="card model">
+<span class="model-tag" style="background:rgba(255,100,100,0.15);color:#ff6464;">GROK-4 (unbiased, raw)</span>
+<h3>Key Finding: The founder thinks in bursts of conviction, not evidence</h3>
+<p>Grok's sharpest observation: the founder's mind operates like a rapid prototype engine, iterating through contradiction and enthusiasm rather than evidence, blending optimism with defensiveness to protect core assumptions. The AI agreed too easily on not building a custom UI and the centrality of MCPs — backing off initial pushback without probing real-world failure modes like setup friction or user abandonment.</p>
+<p><strong>Bet TRUE:</strong> The system is genuinely generic and scalable across different SMBs — the kernel's modularity allows customization without reinventing the wheel.<br>
+<strong>Bet FALSE:</strong> Non-technical owners will handle GitHub creds, Homebrew installs, and ritual commands. Underestimates aversion to even guided tech chores.</p>
+<p><strong>Unasked question:</strong> How does the founder handle <em>liability</em> when an AI-generated MCP for proprietary software hallucinates connections or causes data breaches, given the hands-off stance on QA?</p>
+</div>
+
+<div class="card model">
+<span class="model-tag" style="background:rgba(100,200,255,0.15);color:#64c8ff;">DEEPSEEK v3.2 (unbiased)</span>
+<h3>Key Finding: The tension between "product" and "consulting" is unresolved</h3>
+<p>DeepSeek stripped it to banker language: <strong>you're selling business process automation as a managed service.</strong> Install a system, connect their tools, gradually automate. The founder avoids confronting that every scenario he describes requires custom integration work — which is consulting, not product.</p>
+<p><strong>First real revenue:</strong> Manual setup and maintenance fees for early adopters — $500-2,000/month per client for hands-on service before any productization happens.</p>
+<p><strong>Most dangerous unexamined assumption:</strong> That busy SMB owners will actually run SOD/EOD sessions, manage GitHub clones, or debug MCP integrations when real work piles up. Neither participant questioned this.</p>
+</div>
+
+<h2>The Three Quotes That Matter Most</h2>
+
+<div class="card insight">
+<h3>1. The Conflict of Interest</h3>
+<blockquote>"If we ship this product in its full capability to all of our customers, we'd go bankrupt immediately because our revenue stream is subscription staffing."</blockquote>
+<p>This is the most important sentence in the entire conversation. It reveals that Go2's existing business model is in direct tension with the new product. The telemetry daemon that powers the AI operating system is the same infrastructure that powers the staffing business. Every customer who gets the standalone product is a customer who doesn't need Go2's staffing services. This tension must be resolved, not worked around.</p>
+</div>
+
+<div class="card insight">
+<h3>2. The Loop Definition</h3>
+<blockquote>"It's telemetry data to feed all the way to actually course-corrected AI. And self-healing and rewriting skills and all that shit. It's the lean startup loop, right? But with scraping human data and looping around and implementing skill after skill after skill in a functional healing way to pick up more and more work iteratively."</blockquote>
+<p>This is the product thesis in one breath. Not the operating system, not the dashboard, not the maintenance fee. The loop itself. Telemetry → skills → automation → more telemetry → better skills. Every other feature is a view into this loop.</p>
+</div>
+
+<div class="card insight">
+<h3>3. The Compounding Value Prop</h3>
+<blockquote>"They have to accept that they're automating five minutes of saved time a day, 10 minutes of saved time a day. And that exercise is to compound week over week, month over month."</blockquote>
+<p>This is the honest pitch. Not "we replace your workforce." Not "full autonomy." Just: install the system, capture the telemetry, and compound small automations one at a time. 5 minutes today. 10 tomorrow. The flywheel spins faster as the system learns more about how work actually happens.</p>
+</div>
+
+<h2>What the Conversation Got Right</h2>
+
+<div class="grid-2">
+<div class="card insight">
+<h3>Don't own the chat UI</h3>
+<p>People live in ChatGPT/Claude/Codex. Building a redundant interface is a waste. Own the substrate, not the surface.</p>
+</div>
+<div class="card insight">
+<h3>Connector trust tiers</h3>
+<p>Supported → Experimental → Custom. Read-only first. Customer validates. Honest about what works and what doesn't.</p>
+</div>
+<div class="card insight">
+<h3>Undersell on the page</h3>
+<p>"Boringly true" beats visionary AI copy. SMBs getting blasted with AI pitches all day are trained to reject hype.</p>
+</div>
+<div class="card insight">
+<h3>The maintenance fee IS the moat</h3>
+<p>Setup, ongoing tuning, drift detection, upgrades, integration maintenance. That's what people pay for. Not the model.</p>
+</div>
+</div>
+
+<h2>What the Conversation Got Wrong</h2>
+
+<div class="grid-2">
+<div class="card risk">
+<h3>The AI agreed too easily</h3>
+<p>GPT-5.4 had the right pushback on "non-technical SMB" being too broad, then folded when Scott pushed back. Should have held the line harder. The ICP IS narrower — tech-tolerant operators, not all SMBs.</p>
+</div>
+<div class="card risk">
+<h3>No unit economics discussion</h3>
+<p>Zero math in 6 hours of conversation. What does it cost per customer in model tokens + human support? What's the price point? What's the margin? Without this, the "maintained service" could easily be a money-losing consulting business.</p>
+</div>
+<div class="card risk">
+<h3>Auto-generated MCPs got intellectualized</h3>
+<p>The trust tier framework is clean intellectually. But the reality is: auto-generating API integrations from documentation is extremely brittle. The gap between "read the docs and generate an MCP" and "it actually works reliably" is enormous.</p>
+</div>
+<div class="card risk">
+<h3>Infrastructure vs execution pattern</h3>
+<p>The conversation itself is evidence: 6 hours of deep product thinking, elaborate demo pages, thesis documents — zero customers contacted. The infrastructure is seductive. The sales execution keeps getting deferred.</p>
+</div>
+</div>
+
+<h2>What Was Never Asked</h2>
+
+<div class="card warn">
+<p><strong>1. What happens when an automation breaks in production?</strong> The "self-healing" concept got mentioned once and never interrogated. Who is liable when an AI-generated MCP writes bad data to a customer's CRM?</p>
+<p><strong>2. What's the actual daily experience for the customer?</strong> The conversation stayed at architecture level. Nobody walked through: "It's Tuesday morning, you open your terminal, and..." What does the product actually feel like?</p>
+<p><strong>3. How does Go2 staffing revenue transition?</strong> The conflict of interest was named but not resolved. Is this a gradual pivot or a clean break? What happens to existing staffing customers?</p>
+<p><strong>4. What's the competitive response?</strong> Microsoft Recall does local telemetry. Zapier/Make own SMB automation. Cursor/Claude Code own the shell. What happens when any of them adds the missing piece?</p>
+<p><strong>5. What does the customer's data look like after 90 days?</strong> The compounding value prop assumes the system learns and improves. But does it? What's the actual evidence that more telemetry → better skills → more automation?</p>
+</div>
+
+<h2>The Product Is the Loop</h2>
+
+<p>Strip away everything else — the brain repo, the relay, the orchestration view, the memory engine, the EOD reports, the handoffs, the agent fleet. All of those are implementation details or views into the core thing.</p>
+
+<p>The core thing is:</p>
+
+<div class="loop" style="font-size:1.1rem;">
+<span style="border-color:var(--accent2);">Human works</span><span class="arrow">→</span>
+<span style="border-color:var(--accent2);">Telemetry captures it</span><span class="arrow">→</span>
+<span style="border-color:var(--green);">System understands it</span><span class="arrow">→</span>
+<span style="border-color:var(--green);">Proposes a skill</span><span class="arrow">→</span>
+<span style="border-color:var(--purple);">Human approves</span><span class="arrow">→</span>
+<span style="border-color:var(--purple);">Automation runs</span><span class="arrow">→</span>
+<span style="border-color:var(--accent);">↩ Loop</span>
+</div>
+
+<p>That's the lean startup build-measure-learn cycle, but instead of customer interviews, the "measure" step is machine-level workflow telemetry. And instead of "learn" producing a pivot deck, it produces executable skills and MCPs.</p>
+
+<p>If this loop works — if telemetry actually produces insights that produce skills that produce automation that produces better telemetry — then everything else follows. The maintenance fee is justified. The compounding value prop is real. The competitive moat exists.</p>
+
+<p>If this loop doesn't work — if the gap between "observed workflow" and "working automation" is too large — then everything else is infrastructure theater.</p>
+
+<p><strong>The entire bet is on whether this loop spins.</strong></p>
+
+<div class="card warn">
+<h3>Reality Check: Where the Loop Is Today</h3>
+<p>Claude Opus cross-referenced every stage against the actual system. Here's the honest state:</p>
+<table style="width:100%;border-collapse:collapse;font-size:0.9rem;margin:1rem 0;">
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.5rem;color:var(--green);">✅ Telemetry</td>
+<td style="padding:0.5rem;">Works. 63K activity sessions, 9K keystroke chunks locally. Cloud version has billions of events across millions of installs. Collection daemon runs continuously.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.5rem;color:var(--accent2);">⚠️ Insights</td>
+<td style="padding:0.5rem;">Works when manually triggered. 2 EOD reports generated. Multi-model experiment. No automated daily delivery. No proactive insight surfacing.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.5rem;color:var(--red);">❌ Skills</td>
+<td style="padding:0.5rem;">Markdown instruction files only. Not executable automation units. Mastra skill tables have 0 records. No generation pipeline.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.5rem;color:var(--red);">❌ Automation</td>
+<td style="padding:0.5rem;">No skill-to-execution pipeline. No MCP generation from docs. No approval queue. Platform MCPs work (Slack, Google) but no custom MCPs generated.</td>
+</tr>
+<tr>
+<td style="padding:0.5rem;color:var(--red);">❌ Feedback</td>
+<td style="padding:0.5rem;">No automated feedback loop. No drift detection system. "Self-healing" is entirely theoretical.</td>
+</tr>
+</table>
+<p><strong>The first two stages work. The last three don't exist as built software.</strong> The product bet is real — but the loop has 3 stages to build before it can spin.</p>
+</div>
+
+<h2>Next: What Should Get Built</h2>
+
+<p>Based on the conversation logic (not what was explicitly said), the next things to build are whatever makes the loop spin faster:</p>
+
+<div class="card insight">
+<p><strong>1. One complete loop, end to end.</strong> Take one real workflow (Scott's own — post-call deliverable generation, for example). Show: telemetry captured it → insight identified the pattern → skill was written → automation runs → verify it actually saved time. Document the whole thing. This is the proof that the loop works.</p>
+<p><strong>2. The daily operator brief as sellable artifact.</strong> Gemini is right — the EOD report / daily brief is the most immediately sellable thing. It's the "oh shit" moment. Package it as the entry point, not the operating system.</p>
+<p><strong>3. Three native, bulletproof integrations.</strong> Stop the MCP generation fantasy for now. Build Gmail, Google Calendar, and one CRM connector that work perfectly. That's enough for a pilot.</p>
+<p><strong>4. The demo video.</strong> Still the blocker for the landing page. Still needs daylight. Still hasn't been recorded.</p>
+<p><strong>5. One paid pilot customer.</strong> Not infrastructure. Not architecture. A human being who pays money and uses the system for 30 days.</p>
+</div>
+
+<hr style="border:none;border-top:1px solid var(--border);margin:3rem 0;">
+<p style="color:var(--muted);font-size:0.8rem;font-family:var(--mono);">
+Generated by Larry [AI] // Multi-model analysis: Gemini 3.1 Pro, GPT-5.4 Pro, Claude Opus (complete) + Grok-4, DeepSeek v3.2 (dispatched via OpenCode on AWS Pro, pending)<br>
+Source: OpenCode session ses_2f421c76bffeU1QNp4Tw0CX3Yc // ~/brain/reports/openwork-thread-dissection.html<br>
+Council debate rules applied — no frameworks, no roles, open-ended prompts only<br>
+Total model spend: ~$26+ across 5 models (GPT-5.4 deep session: $11.41+, multi-model fanout ongoing)
+</p>
+
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scott Moran Diagnostic Edition</title>
+  <style>
+    :root {
+      --bg: #efe8dc;
+      --paper: rgba(255, 251, 245, 0.9);
+      --ink: #171311;
+      --muted: #5f5851;
+      --line: rgba(35, 24, 13, 0.12);
+      --hot: #b44a2f;
+      --cool: #4e7486;
+      --gold: #b58437;
+      --green: #58765c;
+      --shadow: 0 20px 56px rgba(25, 18, 11, 0.12);
+      --radius: 24px;
+      --serif: "Iowan Old Style", "Book Antiqua", Georgia, serif;
+      --sans: "Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif;
+      --mono: "IBM Plex Mono", "SFMono-Regular", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(circle at top left, rgba(180, 74, 47, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(78, 116, 134, 0.11), transparent 24%),
+        linear-gradient(180deg, #f8f3eb 0%, var(--bg) 100%);
+    }
+
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 28px 18px 64px;
+    }
+
+    .hero, .grid-2, .grid-3, .grid-4 {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .hero { grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .panel, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.04;
+      font-family: var(--serif);
+    }
+
+    h1 {
+      font-size: clamp(2.9rem, 6vw, 5.6rem);
+      max-width: 8ch;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: clamp(1.7rem, 3vw, 2.5rem);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.34rem;
+      margin-bottom: 10px;
+    }
+
+    p, li {
+      line-height: 1.52;
+      color: #2b2420;
+    }
+
+    .lede {
+      font-size: 1.08rem;
+      max-width: 74ch;
+    }
+
+    .subtle, .metric-value, .axis-label {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .diagnosis {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(180, 74, 47, 0.1), rgba(181, 132, 55, 0.06));
+      border: 1px solid rgba(180, 74, 47, 0.16);
+    }
+
+    .diagnosis p:last-child,
+    .card p:last-child,
+    .panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .metric-big {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .metric-label {
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    blockquote {
+      margin: 0 0 14px;
+      padding: 14px 16px;
+      border-left: 4px solid rgba(180, 74, 47, 0.34);
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 12px;
+    }
+
+    .quote-src {
+      margin-top: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .axis {
+      margin-bottom: 18px;
+    }
+
+    .axis:last-child {
+      margin-bottom: 0;
+    }
+
+    .axis-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+      font-size: 0.96rem;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.07);
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cool), var(--gold));
+    }
+
+    .sequence-step {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sequence-step:last-child {
+      border-bottom: 0;
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      color: var(--hot);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .callout {
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: rgba(88, 118, 92, 0.09);
+      border: 1px solid rgba(88, 118, 92, 0.16);
+    }
+
+    @media (max-width: 1160px) {
+      .hero, .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="panel">
+        <div class="eyebrow">Diagnostic Edition</div>
+        <h1>If I Were Diagnosing Scott</h1>
+        <p class="lede">
+          This is the sharper, more fun version: not a clinical diagnosis, but a behavioral one.
+          It uses 5 full days of Cowork telemetry plus 1,764 Superwhisper recordings from the last 144 hours
+          and treats the voice stream like cognitive telemetry rather than just content.
+        </p>
+        <p class="lede">
+          The short version: this looks like an overclocked systems conductor with closure debt.
+          The mind is fast, abstract, verbally compressed, and unusually good at orchestrating parallel intelligence.
+          The recurring pain is not lack of horsepower. It is option-preservation, context betrayal sensitivity,
+          and the emotional cost of narrowing when stakes are high.
+        </p>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Primary Read</div>
+        <div class="diagnosis">
+          <p><strong>Primary diagnosis:</strong> Overclocked Systems Conductor with Closure Debt.</p>
+          <p><strong>Secondary diagnosis:</strong> Option-Preservation Addiction.</p>
+          <p><strong>Tertiary diagnosis:</strong> Context Betrayal Sensitivity.</p>
+          <p><strong>Stress response:</strong> converts pressure into more motion, more artifacts, more orchestration.</p>
+          <p><strong>Forced IQ guess:</strong> roughly <strong>135 +/- 10</strong>. Useful only as a reminder that IQ is not the problem.</p>
+        </div>
+        <p class="subtle" style="margin-top:14px;">Generated 2026-03-24 in Los Angeles time</p>
+      </div>
+    </section>
+
+    <section class="grid-4">
+      <div class="card">
+        <div class="metric-big">1,764</div>
+        <div class="metric-label">Voice Bursts</div>
+        <p>Across 144 hours. Median clip length is only <strong>49 words</strong>; average is <strong>81.9</strong>. This is live cognitive offloading, not leisurely reflection.</p>
+        <div class="metric-value">41.7% of clips are under 40 words</div>
+      </div>
+      <div class="card">
+        <div class="metric-big">82.2%</div>
+        <div class="metric-label">Assistant Char Share</div>
+        <p>Most typed output lands in Claude, Codex, or OpenWork. The machine thinks with tools and through tools.</p>
+        <div class="metric-value">Mar 19-23 telemetry</div>
+      </div>
+      <div class="card">
+        <div class="metric-big">1,365</div>
+        <div class="metric-label">Obligation Terms</div>
+        <p><strong>need to</strong>, <strong>have to</strong>, and <strong>should</strong> saturate the voice corpus. The mind is carrying weight, not wandering.</p>
+        <div class="metric-value">418 + 301 + 646</div>
+      </div>
+      <div class="card">
+        <div class="metric-big">12-17</div>
+        <div class="metric-label">Peak Voice Hours</div>
+        <p>The densest dictation band is noon through 5 PM. The productive self appears to arrive after the imagined morning ideal self.</p>
+        <div class="metric-value">Voice telemetry by hour</div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <div class="eyebrow">Main Diagnoses</div>
+        <h2>The Pattern Language</h2>
+
+        <div class="sequence-step">
+          <div class="step-num">1. Overclocked Systems Conductor</div>
+          <p>He is not built like a specialist who wants one narrow domain and a clean backlog. He wants multiple frontier minds running in parallel, rapid synthesis, and a real-time sense of the whole board. He is energized by orchestration and quickly bored by work that does not compound understanding.</p>
+        </div>
+
+        <div class="sequence-step">
+          <div class="step-num">2. Closure Debt</div>
+          <p>Ideas, structures, prompts, pages, systems, and lane expansions come easily. What costs real psychic energy is choosing the few closures that collapse uncertainty and permanently kill other options. He does not avoid effort. He avoids narrowing when narrowing feels identity-reducing.</p>
+        </div>
+
+        <div class="sequence-step">
+          <div class="step-num">3. Context Betrayal Sensitivity</div>
+          <p>Memory drift, wrong dates, fake completion, or tools acting more capable than they are trigger outsized frustration. The reaction is rational in shape: once context fidelity breaks, he stops trusting the system and reopens manual control loops himself.</p>
+        </div>
+
+        <div class="sequence-step">
+          <div class="step-num">4. Pressure-To-Motion Converter</div>
+          <p>When pressure rises, he does not mainly collapse. He accelerates. The risk is not shutdown; it is multiplying lanes, artifacts, and side quests fast enough that closure falls further behind. Stress becomes throughput, and throughput becomes camouflage for unresolved commitments.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Differential</div>
+        <h2>What This Rhymes With</h2>
+        <ul>
+          <li><strong>ADHD-ish traits:</strong> high novelty appetite, constant working-memory offload, many concurrent threads, and closure aversion. But this does not read like flaky inattentiveness. It reads like high-speed, high-load attentional self-routing.</li>
+          <li><strong>OCPD-ish standards without neatness:</strong> very high intolerance for sloppy reasoning, fake rigor, or imprecise framing, but not the classic tidy, orderly, ritualized aesthetic people usually imagine.</li>
+          <li><strong>Hypomanic-adjacent tempo, not enough evidence for bipolar framing:</strong> the speed is real, but the corpus looks more like founder overclocking plus pressure than euphoric grandiosity or detached invincibility.</li>
+          <li><strong>Giftedness plus chronic overload:</strong> fast abstraction, aggressive analogy, verbal compression, and boredom with shallow takes all show up. The shadow side is that normal pacing feels insulting and ordinary process feels too slow to trust.</li>
+        </ul>
+        <div class="callout" style="margin-top:16px;">
+          <p><strong>Most honest line:</strong> if someone insisted on a label, I would say "gifted, agentic, mildly feral systems thinker with closure debt" before I would say almost anything clinical.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <div class="eyebrow">Trait Guesses</div>
+        <h2>Personality Axes</h2>
+
+        <div class="axis">
+          <div class="axis-head">
+            <span>Openness / idea range</span>
+            <span class="axis-label">95 / 100</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:95%"></div></div>
+        </div>
+
+        <div class="axis">
+          <div class="axis-head">
+            <span>Initiative / agency</span>
+            <span class="axis-label">93 / 100</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:93%"></div></div>
+        </div>
+
+        <div class="axis">
+          <div class="axis-head">
+            <span>Closure consistency</span>
+            <span class="axis-label">58 / 100</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:58%"></div></div>
+        </div>
+
+        <div class="axis">
+          <div class="axis-head">
+            <span>Tolerance for bad thinking</span>
+            <span class="axis-label">08 / 100</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:8%"></div></div>
+        </div>
+
+        <div class="axis">
+          <div class="axis-head">
+            <span>Need for context fidelity</span>
+            <span class="axis-label">92 / 100</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:92%"></div></div>
+        </div>
+
+        <div class="axis">
+          <div class="axis-head">
+            <span>Stress reactivity under money/family threat</span>
+            <span class="axis-label">78 / 100</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:78%"></div></div>
+        </div>
+
+        <p class="subtle">Interpretation: high-openness, high-agency, uneven closure, low patience for nonsense, very high context demands.</p>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Fun Guesses</div>
+        <h2>Informal Type Read</h2>
+        <ul>
+          <li><strong>MBTI-style bullshit guess:</strong> ENTP brain running an ENTJ operating system under pressure.</li>
+          <li><strong>Attachment-to-work style:</strong> pursues control through understanding, architecture, and immediacy rather than through calm routines.</li>
+          <li><strong>Leadership style:</strong> warm with people, combative with bad framing, energized by live synthesis, impatient with passive spectators.</li>
+          <li><strong>Profanity function:</strong> not just anger. It acts like punctuation plus force application plus ambiguity cutter.</li>
+          <li><strong>Self-image distortion:</strong> probably overestimates the importance of getting morning right and underestimates how reliably the afternoon self carries the load.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <div class="eyebrow">Failure Sequence</div>
+        <h2>How The Wheels Usually Come Off</h2>
+        <div class="sequence-step">
+          <div class="step-num">1. Stakes rise</div>
+          <p>Money, trust, product ambiguity, or family pressure make the cost of being wrong feel too high.</p>
+        </div>
+        <div class="sequence-step">
+          <div class="step-num">2. Option count rises</div>
+          <p>Instead of choosing one ugly closure immediately, the system opens more representations, prompts, notes, drafts, agent branches, and story variants.</p>
+        </div>
+        <div class="sequence-step">
+          <div class="step-num">3. Cognitive control improves but emotional load does not</div>
+          <p>The extra thinking often produces genuine insight. It just does not fully lower stress because the real stressor is still the unsent ask, unsimplified story, or unresolved reliability risk.</p>
+        </div>
+        <div class="sequence-step">
+          <div class="step-num">4. Throughput disguises the debt</div>
+          <p>From the outside it still looks productive because it is productive. But the hidden debt is that closure keeps getting postponed in favor of smarter preparation.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Evidence</div>
+        <h2>Why I Think This</h2>
+        <blockquote>
+          "Okay, so I'm on like five projects at once and I do need to get a fucking landing page up relatively soon."
+          <div class="quote-src">Voice transcript, 2026-03-18 11:38</div>
+        </blockquote>
+        <blockquote>
+          "Just validate that or challenge it. Don't fucking play devil's advocate or try to make me feel better. Just give me an honest opinion."
+          <div class="quote-src">Voice transcript, 2026-03-18 11:47</div>
+        </blockquote>
+        <blockquote>
+          "You either lied to me or you did it earlier in this thread and forgot about it."
+          <div class="quote-src">Voice transcript, 2026-03-18 11:33</div>
+        </blockquote>
+        <blockquote>
+          "We need to fucking smather that fucking everywhere in your persistent memory."
+          <div class="quote-src">Voice transcript, 2026-03-18 11:36</div>
+        </blockquote>
+        <blockquote>
+          "We should fucking do it."
+          <div class="quote-src">Voice transcript, workflow orchestration discussion, 2026-03-19 13:15</div>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="eyebrow">Prescription</div>
+      <h2>If This Diagnosis Is Mostly Right</h2>
+      <ul>
+        <li>Do not ask this brain for more motivation. Ask it for fewer open commitments.</li>
+        <li>Use external systems for closure, not just ideation: one explicit kill list, one ship list, one ask list.</li>
+        <li>When stress spikes, assume the first failure mode is over-generation, not laziness.</li>
+        <li>Treat context fidelity as a real operational requirement. Broken memory is not a minor UX issue for this kind of operator.</li>
+        <li>Protect the noon-to-evening band for decisive moves, not just more sharpening.</li>
+      </ul>
+      <p class="subtle" style="margin-top:16px;">This report is inferential and intentionally aggressive. It is a behavioral read, not clinical diagnosis.</p>
+    </section>
+  </main>
+</body>
+</html>

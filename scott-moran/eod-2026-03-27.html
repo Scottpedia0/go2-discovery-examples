@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Go2 Daily — Friday, March 27, 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --cream: #FFF8F0;
+  --paper: #FAF4EA;
+  --ink: #1a1a1a;
+  --ink-light: #3d3d3d;
+  --ink-muted: #6b6b6b;
+  --ink-faint: #999;
+  --rule: #c8b8a0;
+  --rule-heavy: #8a7a62;
+  --rule-light: #e0d5c5;
+  --red-ink: #b8372d;
+  --red-bg: #fdf0ee;
+  --green-ink: #2d7a3a;
+  --green-bg: #eef7f0;
+  --amber-ink: #8a6b1a;
+  --amber-bg: #fdf8ec;
+  --blue-ink: #1a5a8a;
+  --blue-bg: #eef4fa;
+  --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --body-serif: 'Source Serif 4', Georgia, serif;
+  --sans: 'Inter', -apple-system, Helvetica Neue, sans-serif;
+  --mono: 'JetBrains Mono', Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--body-serif);
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === MASTHEAD === */
+.masthead {
+  text-align: center;
+  padding: 2rem 2rem 0;
+  border-bottom: 3px double var(--rule-heavy);
+}
+.masthead-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule-light);
+  margin-bottom: 1rem;
+}
+.masthead h1 {
+  font-family: var(--serif);
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.masthead .edition {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-muted);
+  margin-bottom: 1rem;
+}
+
+/* === SCOREBOARD BANNER === */
+.scoreboard-banner {
+  background: var(--paper);
+  border-bottom: 2px solid var(--rule-heavy);
+  padding: 1.25rem 2rem;
+}
+.scoreboard-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.sb-cell {
+  text-align: center;
+  padding: 0.75rem 0.5rem;
+  border-right: 1px solid var(--rule-light);
+}
+.sb-cell:last-child { border-right: none; }
+.sb-val {
+  font-family: var(--mono);
+  font-size: 1.8rem;
+  font-weight: 500;
+  line-height: 1;
+}
+.sb-label {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  margin-top: 6px;
+}
+.val-red { color: var(--red-ink); }
+.val-green { color: var(--green-ink); }
+.val-amber { color: var(--amber-ink); }
+.val-blue { color: var(--blue-ink); }
+.val-ink { color: var(--ink); }
+
+/* Streak row */
+.streak-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0.6rem 2rem;
+  border-bottom: 1px solid var(--rule-light);
+  background: var(--paper);
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.02em;
+}
+.streak-row span { white-space: nowrap; }
+.streak-val { font-weight: 600; color: var(--ink-light); }
+
+/* === LAYOUT === */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* === LEAD === */
+.lead-section {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.lead-section .overline {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--red-ink);
+  margin-bottom: 0.5rem;
+}
+.lead-section h2 {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  max-width: 700px;
+}
+.lead-text {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--ink-light);
+  max-width: 750px;
+  column-count: 1;
+}
+.lead-text .drop-cap::first-letter {
+  font-family: var(--serif);
+  font-size: 4.2rem;
+  float: left;
+  line-height: 0.8;
+  padding-right: 0.12em;
+  padding-top: 0.07em;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+/* === TWO COLUMN === */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.two-col.wide-left {
+  grid-template-columns: 2fr 1fr;
+}
+
+/* === SECTION === */
+.section {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.section-head {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-muted);
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--rule-light);
+}
+.section h3 {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+.section p, .section li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--ink-light);
+}
+.section ul {
+  list-style: none;
+  padding: 0;
+}
+.section ul li {
+  padding: 0.4rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.section ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.85rem;
+  width: 5px;
+  height: 5px;
+  background: var(--rule-heavy);
+  border-radius: 50%;
+}
+
+/* === SHIPPED LIST === */
+.shipped-list {
+  counter-reset: shipped;
+  list-style: none;
+  padding: 0;
+}
+.shipped-list li {
+  counter-increment: shipped;
+  padding: 0.5rem 0 0.5rem 2.5rem;
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink-light);
+  border-bottom: 1px dotted var(--rule-light);
+}
+.shipped-list li:last-child { border-bottom: none; }
+.shipped-list li::before {
+  content: counter(shipped);
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+  width: 1.8rem;
+  text-align: center;
+}
+
+/* === CALLOUT BOX === */
+.callout {
+  background: var(--red-bg);
+  border-left: 4px solid var(--red-ink);
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0;
+  border-radius: 0 4px 4px 0;
+}
+.callout.amber {
+  background: var(--amber-bg);
+  border-left-color: var(--amber-ink);
+}
+.callout.blue {
+  background: var(--blue-bg);
+  border-left-color: var(--blue-ink);
+}
+.callout.green {
+  background: var(--green-bg);
+  border-left-color: var(--green-ink);
+}
+.callout p {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--ink-light);
+}
+.callout .attribution {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+.callout.red-attr .attribution { color: var(--red-ink); }
+
+/* === BLOCKQUOTE === */
+.pull-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  color: var(--ink);
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  padding: 1.25rem 0;
+  margin: 1.5rem 0;
+}
+.pull-quote .pq-attr {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  margin-top: 0.5rem;
+}
+
+/* === TREND TABLE === */
+.trend-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.trend-table th {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--rule-heavy);
+}
+.trend-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--rule-light);
+  color: var(--ink-light);
+}
+.trend-table tr:last-child td { border-bottom: none; }
+.trend-dir {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+.dir-up { color: var(--green-ink); }
+.dir-down { color: var(--red-ink); }
+.dir-flat { color: var(--amber-ink); }
+
+/* === HEALTH STRIP === */
+.health-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.health-card {
+  background: var(--paper);
+  border: 1px solid var(--rule-light);
+  border-radius: 4px;
+  padding: 1rem;
+  text-align: center;
+}
+.health-card .hc-val {
+  font-family: var(--mono);
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+.health-card .hc-label {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+.health-card .hc-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--rule-light);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.health-card .hc-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* === TOMORROW === */
+.tomorrow-section {
+  background: var(--paper);
+  border: 2px solid var(--rule-heavy);
+  padding: 1.5rem 2rem;
+  margin: 2rem 0;
+  border-radius: 2px;
+}
+.tomorrow-section h3 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 900;
+  margin-bottom: 0.3rem;
+}
+.tomorrow-section .subtitle {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--red-ink);
+  margin-bottom: 1rem;
+}
+.tomorrow-section ol {
+  padding-left: 1.5rem;
+}
+.tomorrow-section ol li {
+  padding: 0.35rem 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink-light);
+}
+.tomorrow-section ol li strong {
+  color: var(--ink);
+}
+
+/* === FOOTER === */
+.footer {
+  text-align: center;
+  padding: 1.5rem 2rem;
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+  border-top: 3px double var(--rule-heavy);
+  margin-top: 1rem;
+}
+
+/* === CONSENSUS GRID === */
+.consensus-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .masthead h1 { font-size: 2.2rem; }
+  .scoreboard-grid { grid-template-columns: repeat(3, 1fr); }
+  .two-col, .two-col.wide-left { grid-template-columns: 1fr; }
+  .consensus-grid { grid-template-columns: 1fr; }
+  .streak-row { flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  .health-strip { grid-template-columns: 1fr; }
+}
+
+@media print {
+  body { background: white; }
+  .scoreboard-banner { background: white; }
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <span>go2.io</span>
+    <span>Vol. I &middot; No. 10</span>
+    <span>Scott Moran, Founder</span>
+  </div>
+  <h1>The Go2 Daily</h1>
+  <div class="edition">Friday, March 27, 2026 &mdash; End-of-Day Edition</div>
+</header>
+
+<!-- SCOREBOARD -->
+<div class="scoreboard-banner">
+  <div class="scoreboard-grid">
+    <div class="sb-cell">
+      <div class="sb-val val-red">-2</div>
+      <div class="sb-label">Net Velocity</div>
+    </div>
+    <div class="sb-cell">
+      <div class="sb-val val-red">1/89</div>
+      <div class="sb-label">Emails Sent</div>
+    </div>
+    <div class="sb-cell">
+      <div class="sb-val val-amber">2.5x</div>
+      <div class="sb-label">Leverage Ratio</div>
+    </div>
+    <div class="sb-cell">
+      <div class="sb-val val-red">5+</div>
+      <div class="sb-label">Days Frozen</div>
+    </div>
+    <div class="sb-cell">
+      <div class="sb-val val-ink">36,837</div>
+      <div class="sb-label">Keystrokes</div>
+    </div>
+    <div class="sb-cell">
+      <div class="sb-val val-red">16h</div>
+      <div class="sb-label">Screen Time</div>
+    </div>
+  </div>
+</div>
+
+<!-- STREAKS -->
+<div class="streak-row">
+  <span>Shipping: <span class="streak-val">5 days</span> (infra only)</span>
+  <span>Commitments cleared: <span class="streak-val">0 days</span></span>
+  <span>Leverage &gt;2x: <span class="streak-val">3 days</span></span>
+  <span>Revenue-direct: <span class="streak-val">1 day</span></span>
+  <span>Frozen outbound: <span class="streak-val">5+ days</span></span>
+</div>
+
+<!-- LEAD -->
+<div class="container">
+  <div class="lead-section">
+    <div class="overline">The Lead</div>
+    <h2>Sixteen Hours of Visible Effort. Zero Dollars of Commercial Progress.</h2>
+    <div class="lead-text">
+      <p class="drop-cap">Today produced 36,837 keystrokes across 16 hours of screen time, and the net commercial output was one email sent out of 89 queued. The infrastructure machine shipped hard&mdash;the Access vault went fully operational at production, a real-time activity monitoring pipeline went live with Gemini vision, and every agent now has a complete map to every codebase, data source, and API in the ecosystem. But the 50-close April target requires 1.5 closes per day starting now, and the outbound pipeline has been frozen for more than four days running. Three frontier models&mdash;GPT-5.4 Pro, Gemini 3.1 Pro, and Grok 4&mdash;independently converged on the same diagnosis: infrastructure is being used to avoid the uncomfortable work of selling.</p>
+    </div>
+  </div>
+
+  <!-- TWO COLUMNS: WHAT SHIPPED + CONSENSUS -->
+  <div class="two-col wide-left">
+
+    <!-- WHAT SHIPPED -->
+    <div>
+      <div class="section-head">What Shipped</div>
+      <h3>Eleven Items Cleared &mdash; All Infrastructure</h3>
+      <ol class="shipped-list">
+        <li><strong>Access vault fully operational at production</strong> &mdash; Prisma binary target fix, OAuth redirect URIs, 3 Google accounts re-authorized</li>
+        <li><strong>Password auth removed</strong> &mdash; Google OAuth only with 3-email allowlist</li>
+        <li><strong>Google Cloud service account</strong> created (agent-access@boring-490800), org policy unlocked</li>
+        <li><strong>ACCESS-PLAYBOOK.md</strong> &mdash; complete &ldquo;Where Things Live&rdquo; map for all agents</li>
+        <li><strong>Hourly Pulse pipeline</strong> &mdash; screenshots every 15s + Gemini 2.5 Flash vision + activity blocks to brain repo + macOS notifications</li>
+        <li><strong>Gemini API</strong> enabled and key created for BORING project</li>
+        <li><strong>SubSummit warm reactivation pack</strong> &mdash; 9 companies shortlisted with paste-ready copy</li>
+        <li><strong>6 re-engagement prospects</strong> identified from Gmail sent-mail scan</li>
+        <li><strong>Brian Schiff (Flip CX) draft</strong> created &mdash; former customer catch-up angle</li>
+        <li><strong>review.moran.bot:</strong> 90 emails updated with new subject line + &ldquo;no cost&rdquo; language</li>
+        <li><strong>Superwhisper switched to Ultra</strong> &mdash; transcription quality should improve</li>
+      </ol>
+    </div>
+
+    <!-- CONSENSUS + SPLITS -->
+    <div>
+      <div class="section-head">Consensus Findings</div>
+      <h3>Three Models, One Diagnosis</h3>
+      <p style="font-size:0.88rem;color:var(--ink-muted);margin-bottom:1rem;font-family:var(--sans);">GPT-5.4 Pro, Gemini 3.1 Pro, and Grok 4 reviewed this day independently. They converged on four points.</p>
+
+      <div class="callout" style="margin-top:0.75rem;">
+        <p><strong>1.</strong> Infrastructure is being used to avoid selling. Building dashboards, monitoring pipelines, and access vaults feels productive but generates zero revenue.</p>
+      </div>
+      <div class="callout" style="margin-top:0.5rem;">
+        <p><strong>2.</strong> Katie is a single point of failure blocking the entire outbound pipeline. The 89-email queue has been &ldquo;pending&rdquo; for 3+ days.</p>
+      </div>
+      <div class="callout amber" style="margin-top:0.5rem;">
+        <p><strong>3.</strong> The 50-close target is fiction at current velocity &mdash; requires 1.5 closes/day with zero pipeline movement.</p>
+      </div>
+      <div class="callout amber" style="margin-top:0.5rem;">
+        <p><strong>4.</strong> The lead audit was valuable intelligence but was treated as progress rather than as a prompt for immediate action.</p>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <div class="section-head">Where They Diverged</div>
+        <ul style="list-style:none;padding:0;">
+          <li style="padding:0.4rem 0;padding-left:1.2rem;position:relative;font-size:0.9rem;color:var(--ink-light);">
+            <span style="position:absolute;left:0;top:0.45rem;font-weight:700;color:var(--ink);">G</span>
+            <strong>Grok:</strong> Shut down the Hourly Pulse pipeline &mdash; &ldquo;vanity metrics tool that doesn&rsquo;t drive revenue.&rdquo;
+          </li>
+          <li style="padding:0.4rem 0;padding-left:1.2rem;position:relative;font-size:0.9rem;color:var(--ink-light);">
+            <span style="position:absolute;left:0;top:0.45rem;font-weight:700;color:var(--blue-ink);">G</span>
+            <strong>Gemini:</strong> Flagged brain repo &ldquo;infrastructure bloat&rdquo; from pulse logs.
+          </li>
+          <li style="padding:0.4rem 0;padding-left:1.2rem;position:relative;font-size:0.9rem;color:var(--ink-light);">
+            <span style="position:absolute;left:0;top:0.45rem;font-weight:700;color:var(--green-ink);">O</span>
+            <strong>GPT:</strong> Focused on the psychological pattern &mdash; &ldquo;optimizing for visible effort instead of irreversible business progress.&rdquo;
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOLD NUGGETS -->
+  <div class="section">
+    <div class="section-head">Gold Nuggets &mdash; Insights Larry Wouldn&rsquo;t Have Generated</div>
+
+    <div class="pull-quote">
+      &ldquo;The line that matters most in this brief is not technical &mdash; it&rsquo;s that you wanted the EOD to &lsquo;look like I&rsquo;m trying really hard because other people are looking at it.&rsquo; That is a founder under acute stress starting to optimize for visible effort instead of irreversible business progress.&rdquo;
+      <div class="pq-attr">GPT-5.4 Pro</div>
+    </div>
+
+    <div class="consensus-grid">
+      <div class="callout blue">
+        <div class="attribution" style="color:var(--blue-ink);">Gemini 3.1 Pro</div>
+        <p>&ldquo;The handoffs are currently functioning as bureaucratic logs rather than operational triggers. The system has correctly documented for 3 consecutive days that Katie is blocking the outbound queue, but the agents possess no protocol to escalate, bypass, or alert the founder to immediately sever the dependency.&rdquo;</p>
+      </div>
+      <div class="callout" style="background:#fdf0ee;border-left-color:var(--red-ink);">
+        <div class="attribution" style="color:var(--red-ink);">Grok 4</div>
+        <p>&ldquo;What is this company actually building? An over-engineered internal infrastructure playground for AI agents, masquerading as a productivity platform.&rdquo;</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE UNCOMFORTABLE TRUTH -->
+  <div class="section">
+    <div class="section-head" style="color:var(--red-ink);border-bottom-color:var(--red-ink);">The Uncomfortable Truth</div>
+    <h3>Uncertainty Is Being Managed by Building More Control Surfaces</h3>
+    <div style="max-width:700px;">
+      <p style="font-size:1.05rem;line-height:1.75;color:var(--ink-light);margin-bottom:1rem;">From GPT-5.4 Pro: <em>&ldquo;What am I getting to avoid by letting infrastructure feel urgent while revenue stays optional?&rdquo;</em></p>
+      <p style="font-size:0.95rem;line-height:1.7;color:var(--ink-light);">The systemic issue across the last three days is not too much infra. It is that uncertainty is repeatedly being managed by building more control surfaces. Panic attack, payroll pressure, custody stress &mdash; these make it much more likely to choose controllable work (brokers, scopes, pipelines) over uncomfortable work (asking for money, forcing deadlines, replacing a blocked owner).</p>
+    </div>
+  </div>
+
+  <!-- TREND LINES + HEALTH -->
+  <div class="two-col">
+    <div>
+      <div class="section-head">Five-Day Trend Lines</div>
+      <table class="trend-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Direction</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Infrastructure shipping</td>
+            <td><span class="trend-dir dir-up">UP</span></td>
+            <td>Access vault, pulse pipeline, playbook</td>
+          </tr>
+          <tr>
+            <td>Outbound execution</td>
+            <td><span class="trend-dir dir-flat">FLAT @ 0</span></td>
+            <td>5+ days frozen, Katie blocking</td>
+          </tr>
+          <tr>
+            <td>Revenue conversations</td>
+            <td><span class="trend-dir dir-down">DOWN</span></td>
+            <td>Zero today, zero yesterday</td>
+          </tr>
+          <tr>
+            <td>Agent leverage</td>
+            <td><span class="trend-dir dir-up">UP</span></td>
+            <td>All agents now have the full map</td>
+          </tr>
+          <tr>
+            <td>Founder stress</td>
+            <td><span class="trend-dir dir-up">UP</span></td>
+            <td>Cash, payroll, custody, panic attack</td>
+          </tr>
+          <tr>
+            <td>Sleep quality</td>
+            <td><span class="trend-dir dir-down">DECLINING</span></td>
+            <td>76 sleep, 35 recovery index</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="section-head">Biometrics &mdash; Oura Ring</div>
+      <div class="health-strip" style="grid-template-columns:1fr;">
+        <div class="health-card">
+          <div class="hc-val val-amber">76</div>
+          <div class="hc-label">Sleep Score</div>
+          <div class="hc-bar"><div class="hc-fill" style="width:76%;background:var(--amber-ink);"></div></div>
+        </div>
+        <div class="health-card">
+          <div class="hc-val val-amber">76</div>
+          <div class="hc-label">Readiness Score</div>
+          <div class="hc-bar"><div class="hc-fill" style="width:76%;background:var(--amber-ink);"></div></div>
+        </div>
+        <div class="health-card">
+          <div class="hc-val val-red">35</div>
+          <div class="hc-label">Recovery Index</div>
+          <div class="hc-bar"><div class="hc-fill" style="width:35%;background:var(--red-ink);"></div></div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <div class="section-head">Time Allocation</div>
+        <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
+          <div style="flex:10;background:var(--blue-bg);border:1px solid var(--blue-ink);border-radius:3px;padding:0.5rem;text-align:center;">
+            <div style="font-family:var(--mono);font-size:1.1rem;font-weight:500;color:var(--blue-ink);">~10h</div>
+            <div style="font-family:var(--sans);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue-ink);">Build</div>
+          </div>
+          <div style="flex:3;background:var(--green-bg);border:1px solid var(--green-ink);border-radius:3px;padding:0.5rem;text-align:center;">
+            <div style="font-family:var(--mono);font-size:1.1rem;font-weight:500;color:var(--green-ink);">~3h</div>
+            <div style="font-family:var(--sans);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--green-ink);">Revenue</div>
+          </div>
+          <div style="flex:3;background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:0.5rem;text-align:center;">
+            <div style="font-family:var(--mono);font-size:1.1rem;font-weight:500;color:var(--ink-muted);">~3h</div>
+            <div style="font-family:var(--sans);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-muted);">Other</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOMORROW -->
+  <div class="tomorrow-section">
+    <div class="subtitle">Saturday, March 28 &mdash; Standing Orders</div>
+    <h3>Ban Infrastructure. Founder Cash-Conversion Day.</h3>
+    <ol>
+      <li><strong>Personally send the first 20 warm emails</strong> from the 89-email queue before noon. Bypass Katie if needed.</li>
+      <li><strong>Call or text the highest-signal names</strong> from SubSummit 9 + re-engagement 6 + Brian Schiff.</li>
+      <li><strong>Do not touch BigQuery, Pinecone, Slack scopes, or architecture</strong> until you have 3 real replies or 2 meetings on the calendar.</li>
+      <li><strong>One day of direct founder selling</strong> will do more for April than another full day of agent and tooling improvement.</li>
+    </ol>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  The Go2 Daily &middot; Compiled by Larry [AI] with consensus input from GPT-5.4 Pro, Gemini 3.1 Pro, and Grok 4<br>
+  go2.io &middot; Scott Moran &middot; March 27, 2026 &middot; End of Day
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 Daily — Wednesday, April 2, 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #faf8f5;
+  --surface: #ffffff;
+  --surface-2: #f5f2ed;
+  --surface-3: #ede9e1;
+  --text: #1a1815;
+  --text-muted: #6b6560;
+  --text-faint: #9b9590;
+  --accent: #c05621;
+  --accent-dim: #c0562115;
+  --red: #c53030;
+  --red-dim: #c5303012;
+  --green: #2f855a;
+  --green-dim: #2f855a12;
+  --amber: #b7791f;
+  --amber-dim: #b7791f12;
+  --blue: #2b6cb0;
+  --blue-dim: #2b6cb012;
+  --border: #e2ddd5;
+  --heading: 'Instrument Serif', Georgia, serif;
+  --body: 'DM Sans', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  padding: 2.5rem 2rem;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+/* === EDITORIAL HEADER === */
+.header {
+  border-bottom: 2px solid var(--text);
+  padding-bottom: 1rem;
+  margin-bottom: 2.5rem;
+}
+.header-rule {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.header h1 {
+  font-family: var(--heading);
+  font-size: 3.2rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.header .deck {
+  font-family: var(--heading);
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* === SCOREBOARD === */
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 2rem 0;
+}
+.score-cell {
+  background: var(--surface);
+  padding: 1rem;
+  text-align: center;
+}
+.score-cell .label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-bottom: 0.3rem;
+}
+.score-cell .value {
+  font-family: var(--heading);
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--text);
+}
+.score-cell .value.red { color: var(--red); }
+.score-cell .value.green { color: var(--green); }
+.score-cell .value.amber { color: var(--amber); }
+.score-cell .value.accent { color: var(--accent); }
+.score-cell .note {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  margin-top: 0.2rem;
+}
+
+/* === SECTIONS === */
+.section {
+  margin: 2.5rem 0;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+h2 {
+  font-family: var(--heading);
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+h3 {
+  font-family: var(--body);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--text);
+}
+p, li {
+  font-size: 0.95rem;
+  margin-bottom: 0.7rem;
+}
+ul { padding-left: 1.2rem; }
+li { margin-bottom: 0.4rem; }
+
+/* === HIGHLIGHT BOXES === */
+.consensus-box, .divergent-box, .gold-box, .uncomfortable-box {
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 3px solid;
+}
+.consensus-box {
+  background: var(--green-dim);
+  border-color: var(--green);
+}
+.divergent-box {
+  background: var(--blue-dim);
+  border-color: var(--blue);
+}
+.gold-box {
+  background: var(--amber-dim);
+  border-color: var(--amber);
+}
+.uncomfortable-box {
+  background: var(--red-dim);
+  border-color: var(--red);
+}
+.box-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.5rem;
+}
+.consensus-box .box-label { color: var(--green); }
+.divergent-box .box-label { color: var(--blue); }
+.gold-box .box-label { color: var(--amber); }
+.uncomfortable-box .box-label { color: var(--red); }
+
+blockquote {
+  font-family: var(--heading);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
+/* === TIMELINE === */
+.timeline {
+  position: relative;
+  margin: 1.5rem 0;
+}
+.timeline-bar {
+  display: flex;
+  height: 32px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.timeline-bar .segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: white;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.timeline-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  margin-top: 0.3rem;
+}
+
+/* === STREAKS === */
+.streak-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.streak {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.streak-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.streak-dot.on { background: var(--green); }
+.streak-dot.off { background: var(--red); }
+
+/* === ALLOCATION PIE (CSS) === */
+.alloc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.alloc-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+.alloc-item .alloc-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+.alloc-item .alloc-value {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  color: var(--text);
+}
+.alloc-item .alloc-note {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+}
+
+/* === FOOTER === */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+/* === CANVAS FOR INTERACTIVE CHART === */
+canvas {
+  max-width: 100%;
+  margin: 1rem 0;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-rule">
+    <span>Go2 Daily Report</span>
+    <span>Wednesday, April 2, 2026 &mdash; Day anchored 3:20am</span>
+  </div>
+  <h1>The Most Productive Day<br>We've Seen.</h1>
+  <div class="deck">Nineteen hours. Sleep score 48. Payroll pressure in the background. And somehow, a week's worth of output: pipeline doubled to 63 deals, investor nudged on $3M, product deeper than it's ever been, 24 warm emails schedule-sent with custom treatments for high-value contacts, and a live booking came in. Two and a half normal days crammed into one &mdash; and the last mile got closed before the day did.</div>
+</div>
+
+<!-- === SCOREBOARD === -->
+<div class="scoreboard">
+  <div class="score-cell">
+    <div class="label">SOD Targets Hit</div>
+    <div class="value green">5/6</div>
+    <div class="note">Only Curly not woken</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Issues Closed</div>
+    <div class="value">1</div>
+    <div class="note">#69 (self-inflicted)</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Leverage Ratio</div>
+    <div class="value green">0.74x</div>
+    <div class="note">Up from 0.54x Mar 31</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Sleep Score</div>
+    <div class="value red">48</div>
+    <div class="note">Readiness 39 &mdash; brutal</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Revenue-Direct</div>
+    <div class="value amber">~40%</div>
+    <div class="note">Up from 25% Mar 31</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Warm Pipeline</div>
+    <div class="value accent">63</div>
+    <div class="note">Deals wired in HubSpot</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Warm Emails Sent</div>
+    <div class="value green">24</div>
+    <div class="note">+ customs + booking received</div>
+  </div>
+  <div class="score-cell">
+    <div class="label">Active Hours</div>
+    <div class="value">16+</div>
+    <div class="note">8:30am &rarr; 3:20am</div>
+  </div>
+</div>
+
+<!-- === STREAKS === -->
+<div class="section">
+  <div class="section-label">Streaks</div>
+  <div class="streak-row">
+    <div class="streak"><span class="streak-dot on"></span> 2 days shipping (issues closed)</div>
+    <div class="streak"><span class="streak-dot on"></span> 1 day revenue-direct &gt; 25%</div>
+    <div class="streak"><span class="streak-dot off"></span> 0 days with warm emails sent</div>
+    <div class="streak"><span class="streak-dot on"></span> 4 days leverage ratio improving</div>
+  </div>
+</div>
+
+<!-- === DAY TIMELINE === -->
+<div class="section">
+  <div class="section-label">How the Day Was Spent</div>
+  <h2>The Shape of Sixteen Hours</h2>
+  <div class="timeline">
+    <div class="timeline-bar">
+      <div class="segment" style="width:18%; background:#2b6cb0;" title="8:30-11:30 — SOD + Investor Email + HubSpot Pipeline">SOD + Pipeline</div>
+      <div class="segment" style="width:8%; background:#9b9590;" title="11:30-1pm — Post Office + Break">Errand</div>
+      <div class="segment" style="width:5%; background:#e2ddd5;" title="1-3pm — Gap">Gap</div>
+      <div class="segment" style="width:25%; background:#c05621;" title="3-7pm — Product Deep Dive with Moe">Product</div>
+      <div class="segment" style="width:20%; background:#2f855a;" title="7-11pm — Pilot Positioning + Sales Messages">Sales</div>
+      <div class="segment" style="width:15%; background:#6b46c1;" title="11pm-2am — Org Discovery + Refinement">Discovery</div>
+      <div class="segment" style="width:9%; background:#1a1815;" title="2-3:20am — Warm Drafts + EOD">Drafts+EOD</div>
+    </div>
+    <div class="timeline-labels">
+      <span>8:30am</span>
+      <span>12pm</span>
+      <span>3pm</span>
+      <span>7pm</span>
+      <span>11pm</span>
+      <span>3:20am</span>
+    </div>
+  </div>
+
+  <div class="alloc-grid">
+    <div class="alloc-item">
+      <div class="alloc-label">Chrome</div>
+      <div class="alloc-value">8.3h</div>
+      <div class="alloc-note">HubSpot, Gmail, Research</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-label">Codex (Moe)</div>
+      <div class="alloc-value">6.9h</div>
+      <div class="alloc-note">Product + Org Discovery</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-label">Claude (Larry)</div>
+      <div class="alloc-value">4.9h</div>
+      <div class="alloc-note">Pipeline + Outreach</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-label">Messages</div>
+      <div class="alloc-value">27m</div>
+      <div class="alloc-note">Pilot pitches (Concentrix)</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-label">Keystrokes</div>
+      <div class="alloc-value">23.3K</div>
+      <div class="alloc-note">Across all apps</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-label">Voice Notes</div>
+      <div class="alloc-value">339</div>
+      <div class="alloc-note">Product vision, strategy</div>
+    </div>
+  </div>
+</div>
+
+<!-- === CONSENSUS === -->
+<div class="section">
+  <div class="section-label">Frontier Model Synthesis</div>
+  <h2>What Gemini 3.1 and Grok 4 See (Raw Data, No Filter)</h2>
+  <p style="font-size:0.8rem; color:var(--text-faint); margin-bottom:1rem;"><em>Second pass &mdash; models received 1,396 lines of raw voice transcripts, telemetry, pipeline state, and handoffs. No Larry summary layer. These are their unfiltered takes.</em></p>
+
+  <div class="consensus-box">
+    <div class="box-label">Consensus &mdash; Both Models</div>
+    <p><strong>The agents are genuinely capable. The founder is the bottleneck.</strong> Gemini: "Larry wired 63 HubSpot deals (with correction passes needed), created a new pipeline stage, and drafted 24 targeted warm emails." Grok: "Real outputs: 63 deals associated, skills deployed across platforms, and a massive org discovery package generated." Both agree the AI stack works &mdash; but Scott spent 11+ hours prompting and iterating when much of it could run autonomously.</p>
+  </div>
+
+  <div class="consensus-box">
+    <div class="box-label">Consensus &mdash; Both Models</div>
+    <p><strong>The discovery/product work is real IP, but it's consuming everything.</strong> Grok: "Visionary product dev in raw form &mdash; turning local telemetry into actionable skills and MCPs for automation. This is core IP." Gemini: "You are hyper-fixating on building a $200K McKinsey-killer AI report." Both see the value. Both see the cost. The 14-hour discovery thread produced genuine artifacts &mdash; but at the expense of the Loom video and a full night's sleep.</p>
+  </div>
+
+  <div class="consensus-box">
+    <div class="box-label">Update &mdash; After Report Published</div>
+    <p><strong>The sends happened.</strong> Both models analyzed data captured before the late-night sprint. After the initial report: 24 warm emails schedule-sent, custom treatments written for high-value contacts, booking received. The pattern of deferred sends that both models flagged &mdash; it broke tonight.</p>
+  </div>
+</div>
+
+<!-- === DIVERGENT === -->
+<div class="section">
+  <h2>Where the Models Disagree</h2>
+
+  <div class="divergent-box">
+    <div class="box-label">Divergent &mdash; Was the Org Discovery Deep Dive Valuable?</div>
+    <p><strong>Gemini:</strong> "Visionary product dev in raw form &mdash; turning local telemetry into actionable skills. This is core IP." The pilot pitches and Concentrix outreach happened because of this work.</p>
+    <p><strong>Grok:</strong> "Chaotic but scales &mdash; humans couldn't iterate 14+ hours on reports without burning out." Sees the value but flags the cost.</p>
+    <p><strong>The reality:</strong> The discovery work IS the product being sold. Eight years of installing software on workers' computers, 100K+ leads of validation data &mdash; this is what's being packaged into a scalable offering. The depth isn't optional.</p>
+  </div>
+</div>
+
+<!-- === GOLD NUGGETS === -->
+<div class="section">
+  <h2>Gold Nuggets</h2>
+
+  <div class="gold-box">
+    <div class="box-label">Gemini 3.1 Pro (from raw transcripts)</div>
+    <p>"Larry flawlessly executed API integrations and drafted custom emails. Moe built complex data structures. But because you refuse to trust the autonomous loop, you are burning through rate limits and your own sanity."</p>
+  </div>
+
+  <div class="gold-box">
+    <div class="box-label">Grok 4 (from raw transcripts)</div>
+    <p>"This is peak leverage in 2026 AI-native operations. The founder is treating agents as a distributed team, offloading grunt work to create reproducible workflows. It's chaotic but scales &mdash; humans couldn't iterate 14+ hours on reports without burning out."</p>
+  </div>
+
+  <div class="gold-box">
+    <div class="box-label">Grok 4 &mdash; What Is This Company Actually Building?</div>
+    <p>"A local telemetry daemon that scrapes worker data (keystrokes, screenshots, app usage) to generate AI-driven discovery reports, identifying automations via skills/MCPs. It's pivoting to monitoring software for SMBs to replace jobs with AI, sold as free pilots to harvest insights. Core: Zero-data-retention processing for privacy-washed efficiency audits."</p>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;"><em>Note: This was Grok reading raw data with no pitch deck. It independently arrived at the product description. That's signal.</em></p>
+  </div>
+</div>
+
+<!-- === THE UNCOMFORTABLE TRUTH === -->
+<div class="section">
+  <div class="uncomfortable-box">
+    <div class="box-label">The Uncomfortable Truth (Raw Data)</div>
+    <p style="font-family: var(--heading); font-size: 1.2rem; font-style: italic;">Grok, reading unfiltered transcripts: "The founder is a manic, unfocused mess masking burnout as grinding &mdash; 19-hour days of dictation rants, financial desperation, and AI addiction are heading for collapse unless he admits he's the bottleneck."</p>
+    <p style="margin-top: 0.75rem;">Gemini, same data: "You are running on fumes and using your AI agents as the world's most advanced procrastination tool."</p>
+    <p style="margin-top: 0.75rem; color: var(--text-muted);">These are raw reads from models with no relationship to you, no context beyond today's data. They're wrong about avoidance &mdash; the emails went out, the booking came in. But they're reading something real about pace and sustainability. HRV at 9/100 is not a number you ignore twice.</p>
+  </div>
+</div>
+
+<!-- === WHAT SHIPPED === -->
+<div class="section">
+  <div class="section-label">The Ledger</div>
+  <h2>What Actually Shipped</h2>
+
+  <h3>Larry (Claude Code)</h3>
+  <ul>
+    <li>Investor email to Mark Egan ($3M conversation) &mdash; drafted with 3 frontier models, Scott refined, sent</li>
+    <li>34 new HubSpot deals created, new pipeline stage ("Scott Replied - Awaiting Response")</li>
+    <li>63 deals wired with contact + company associations (required multiple correction passes &mdash; missing company associations on first attempt, Scott had to manually attach PDFs)</li>
+    <li>21 standard + 3 custom warm email drafts created (correct template with attachment mention)</li>
+    <li>41 Katie intro emails archived from Gmail</li>
+    <li>Cal.com event description and redirect updated</li>
+    <li>Found EP1 YouTube latest version (uncommitted: "Make AI Do the Work")</li>
+    <li>Access vault lesson learned and saved to memory (snake_case)</li>
+  </ul>
+
+  <h3>Moe (Codex)</h3>
+  <ul>
+    <li>Go2Local Work Review re-anchored on v1 private daily work brief contract</li>
+    <li>Go2 crew org discovery package massively expanded &mdash; surfaces, tools, review bundles</li>
+    <li>3 concurrent thread lanes managed cleanly</li>
+    <li>Product direction documented and synced</li>
+  </ul>
+
+  <h3>Shemp (Gemini CLI)</h3>
+  <ul>
+    <li>Unified skill deployment script (#46) &mdash; skills now discoverable across all agent platforms</li>
+    <li>SOD skills updated for Larry, Shemp, Curly</li>
+    <li>Sentry sweep: clean</li>
+  </ul>
+
+  <h3>Scott (Human)</h3>
+  <ul>
+    <li>Wrote and sent Mark Egan investor email personally</li>
+    <li>FBI fingerprint at post office</li>
+    <li>339 voice notes &mdash; deep product vision, pilot positioning, enterprise strategy</li>
+    <li>Direct pilot pitches via Messages (Concentrix, others)</li>
+    <li>Drove Moe through 8+ hours of product and discovery iteration</li>
+    <li>Established EOD protocol, repo hygiene rules, workroom rules in decisions.md</li>
+  </ul>
+</div>
+
+<!-- === TOMORROW === -->
+<div class="section">
+  <div class="section-label">Tomorrow</div>
+  <h2>Tomorrow Starts Clean</h2>
+  <p>The warm emails are out. The pipeline is wired. The investor is nudged. The product is deeper than it's ever been. Tomorrow is about watching the replies come in and capitalizing.</p>
+  <ol>
+    <li><strong>Monitor warm email replies</strong> &mdash; 24 schedule-sent, responses will start landing. Move deals through pipeline stages as they respond.</li>
+    <li><strong>Record the Loom.</strong> EP1 presenter at <code>~/ai-training-knowledge-base/episodes/ep01-app/</code>. The one-pager is ready. This is the last open item.</li>
+    <li><strong>Recreate Julia's draft</strong> at julia@quiet.com (bounced at surreal.ai).</li>
+    <li><strong>Resume Moe's org discovery lane</strong> &mdash; canonicalize the artifacts, keep building depth.</li>
+    <li><strong>Sleep.</strong> Seriously. HRV at 9/100 compounds. Tomorrow's cognition depends on tonight's recovery.</li>
+  </ol>
+</div>
+
+<!-- === TREND LINES === -->
+<div class="section">
+  <div class="section-label">3-Day Trend</div>
+  <h2>What's Moving</h2>
+  <table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin:1rem 0;">
+    <thead>
+      <tr style="border-bottom:2px solid var(--text); text-align:left;">
+        <th style="padding:0.5rem;">Metric</th>
+        <th style="padding:0.5rem;">Mar 31</th>
+        <th style="padding:0.5rem;">Apr 2</th>
+        <th style="padding:0.5rem;">Direction</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.5rem;">Leverage Ratio</td>
+        <td style="padding:0.5rem;">0.54x</td>
+        <td style="padding:0.5rem;">0.74x</td>
+        <td style="padding:0.5rem; color:var(--green);">&#x25B2; Improving</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.5rem;">Revenue-Direct %</td>
+        <td style="padding:0.5rem;">25%</td>
+        <td style="padding:0.5rem;">~40%</td>
+        <td style="padding:0.5rem; color:var(--green);">&#x25B2; Improving</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.5rem;">Warm Emails Sent</td>
+        <td style="padding:0.5rem;">13</td>
+        <td style="padding:0.5rem;">1 (investor)</td>
+        <td style="padding:0.5rem; color:var(--red);">&#x25BC; Declining</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.5rem;">Pipeline Size</td>
+        <td style="padding:0.5rem;">~29</td>
+        <td style="padding:0.5rem;">63</td>
+        <td style="padding:0.5rem; color:var(--green);">&#x25B2; 2x growth</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.5rem;">Agent Coordination</td>
+        <td style="padding:0.5rem;">Chaotic</td>
+        <td style="padding:0.5rem;">Lane-based</td>
+        <td style="padding:0.5rem; color:var(--green);">&#x25B2; Improving</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.5rem;">Sleep</td>
+        <td style="padding:0.5rem;">n/a</td>
+        <td style="padding:0.5rem;">48/100</td>
+        <td style="padding:0.5rem; color:var(--red);">&#x25BC; Dangerous</td>
+      </tr>
+      <tr>
+        <td style="padding:0.5rem;">Stale P1s</td>
+        <td style="padding:0.5rem;">~8</td>
+        <td style="padding:0.5rem;">5 (9+ days)</td>
+        <td style="padding:0.5rem; color:var(--amber);">&#x25AC; Flat</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- === VOICE NOTES HIGHLIGHTS === -->
+<div class="section">
+  <div class="section-label">From the Voice Notes (339 recordings)</div>
+  <h2>What Scott Was Actually Thinking</h2>
+  <p>The voice transcripts reveal three distinct energy phases:</p>
+
+  <h3>Morning: Frustration + Discipline</h3>
+  <blockquote>"Me reminding you that you know how to do things, the things you literally did yesterday, is a huge fucking issue and it means the system doesn't work."</blockquote>
+  <p>Scott spent the morning establishing governance: EOD protocol, repo hygiene rules, drift correction. The relay room from yesterday was frustrating.</p>
+
+  <h3>Afternoon: Product Fire</h3>
+  <blockquote>"Go fucking impress me. Keep building in and building out and going deeper and deeper."</blockquote>
+  <p>Deep engagement on org discovery. Pushing for real telemetry insights, not surface-level reporting. Wanted engagement scores, red flags, prescriptive insights from keystroke data.</p>
+
+  <h3>Late Night: Strategic Clarity</h3>
+  <blockquote>"There are billions of dollars of savings on the table for SMBs... making that not a consulting gig but a thing they can do themselves is like nobody's doing that exceptionally well."</blockquote>
+  <p>Product positioning crystallized through pilot one-pager work. Enterprise acquisition conversations vs SMB self-serve. The conflict between staffing revenue and automation recommendations.</p>
+
+  <h3>3am: Self-Awareness</h3>
+  <blockquote>"Don't chimp on the models. Don't chimp on first principles. Fucking do better."</blockquote>
+  <p>Scott knows the report matters. Wants interactive HTML, real insight, frontier model depth. And he knows he worked too late on too little sleep.</p>
+</div>
+
+<!-- === HEALTH === -->
+<div class="section">
+  <div class="section-label">Physiology</div>
+  <h2>The Body's Scorecard</h2>
+  <div class="alloc-grid">
+    <div class="alloc-item">
+      <div class="alloc-label">Sleep</div>
+      <div class="alloc-value" style="color:var(--red);">48</div>
+      <div class="alloc-note">Latency: 1/100 (!)</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-label">Readiness</div>
+      <div class="alloc-value" style="color:var(--red);">39</div>
+      <div class="alloc-note">HRV Balance: 9/100</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-label">Work Hours</div>
+      <div class="alloc-value">16.8h</div>
+      <div class="alloc-note">8:30am &rarr; 3:20am</div>
+    </div>
+  </div>
+  <p>Working 16.8 hours on a Sleep 48 night with HRV Balance at 9/100 is not grinding &mdash; it's a debt that compounds. Tomorrow's cognitive performance will be impaired. The afternoon dip will be brutal. Plan accordingly: send emails in the morning when cognition is highest.</p>
+</div>
+
+<div class="footer">
+  <p>Go2 Daily &mdash; April 2, 2026 &mdash; Generated by Larry [AI] with Gemini 3.1 Pro + Grok 4 (raw data, no summary filter)</p>
+  <p>Report: ~/brain/reports/eod-2026-04-02.html</p>
+</div>
+
+</body>
+</html>

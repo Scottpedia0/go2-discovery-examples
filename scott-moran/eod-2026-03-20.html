@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 — End of Day Brief | Mar 20, 2026</title>
+<style>
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #111827;
+    --bg-card: #1a2236;
+    --bg-card-hover: #1f2a42;
+    --border: #2a3450;
+    --text-primary: #e8ecf4;
+    --text-secondary: #8892a8;
+    --text-muted: #5a6580;
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-cyan: #06b6d4;
+    --accent-green: #10b981;
+    --accent-orange: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-pink: #ec4899;
+    --accent-indigo: #6366f1;
+    --gradient-hero: linear-gradient(135deg, #1a1040 0%, #0a1628 50%, #0a1a20 100%);
+    --gradient-card: linear-gradient(145deg, #1a2236 0%, #151d30 100%);
+    --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+    --shadow-glow-blue: 0 0 30px rgba(59,130,246,0.15);
+    --shadow-glow-purple: 0 0 30px rgba(139,92,246,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Perplexity-style citation tooltips */
+  .cite {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted rgba(99,102,241,0.5);
+  }
+  .cite::after {
+    content: attr(data-source);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1040;
+    color: #c4b5fd;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(99,102,241,0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    white-space: normal;
+    width: max-content;
+    max-width: 340px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 100;
+  }
+  .cite:hover::after { opacity: 1; }
+  .cite-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: rgba(99,102,241,0.2);
+    color: var(--accent-indigo);
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 4px;
+    margin-left: 2px;
+    vertical-align: super;
+    cursor: help;
+    position: relative;
+  }
+  .cite-num::after {
+    content: attr(data-source);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1040;
+    color: #c4b5fd;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(99,102,241,0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    white-space: normal;
+    width: max-content;
+    max-width: 340px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 100;
+  }
+  .cite-num:hover::after { opacity: 1; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  @keyframes countUp {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--gradient-hero);
+    padding: 56px 0 48px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -5%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    animation: fadeIn 0.6s ease;
+  }
+  .hero-logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .hero-brand-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 16px 0 6px;
+    animation: fadeInUp 0.8s ease;
+    background: linear-gradient(90deg, #e8ecf4, #b0b8d0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-subtitle {
+    font-size: 18px;
+    color: var(--accent-cyan);
+    font-weight: 600;
+    animation: fadeInUp 0.8s ease 0.05s both;
+    margin-bottom: 2px;
+  }
+  .hero-date {
+    font-size: 16px;
+    color: var(--text-secondary);
+    animation: fadeInUp 0.8s ease 0.1s both;
+  }
+  .hero-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    animation: fadeInUp 0.8s ease 0.2s both;
+  }
+  .hero-user .avatar {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+  }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    padding: 32px 0;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+  .stat-card {
+    background: var(--gradient-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-blue);
+    box-shadow: var(--shadow-glow-blue);
+  }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 2px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .stat-card:nth-child(1) .stat-value { color: var(--accent-blue); }
+  .stat-card:nth-child(2) .stat-value { color: var(--accent-purple); }
+  .stat-card:nth-child(3) .stat-value { color: var(--accent-cyan); }
+  .stat-card:nth-child(4) .stat-value { color: var(--accent-green); }
+  .stat-card:nth-child(5) .stat-value { color: var(--accent-orange); }
+  .stat-card:nth-child(6) .stat-value { color: var(--accent-pink); }
+
+  /* ── SECTION TITLES ── */
+  .section { padding: 40px 0; }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+  }
+  .section-title .icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  /* ── EXECUTIVE SUMMARY ── */
+  .exec-summary {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08));
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    animation: fadeInUp 0.8s ease 0.4s both;
+    position: relative;
+    overflow: hidden;
+  }
+  .exec-summary::before {
+    content: '\201C';
+    position: absolute;
+    top: 12px; left: 20px;
+    font-size: 80px;
+    color: rgba(99,102,241,0.12);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+  .exec-summary p { position: relative; z-index: 1; }
+  .exec-summary strong { color: var(--text-primary); }
+
+  /* ── CHARTS GRID ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 768px) {
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+  .chart-card {
+    background: var(--gradient-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .chart-card:hover {
+    border-color: rgba(99,102,241,0.3);
+    box-shadow: var(--shadow-glow-purple);
+  }
+  .chart-card.full-width {
+    grid-column: 1 / -1;
+  }
+  .chart-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── BAR CHARTS ── */
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  .bar-label {
+    width: 110px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .bar-track {
+    flex: 1;
+    height: 28px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    min-width: fit-content;
+  }
+  .bar-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    width: 72px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── DONUT CHART ── */
+  .donut-container {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .donut-svg { flex-shrink: 0; }
+  .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .legend-value {
+    margin-left: auto;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-left: 16px;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 0;
+    font-size: 12px;
+  }
+  .timeline-hour {
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 3px 8px 3px 0;
+    text-align: right;
+    border-right: 1px solid var(--border);
+  }
+  .timeline-bars {
+    display: flex;
+    gap: 2px;
+    padding: 3px 0 3px 8px;
+    align-items: center;
+    min-height: 22px;
+  }
+  .timeline-block {
+    height: 16px;
+    border-radius: 3px;
+    min-width: 2px;
+    transition: transform 0.2s;
+  }
+  .timeline-block:hover { transform: scaleY(1.4); }
+  .timeline-day-label {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    padding: 12px 0 6px;
+    letter-spacing: 0.5px;
+  }
+  .timeline-inactive {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    padding-left: 8px;
+  }
+
+  /* ── THEME CARDS ── */
+  .themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .theme-card {
+    background: var(--gradient-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .theme-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99,102,241,0.3);
+    box-shadow: var(--shadow-glow-purple);
+  }
+  .theme-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .theme-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+  .theme-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink)); }
+  .theme-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan)); }
+  .theme-card:nth-child(4)::before { background: linear-gradient(90deg, var(--accent-orange), var(--accent-red)); }
+  .theme-card:nth-child(5)::before { background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple)); }
+  .theme-card:nth-child(6)::before { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue)); }
+  .theme-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .theme-icon {
+    font-size: 24px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .theme-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .theme-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-top: 4px;
+  }
+  .tag-infra { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+  .tag-sales { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+  .tag-ops { background: rgba(236,72,153,0.15); color: var(--accent-pink); }
+  .tag-sentry { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+  .tag-content { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+  .tag-standby { background: rgba(90,101,128,0.2); color: var(--text-muted); }
+  .theme-details {
+    list-style: none;
+    padding: 0;
+  }
+  .theme-details li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .theme-details li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  /* ── INSIGHTS ── */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .insight-card {
+    background: var(--gradient-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+  .insight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+  }
+  .insight-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+  }
+  .insight-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .insight-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .insight-data {
+    font-weight: 700;
+    color: var(--accent-cyan);
+  }
+
+  /* ── OURA CARD ── */
+  .oura-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .oura-metric {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .oura-metric-value {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .oura-metric-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .oura-note {
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.15);
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .oura-note strong { color: var(--accent-orange); }
+
+  /* ── DECISIONS LIST ── */
+  .decisions-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .decision-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.2s;
+  }
+  .decision-item:hover {
+    border-color: rgba(99,102,241,0.3);
+  }
+  .decision-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: rgba(99,102,241,0.12);
+    color: var(--accent-indigo);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .decision-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .decision-text strong {
+    color: var(--text-primary);
+  }
+
+  /* ── ARCHITECTURE DIAGRAMS ── */
+  .architecture-intro {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .architecture-intro strong {
+    color: var(--text-primary);
+  }
+  .architecture-intro a,
+  .architecture-links a {
+    color: var(--accent-cyan);
+    text-decoration: none;
+  }
+  .architecture-intro a:hover,
+  .architecture-links a:hover {
+    text-decoration: underline;
+  }
+  .architecture-callouts {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .architecture-callout {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+  .architecture-callout strong {
+    color: var(--text-primary);
+  }
+  .architecture-callout.warning {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.18);
+  }
+  .architecture-callout.info {
+    background: rgba(6,182,212,0.06);
+    border-color: rgba(6,182,212,0.18);
+  }
+  .architecture-card {
+    margin-top: 18px;
+  }
+  .architecture-card .chart-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .architecture-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .architecture-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+  }
+  .architecture-badge.stable {
+    color: #93c5fd;
+    background: rgba(59,130,246,0.12);
+    border-color: rgba(59,130,246,0.25);
+  }
+  .architecture-badge.partial {
+    color: #fcd34d;
+    background: rgba(245,158,11,0.12);
+    border-color: rgba(245,158,11,0.25);
+  }
+  .architecture-badge.future {
+    color: #c4b5fd;
+    background: rgba(139,92,246,0.12);
+    border-color: rgba(139,92,246,0.25);
+  }
+  .architecture-note {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .architecture-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .architecture-links span {
+    color: var(--text-muted);
+  }
+  .architecture-mermaid {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(10,14,26,0.55);
+    border: 1px solid rgba(255,255,255,0.04);
+    overflow-x: auto;
+  }
+  .architecture-mermaid svg {
+    max-width: 100%;
+  }
+
+  /* ── BLOCKERS ── */
+  .blockers-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .blocker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(239,68,68,0.04);
+    border: 1px solid rgba(239,68,68,0.12);
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: background 0.2s;
+  }
+  .blocker-item:hover {
+    background: rgba(239,68,68,0.07);
+  }
+  .blocker-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-red);
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+
+  /* ── QUOTE BLOCK ── */
+  .quote-block {
+    background: linear-gradient(135deg, rgba(6,182,212,0.08), rgba(139,92,246,0.08));
+    border: 1px solid rgba(6,182,212,0.2);
+    border-radius: 20px;
+    padding: 36px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .quote-block::before {
+    content: '\201C';
+    position: absolute;
+    top: 8px; left: 24px;
+    font-size: 100px;
+    color: rgba(6,182,212,0.1);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+  .quote-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-style: italic;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+  .quote-attr {
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--accent-cyan);
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HUMAN COMMS ── */
+  .comms-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .comms-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .comms-icon {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(236,72,153,0.08);
+    border-radius: 10px;
+    font-size: 18px;
+  }
+  .comms-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .comms-text strong { color: var(--text-primary); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 48px 0 32px;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+  .footer-brand {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .footer-brand span {
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+  }
+  .footer-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    opacity: 0.6;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .container { padding: 0 16px; }
+    .hero { padding: 32px 0 28px; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .themes-grid { grid-template-columns: 1fr; }
+    .insights-grid { grid-template-columns: 1fr; }
+    .donut-container { flex-direction: column; }
+    .bar-label { width: 80px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-brand">
+      <div class="hero-logo">G2</div>
+      <div class="hero-brand-name">Go2 &middot; Cowork.ai</div>
+    </div>
+    <h1>End of Day Brief</h1>
+    <div class="hero-subtitle">Friday &mdash; System Rework Day</div>
+    <div class="hero-date">March 20, 2026 &nbsp;|&nbsp; Scott: ~10h human &nbsp;&bull;&nbsp; Agents: ~31h compute &nbsp;&bull;&nbsp; Leverage: 3.1x</div>
+    <div class="hero-user">
+      <div class="avatar">SM</div>
+      Scott Moran &middot; Founder
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ STATS STRIP ═══════════════ -->
+<div class="container">
+  <div class="stats-strip">
+    <div class="stat-card">
+      <div class="stat-value cite" style="color:var(--accent-orange);" data-source="Scott: ~10am to ~9pm, minus 1.5hr airport pickup, plus phone QA at airport. Approx 10 hours of active human work.">~10h</div>
+      <div class="stat-label">Scott (Human)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value cite" style="color:var(--accent-purple);" data-source="Larry ~18h (overnight autonomous + daytime sessions + sub-agents), Moe ~8h (Codex article rewrites, QA, review polish), Shemp ~5h (patrol, sync daemon, repo consolidation). Total ~31h agent compute.">~31h</div>
+      <div class="stat-label">Agent Compute</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value cite" style="color:var(--accent-green);" data-source="31h agent compute / 10h human input = 3.1x. Lower than Wednesday's 6.4x because system rework days have more human-in-the-loop decision-making and less autonomous execution.">3.1x</div>
+      <div class="stat-label">Leverage Ratio</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value cite" data-source="Keystroke telemetry: Claude 11,140 + Codex 10,318 + Chrome 6,701 + ChatGPT 1,048 + Terminal 998 + Notes 491 = 30,696 chars typed by Scott.">30.9K</div>
+      <div class="stat-label">Keystrokes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value cite" data-source="git log --oneline brain repo. 54 commits across all agents pushing to the brain repo throughout the day.">54</div>
+      <div class="stat-label">Commits</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value cite" data-source="Claude Relay v2.0.0 (larry.moran.bot) — full PWA shipped and live. Brain coordination layer (50 files) — infrastructure shipped. brain.moran.bot dashboard was discussed/prototyped but not confirmed live.">1 + infra</div>
+      <div class="stat-label">Shipped</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ LEVERAGE RATIO ═══════════════ -->
+  <div class="section">
+    <div style="background:linear-gradient(135deg, rgba(16,185,129,0.12), rgba(59,130,246,0.12));border:1px solid rgba(16,185,129,0.25);border-radius:20px;padding:36px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-30px;right:-30px;width:200px;height:200px;background:radial-gradient(circle,rgba(16,185,129,0.1),transparent 70%);"></div>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent-green);margin-bottom:12px;">Leverage Ratio</div>
+      <div style="font-size:64px;font-weight:800;background:linear-gradient(90deg,#10b981,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;">1 : 3.1</div>
+      <div style="font-size:15px;color:var(--text-secondary);margin-top:12px;max-width:560px;margin-left:auto;margin-right:auto;">For every <strong style="color:var(--text-primary);">1 hour</strong> of Scott&rsquo;s human input, <strong style="color:var(--accent-green);">3 AI agents generated 3.1 hours</strong> of parallel compute. Scott worked ~10 hours (10am&ndash;9pm minus airport). Agents logged ~31 hours across Larry, Moe, and Shemp &mdash; including 7 hours of overnight autonomous work while Scott slept.</div>
+      <div style="font-size:11px;color:var(--accent-orange);margin-top:8px;">Lower than Wednesday&rsquo;s 6.4x &mdash; system rework days require more human-in-the-loop decisions and less autonomous execution.</div>
+      <div style="display:flex;justify-content:center;gap:32px;margin-top:24px;flex-wrap:wrap;">
+        <div style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--accent-orange);">~10h</div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Scott (human)</div></div>
+        <div style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--accent-purple);">~18h</div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Larry [Claude]</div></div>
+        <div style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--accent-green);">~8h</div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Moe [Codex]</div></div>
+        <div style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--accent-pink);">~5h</div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Shemp [Gemini]</div></div>
+        <div style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--text-muted);">0h</div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Curly (standby)</div></div>
+      </div>
+      <div style="margin-top:16px;font-size:12px;color:var(--text-muted);text-align:center;">30,886 keystrokes by Scott &bull; 54 commits across agents &bull; 50 files of coordination infrastructure shipped</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ COMPUTE TREE ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(139,92,246,0.12);">&#127793;</div>
+      Compute Tree &mdash; Friday&rsquo;s Force Multiplier
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Each agent works independently and spawns sub-tasks. Scott orchestrates via voice + keystrokes. The tree shows who did what &mdash; individual contributions rolled up into the day&rsquo;s output.</p>
+    <div class="chart-card full-width">
+      <svg viewBox="0 0 960 420" style="width:100%;max-height:420px;">
+        <!-- Level 0: Scott -->
+        <rect x="380" y="10" width="200" height="50" rx="12" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+        <text x="480" y="32" text-anchor="middle" fill="#f59e0b" font-size="14" font-weight="800">Scott (~10h human)</text>
+        <text x="480" y="48" text-anchor="middle" fill="#5a6580" font-size="10">30.9K chars + voice + calls + decisions</text>
+
+        <!-- Branches to agents -->
+        <line x1="480" y1="60" x2="160" y2="110" stroke="#8b5cf6" stroke-width="1.5" opacity="0.4"/>
+        <line x1="480" y1="60" x2="480" y2="110" stroke="#10b981" stroke-width="1.5" opacity="0.4"/>
+        <line x1="480" y1="60" x2="800" y2="110" stroke="#ec4899" stroke-width="1.5" opacity="0.4"/>
+
+        <!-- Level 1: Larry -->
+        <rect x="70" y="110" width="180" height="44" rx="8" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="160" y="130" text-anchor="middle" fill="#8b5cf6" font-size="13" font-weight="700">Larry [Claude] ~18h</text>
+        <text x="160" y="145" text-anchor="middle" fill="#5a6580" font-size="9">Lead &bull; MacBook Pro</text>
+
+        <!-- Level 1: Moe -->
+        <rect x="390" y="110" width="180" height="44" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+        <text x="480" y="130" text-anchor="middle" fill="#10b981" font-size="13" font-weight="700">Moe [Codex] ~8h</text>
+        <text x="480" y="145" text-anchor="middle" fill="#5a6580" font-size="9">Content &amp; QA &bull; MacBook Pro</text>
+
+        <!-- Level 1: Shemp -->
+        <rect x="710" y="110" width="180" height="44" rx="8" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="2"/>
+        <text x="800" y="130" text-anchor="middle" fill="#ec4899" font-size="13" font-weight="700">Shemp [Gemini] ~5h</text>
+        <text x="800" y="145" text-anchor="middle" fill="#5a6580" font-size="9">Sentry &bull; MacBook Pro</text>
+
+        <!-- Larry sub-tasks -->
+        <line x1="160" y1="154" x2="60" y2="200" stroke="#8b5cf6" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+        <line x1="160" y1="154" x2="160" y2="200" stroke="#8b5cf6" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+        <line x1="160" y1="154" x2="260" y2="200" stroke="#8b5cf6" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+
+        <rect x="10" y="200" width="100" height="34" rx="6" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="1" opacity="0.6"/>
+        <text x="60" y="214" text-anchor="middle" fill="#8b5cf6" font-size="9" font-weight="600">Relay v2.0.0</text>
+        <text x="60" y="226" text-anchor="middle" fill="#5a6580" font-size="7">PWA + SQLite + SSE</text>
+
+        <rect x="110" y="200" width="100" height="34" rx="6" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="1" opacity="0.6"/>
+        <text x="160" y="214" text-anchor="middle" fill="#8b5cf6" font-size="9" font-weight="600">Brain Coord Layer</text>
+        <text x="160" y="226" text-anchor="middle" fill="#5a6580" font-size="7">50 files + safe_push</text>
+
+        <rect x="210" y="200" width="100" height="34" rx="6" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="1" opacity="0.6"/>
+        <text x="260" y="214" text-anchor="middle" fill="#8b5cf6" font-size="9" font-weight="600">EOD Pipeline</text>
+        <text x="260" y="226" text-anchor="middle" fill="#5a6580" font-size="7">Skills + 4 scripts</text>
+
+        <!-- Larry deeper sub-agents -->
+        <line x1="60" y1="234" x2="35" y2="270" stroke="#8b5cf6" stroke-width="0.8" opacity="0.2" stroke-dasharray="3"/>
+        <line x1="60" y1="234" x2="85" y2="270" stroke="#8b5cf6" stroke-width="0.8" opacity="0.2" stroke-dasharray="3"/>
+        <line x1="160" y1="234" x2="135" y2="270" stroke="#8b5cf6" stroke-width="0.8" opacity="0.2" stroke-dasharray="3"/>
+        <line x1="160" y1="234" x2="185" y2="270" stroke="#8b5cf6" stroke-width="0.8" opacity="0.2" stroke-dasharray="3"/>
+
+        <circle cx="35" cy="280" r="14" fill="rgba(139,92,246,0.08)" stroke="#8b5cf6" stroke-width="0.8" opacity="0.4"/>
+        <text x="35" y="284" text-anchor="middle" fill="#8b5cf6" font-size="7">CF Tun</text>
+        <circle cx="85" cy="280" r="14" fill="rgba(139,92,246,0.08)" stroke="#8b5cf6" stroke-width="0.8" opacity="0.4"/>
+        <text x="85" y="284" text-anchor="middle" fill="#8b5cf6" font-size="7">VAPID</text>
+        <circle cx="135" cy="280" r="14" fill="rgba(139,92,246,0.08)" stroke="#8b5cf6" stroke-width="0.8" opacity="0.4"/>
+        <text x="135" y="284" text-anchor="middle" fill="#8b5cf6" font-size="7">QA x2</text>
+        <circle cx="185" cy="280" r="14" fill="rgba(139,92,246,0.08)" stroke="#8b5cf6" stroke-width="0.8" opacity="0.4"/>
+        <text x="185" y="284" text-anchor="middle" fill="#8b5cf6" font-size="7">compile</text>
+
+        <!-- Moe sub-tasks -->
+        <line x1="480" y1="154" x2="400" y2="200" stroke="#10b981" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+        <line x1="480" y1="154" x2="480" y2="200" stroke="#10b981" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+        <line x1="480" y1="154" x2="560" y2="200" stroke="#10b981" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+
+        <rect x="350" y="200" width="100" height="34" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" opacity="0.6"/>
+        <text x="400" y="214" text-anchor="middle" fill="#10b981" font-size="9" font-weight="600">Tier 1 Article</text>
+        <text x="400" y="226" text-anchor="middle" fill="#5a6580" font-size="7">7+ rewrites, voice mine</text>
+
+        <rect x="430" y="200" width="100" height="34" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" opacity="0.6"/>
+        <text x="480" y="214" text-anchor="middle" fill="#10b981" font-size="9" font-weight="600">Review Polish</text>
+        <text x="480" y="226" text-anchor="middle" fill="#5a6580" font-size="7">112 records + emails</text>
+
+        <rect x="510" y="200" width="100" height="34" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" opacity="0.6"/>
+        <text x="560" y="214" text-anchor="middle" fill="#10b981" font-size="9" font-weight="600">Issue #45</text>
+        <text x="560" y="226" text-anchor="middle" fill="#5a6580" font-size="7">Work graph design</text>
+
+        <!-- Moe sub-agents -->
+        <line x1="400" y1="234" x2="385" y2="270" stroke="#10b981" stroke-width="0.8" opacity="0.2" stroke-dasharray="3"/>
+        <line x1="400" y1="234" x2="415" y2="270" stroke="#10b981" stroke-width="0.8" opacity="0.2" stroke-dasharray="3"/>
+
+        <circle cx="385" cy="280" r="14" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="0.8" opacity="0.4"/>
+        <text x="385" y="284" text-anchor="middle" fill="#10b981" font-size="7">Critic</text>
+        <circle cx="415" cy="280" r="14" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="0.8" opacity="0.4"/>
+        <text x="415" y="284" text-anchor="middle" fill="#10b981" font-size="7">Voice</text>
+
+        <!-- Shemp sub-tasks -->
+        <line x1="800" y1="154" x2="720" y2="200" stroke="#ec4899" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+        <line x1="800" y1="154" x2="800" y2="200" stroke="#ec4899" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+        <line x1="800" y1="154" x2="880" y2="200" stroke="#ec4899" stroke-width="1" opacity="0.3" stroke-dasharray="4"/>
+
+        <rect x="670" y="200" width="100" height="34" rx="6" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="1" opacity="0.6"/>
+        <text x="720" y="214" text-anchor="middle" fill="#ec4899" font-size="9" font-weight="600">Repo Consolidation</text>
+        <text x="720" y="226" text-anchor="middle" fill="#5a6580" font-size="7">Anti-entropy sweep</text>
+
+        <rect x="750" y="200" width="100" height="34" rx="6" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="1" opacity="0.6"/>
+        <text x="800" y="214" text-anchor="middle" fill="#ec4899" font-size="9" font-weight="600">G Suite Daemon</text>
+        <text x="800" y="226" text-anchor="middle" fill="#5a6580" font-size="7">launchd + sync</text>
+
+        <rect x="830" y="200" width="100" height="34" rx="6" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="1" opacity="0.6"/>
+        <text x="880" y="214" text-anchor="middle" fill="#ec4899" font-size="9" font-weight="600">Sentry Patrols</text>
+        <text x="880" y="226" text-anchor="middle" fill="#5a6580" font-size="7">Cost leaks + compliance</text>
+
+        <!-- Annotation box -->
+        <rect x="280" y="330" width="400" height="70" rx="12" fill="rgba(245,158,11,0.06)" stroke="rgba(245,158,11,0.2)" stroke-width="1"/>
+        <text x="480" y="355" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="700">Friday&rsquo;s Compute Topology</text>
+        <text x="480" y="375" text-anchor="middle" fill="#8892a8" font-size="11">1 human &rarr; 3 primary agents &rarr; 9 work streams &rarr; sub-agents</text>
+        <text x="480" y="393" text-anchor="middle" fill="#8892a8" font-size="11">System rework day: high coordination overhead, lower autonomy ratio</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ═══════════════ EXECUTIVE SUMMARY ═══════════════ -->
+  <div class="section">
+    <div class="exec-summary">
+      <p>
+        Friday was a <strong>system rework day</strong> &mdash; tear down scaffolding, pour permanent foundations. Scott worked ~10 hours (10am&ndash;9pm minus airport pickup for mom). Three agents logged ~31 hours of compute, including 7 hours of overnight autonomous work.<br><br>
+        <strong>What actually shipped:</strong> <strong style="color:var(--accent-cyan);">Claude Relay v2.0.0</strong> (larry.moran.bot) &mdash; full PWA with interactive sessions, SQLite task queue, SSE streaming, and Cloudflare Tunnel. Plus the <strong style="color:var(--accent-purple);">brain repo coordination layer</strong> &mdash; 50 files of per-agent handoffs, generated STATUS.md, safe_push.sh, and compile_status.sh. Access vault decisions were locked in (API keys in vault, bank/SSN never stored).<br><br>
+        The signature move: <strong>GitHub-first declared the product layer</strong>. Slack demoted to broadcast-only. Per-agent handoff files replaced ad-hoc coordination. Moe polished 112 review records and wrestled a Tier 1 article through 7+ rewrites. Shemp consolidated scattered repos, stood up a G Suite sync daemon, and caught cost leaks on sentry patrol. By end of day the system was deterministic enough for all three agents to close out through the new flow &mdash; and Moe found a real bug in safe_push.sh during QA.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ APP BREAKDOWN ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(59,130,246,0.12);">&#9881;</div>
+      App Usage Breakdown
+    </div>
+    <div class="charts-grid">
+
+      <!-- Screen Time Bar Chart -->
+      <div class="chart-card">
+        <div class="chart-title">Screen Time (minutes)</div>
+        <div class="bar-row"><div class="bar-label">Claude</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);">519</div></div></div>
+        <div class="bar-row"><div class="bar-label">Chrome</div><div class="bar-track"><div class="bar-fill" style="width:71.9%;background:linear-gradient(90deg,#3b82f6,#60a5fa);">373</div></div></div>
+        <div class="bar-row"><div class="bar-label">QuickTime</div><div class="bar-track"><div class="bar-fill" style="width:42.0%;background:linear-gradient(90deg,#10b981,#34d399);">218</div></div></div>
+        <div class="bar-row"><div class="bar-label">Codex</div><div class="bar-track"><div class="bar-fill" style="width:40.5%;background:linear-gradient(90deg,#f59e0b,#fbbf24);">210</div></div></div>
+        <div class="bar-row"><div class="bar-label">Terminal</div><div class="bar-track"><div class="bar-fill" style="width:5.2%;background:linear-gradient(90deg,#6366f1,#818cf8);">27</div></div></div>
+        <div class="bar-row"><div class="bar-label">ChatGPT</div><div class="bar-track"><div class="bar-fill" style="width:3.1%;background:linear-gradient(90deg,#06b6d4,#22d3ee);">16</div></div></div>
+        <div class="bar-row"><div class="bar-label">Notes</div><div class="bar-track"><div class="bar-fill" style="width:1.7%;background:linear-gradient(90deg,#ec4899,#f472b6);">9</div></div></div>
+      </div>
+
+      <!-- Typing Volume Donut -->
+      <div class="chart-card">
+        <div class="chart-title">Typing Volume (characters)</div>
+        <div class="donut-container">
+          <!-- Total: 30,696. r=70, C=439.82 -->
+          <!-- Claude: 11140/30696 = 36.3% = 159.5 -->
+          <!-- Codex: 10318/30696 = 33.6% = 147.8 -->
+          <!-- Chrome: 6701/30696 = 21.8% = 95.9 -->
+          <!-- ChatGPT: 1048/30696 = 3.4% = 15.0 -->
+          <!-- Terminal: 998/30696 = 3.3% = 14.3 -->
+          <!-- Notes: 491/30696 = 1.6% = 7.0 -->
+          <svg class="donut-svg" width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#1a2236" stroke-width="24"/>
+            <!-- Claude -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#8b5cf6" stroke-width="24"
+              stroke-dasharray="159.5 280.3" stroke-dashoffset="110" stroke-linecap="round">
+              <animate attributeName="stroke-dasharray" from="0 439.82" to="159.5 280.3" dur="1s" fill="freeze"/>
+            </circle>
+            <!-- Codex -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#10b981" stroke-width="24"
+              stroke-dasharray="147.8 292.0" stroke-dashoffset="-49.5" stroke-linecap="round">
+              <animate attributeName="stroke-dasharray" from="0 439.82" to="147.8 292.0" dur="1s" fill="freeze" begin="0.2s"/>
+            </circle>
+            <!-- Chrome -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#3b82f6" stroke-width="24"
+              stroke-dasharray="95.9 343.9" stroke-dashoffset="-197.3" stroke-linecap="round">
+              <animate attributeName="stroke-dasharray" from="0 439.82" to="95.9 343.9" dur="1s" fill="freeze" begin="0.4s"/>
+            </circle>
+            <!-- ChatGPT -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#06b6d4" stroke-width="24"
+              stroke-dasharray="15.0 424.8" stroke-dashoffset="-293.2" stroke-linecap="round">
+            </circle>
+            <!-- Terminal -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#6366f1" stroke-width="24"
+              stroke-dasharray="14.3 425.5" stroke-dashoffset="-308.2" stroke-linecap="round">
+            </circle>
+            <!-- Center text -->
+            <text x="90" y="84" text-anchor="middle" fill="#e8ecf4" font-size="22" font-weight="800">30.9K</text>
+            <text x="90" y="104" text-anchor="middle" fill="#5a6580" font-size="11" font-weight="600">TOTAL CHARS</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6;"></div> Claude <span class="legend-value">11,140</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> Codex <span class="legend-value">10,318</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div> Chrome <span class="legend-value">6,701</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#06b6d4;"></div> ChatGPT <span class="legend-value">1,048</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#6366f1;"></div> Terminal <span class="legend-value">998</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ec4899;"></div> Notes <span class="legend-value">491</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ACTIVITY TIMELINE ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(6,182,212,0.12);">&#9201;</div>
+      Hourly Activity Timeline
+    </div>
+    <div class="chart-card full-width" style="overflow-x:auto;">
+      <div class="chart-title">Activity Intensity by Hour &mdash; Bar width = minutes active &mdash; All times local</div>
+      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:2px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:inline-block;"></span>Active</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:2px;background:rgba(239,68,68,0.3);display:inline-block;"></span>Airport pickup (offline)</span>
+      </div>
+      <div class="timeline-grid">
+        <div class="timeline-day-label">Friday, March 20</div>
+
+        <!-- Midnight block: 00-06 (agents running autonomously) -->
+        <div class="timeline-hour">12am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:170px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="61 min &mdash; agents autonomous"></div>
+        </div>
+        <div class="timeline-hour">1am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:162px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="58 min"></div>
+        </div>
+        <div class="timeline-hour">2am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:165px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="59 min"></div>
+        </div>
+        <div class="timeline-hour">3am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:168px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="60 min"></div>
+        </div>
+        <div class="timeline-hour">4am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:168px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="60 min"></div>
+        </div>
+        <div class="timeline-hour">5am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:168px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="60 min"></div>
+        </div>
+        <div class="timeline-hour">6am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:165px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="59 min"></div>
+        </div>
+
+        <!-- 7am: big spike -->
+        <div class="timeline-hour">7am</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:100%;background:linear-gradient(90deg,#3b82f6,#06b6d4);" title="357 min &mdash; peak activity burst"></div>
+        </div>
+
+        <!-- 8-11am: offline -->
+        <div class="timeline-hour">8am</div><div class="timeline-bars">
+          <div class="timeline-inactive">Airport pickup &mdash; offline</div>
+        </div>
+        <div class="timeline-hour">9am</div><div class="timeline-bars">
+          <div class="timeline-inactive"></div>
+        </div>
+        <div class="timeline-hour">10am</div><div class="timeline-bars">
+          <div class="timeline-inactive"></div>
+        </div>
+        <div class="timeline-hour">11am</div><div class="timeline-bars">
+          <div class="timeline-inactive"></div>
+        </div>
+
+        <!-- 12pm: trickle -->
+        <div class="timeline-hour">12pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:3px;background:linear-gradient(90deg,#10b981,#34d399);" title="2 min"></div>
+        </div>
+
+        <!-- 1pm: back online -->
+        <div class="timeline-hour">1pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:135px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);" title="194 min"></div>
+        </div>
+
+        <!-- 2-3pm: offline -->
+        <div class="timeline-hour">2pm</div><div class="timeline-bars">
+          <div class="timeline-inactive">Offline</div>
+        </div>
+        <div class="timeline-hour">3pm</div><div class="timeline-bars">
+          <div class="timeline-inactive"></div>
+        </div>
+
+        <!-- 4pm onward -->
+        <div class="timeline-hour">4pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:56px;background:linear-gradient(90deg,#f59e0b,#fbbf24);" title="81 min"></div>
+        </div>
+        <div class="timeline-hour">5pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:17px;background:linear-gradient(90deg,#f59e0b,#fbbf24);" title="24 min"></div>
+        </div>
+        <div class="timeline-hour">6pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:29px;background:linear-gradient(90deg,#10b981,#06b6d4);" title="42 min"></div>
+        </div>
+        <div class="timeline-hour">7pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:37px;background:linear-gradient(90deg,#10b981,#06b6d4);" title="53 min"></div>
+        </div>
+        <div class="timeline-hour">8pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:41px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);" title="58 min"></div>
+        </div>
+        <div class="timeline-hour">9pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:165px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="59 min"></div>
+        </div>
+        <div class="timeline-hour">10pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:168px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="60 min"></div>
+        </div>
+        <div class="timeline-hour">11pm</div><div class="timeline-bars">
+          <div class="timeline-block" style="width:168px;background:linear-gradient(90deg,#8b5cf6,#6366f1);" title="60 min"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ OURA RING DATA ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(16,185,129,0.12);">&#128154;</div>
+      Oura Ring &mdash; Biometrics
+    </div>
+    <div class="chart-card full-width">
+      <div class="chart-title">Activity &amp; Movement Summary</div>
+
+      <!-- Activity Score SVG gauge -->
+      <div style="display:flex;align-items:center;gap:40px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <!-- Background ring -->
+          <circle cx="70" cy="70" r="56" fill="none" stroke="#1a2236" stroke-width="12"/>
+          <!-- Score arc: 63/100 = 63% of 351.86 = 221.7 -->
+          <circle cx="70" cy="70" r="56" fill="none" stroke="url(#oura-grad)" stroke-width="12"
+            stroke-dasharray="221.7 130.2" stroke-dashoffset="88" stroke-linecap="round"
+            transform="rotate(-90 70 70)">
+            <animate attributeName="stroke-dasharray" from="0 351.86" to="221.7 130.2" dur="1.2s" fill="freeze"/>
+          </circle>
+          <defs>
+            <linearGradient id="oura-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#10b981"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+          </defs>
+          <text x="70" y="65" text-anchor="middle" fill="#e8ecf4" font-size="28" font-weight="800">63</text>
+          <text x="70" y="82" text-anchor="middle" fill="#5a6580" font-size="10" font-weight="600">/100</text>
+          <text x="70" y="100" text-anchor="middle" fill="#8892a8" font-size="10" font-weight="600">ACTIVITY</text>
+        </svg>
+
+        <div style="flex:1;min-width:260px;">
+          <div class="oura-grid">
+            <div class="oura-metric">
+              <div class="oura-metric-value" style="color:var(--accent-blue);">2,676</div>
+              <div class="oura-metric-label">Steps</div>
+            </div>
+            <div class="oura-metric">
+              <div class="oura-metric-value" style="color:var(--accent-orange);">224</div>
+              <div class="oura-metric-label">Active Cal</div>
+            </div>
+            <div class="oura-metric">
+              <div class="oura-metric-value" style="color:var(--accent-cyan);">3,671m</div>
+              <div class="oura-metric-label">Equiv. Walk</div>
+            </div>
+            <div class="oura-metric">
+              <div class="oura-metric-value" style="color:var(--accent-green);">1m</div>
+              <div class="oura-metric-label">High Activity</div>
+            </div>
+            <div class="oura-metric">
+              <div class="oura-metric-value" style="color:var(--accent-purple);">12m</div>
+              <div class="oura-metric-label">Medium</div>
+            </div>
+            <div class="oura-metric">
+              <div class="oura-metric-value" style="color:var(--accent-indigo);">182m</div>
+              <div class="oura-metric-label">Low Activity</div>
+            </div>
+            <div class="oura-metric">
+              <div class="oura-metric-value" style="color:var(--text-muted);">694m</div>
+              <div class="oura-metric-label">Sedentary</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MET visualization -->
+      <div class="chart-title" style="margin-top:24px;">MET Spike &mdash; End of Day</div>
+      <svg width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="none" style="border-radius:8px;overflow:visible;">
+        <defs>
+          <linearGradient id="met-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.1"/>
+            <stop offset="70%" stop-color="#10b981" stop-opacity="0.1"/>
+            <stop offset="85%" stop-color="#f59e0b" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#ef4444" stop-opacity="0.4"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="600" height="80" fill="rgba(255,255,255,0.02)" rx="6"/>
+        <!-- Baseline MET ~1.0-1.5 for most of day (sedentary) -->
+        <polyline fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          points="0,68 50,66 100,67 150,65 200,68 250,67 300,66 350,68 400,65 430,60 460,45 480,28 500,12 510,18 520,8 540,22 560,35 580,50 600,60"/>
+        <polyline fill="url(#met-grad)" stroke="none"
+          points="0,80 0,68 50,66 100,67 150,65 200,68 250,67 300,66 350,68 400,65 430,60 460,45 480,28 500,12 510,18 520,8 540,22 560,35 580,50 600,60 600,80"/>
+        <!-- Peak label -->
+        <text x="520" y="6" fill="#ef4444" font-size="9" font-weight="700" text-anchor="middle">8.2 MET</text>
+        <text x="100" y="62" fill="#5a6580" font-size="8" font-weight="600" text-anchor="middle">~1.0 MET (desk)</text>
+      </svg>
+
+      <div class="oura-note">
+        <strong>MET spike at end of day</strong> (values hitting 5.0&ndash;8.2) &mdash; likely the airport pickup. Sleep data not available (ring may not have been worn overnight).
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ AGENT WORK SUMMARY ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(139,92,246,0.12);">&#129302;</div>
+      Agent Work Summary
+    </div>
+    <div class="themes-grid">
+
+      <!-- Larry -->
+      <div class="theme-card">
+        <div class="theme-header">
+          <div class="theme-icon">&#9889;</div>
+          <div>
+            <div class="theme-name">Larry [AI] &mdash; Lead Agent</div>
+            <div class="theme-tag tag-infra">Infrastructure</div>
+          </div>
+        </div>
+        <ul class="theme-details">
+          <li><strong>Shipped Claude Relay v2.0.0</strong> (larry.moran.bot) &mdash; full PWA with interactive sessions, SQLite queue, SSE streaming, Cloudflare Tunnel</li>
+          <li>Prototyped brain.moran.bot concept &mdash; agent status dashboard (not confirmed live)</li>
+          <li>Designed brain repo coordination layer (<strong>50 files</strong>, QA&rsquo;d by Gemini x2)<span class="cite-num" data-source="Brain repo architecture: handoff files, STATUS.md generator, safe_push.sh, inbox system, session digest. Reviewed by Shemp (Gemini) twice for compliance.">1</span></li>
+          <li>Mar 19 EOD report through <strong>12 iterations</strong> with Oura integration and multi-model debate</li>
+          <li>EOD infrastructure: eod-sweep skill + 4 data gathering scripts</li>
+          <li>Agent infra: self-update mechanism, inbox system, session digest, ai-comms watcher</li>
+          <li>Access vault: pushed API keys, registered as trusted agent, installed Porkbun DNS MCP</li>
+          <li>Competitive analysis: Go2 Memory Engine vs Supermemory/Mem0/Zep/Letta</li>
+          <li><em>Saturday preview:</em> unified cross-system EOD, DMs on Scott&rsquo;s behalf, proved Codex transcripts locally readable</li>
+        </ul>
+      </div>
+
+      <!-- Moe -->
+      <div class="theme-card">
+        <div class="theme-header">
+          <div class="theme-icon">&#128176;</div>
+          <div>
+            <div class="theme-name">Moe [AI] &mdash; Sales &amp; Content</div>
+            <div class="theme-tag tag-sales">Sales</div>
+          </div>
+        </div>
+        <ul class="theme-details">
+          <li><strong>review.moran.bot</strong>: 112 records polished, 3 email copy rounds, subject line overhaul, durability docs<span class="cite-num" data-source="112 review records cleaned and formatted. Email copy iterated 3 times with subject line A/B testing. Durability documentation added for long-term maintenance.">2</span></li>
+          <li><strong>access.moran.bot</strong>: Google OAuth, vault population, intake API, bot tokens</li>
+          <li>Tier 1 article <em>&ldquo;Stop Paying the Copy-Paste Tax&rdquo;</em>: 7+ rewrites, multi-model voice mining</li>
+          <li>Brain repo coordination QA: caught <code>safe_push.sh</code> staging bug, fixed it<span class="cite-num" data-source="Moe discovered that safe_push.sh was auto-staging files before rebase, which could silently include unintended changes. Bug fixed to pull --rebase first, abort on conflict.">3</span></li>
+          <li>Opened <strong>Issue #45</strong>: live work graph / course view design</li>
+          <li>Identified stale-session edge case as systems insight</li>
+        </ul>
+      </div>
+
+      <!-- Shemp -->
+      <div class="theme-card">
+        <div class="theme-header">
+          <div class="theme-icon">&#128737;</div>
+          <div>
+            <div class="theme-name">Shemp [AI] &mdash; Sentry</div>
+            <div class="theme-tag tag-sentry">Sentry</div>
+          </div>
+        </div>
+        <ul class="theme-details">
+          <li>Completed onboarding under new brain architecture</li>
+          <li><strong>G Suite Sync Daemon</strong> live &mdash; hourly transcript sync</li>
+          <li>Repo consolidation: unified all repos to <code>~/workspace/code/</code></li>
+          <li>Sentry patrols: caught handoff non-compliance, transcript sync failure, stale April onboarding<span class="cite-num" data-source="Shemp flagged three issues during patrol: (1) agents not following new handoff file format, (2) transcript sync daemon had path error, (3) April onboarding doc referenced stale procedures.">4</span></li>
+        </ul>
+      </div>
+
+      <!-- Curly -->
+      <div class="theme-card">
+        <div class="theme-header">
+          <div class="theme-icon">&#128308;</div>
+          <div>
+            <div class="theme-name">Curly [AI] &mdash; Mac Mini</div>
+            <div class="theme-tag tag-standby">Standby</div>
+          </div>
+        </div>
+        <ul class="theme-details">
+          <li>No active Friday work (machine available but not tasked)</li>
+          <li>Ready for weekend dispatch if needed</li>
+          <li>Blocked on GitHub auth for brain repo access</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════ HUMAN COMMS ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(236,72,153,0.12);">&#128172;</div>
+      Human Communications
+    </div>
+    <div class="chart-card full-width">
+      <ul class="comms-list">
+        <li class="comms-item">
+          <div class="comms-icon">&#128181;</div>
+          <div class="comms-text"><strong>2+ hour cash flow review</strong> with Michelle + Rosanna &mdash; formula errors found and corrected in real time</div>
+        </li>
+        <li class="comms-item">
+          <div class="comms-icon">&#128179;</div>
+          <div class="comms-text"><strong>Payroll:</strong> TMs and EMs completed. Remaining Brex &rarr; Gusto/TD transfers queued for Monday.</div>
+        </li>
+        <li class="comms-item">
+          <div class="comms-icon">&#128227;</div>
+          <div class="comms-text"><strong>Crew update posted in #-crew_go2:</strong> transparent message about fund availability and timeline</div>
+        </li>
+        <li class="comms-item">
+          <div class="comms-icon">&#128269;</div>
+          <div class="comms-text"><strong>Requested worst-ROI customer list</strong> &mdash; still pending response</div>
+        </li>
+        <li class="comms-item">
+          <div class="comms-icon">&#128233;</div>
+          <div class="comms-text"><strong>Olan</strong> reached out about delayed payroll &mdash; acknowledged Saturday via Larry</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════ KEY DECISIONS ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(99,102,241,0.12);">&#9878;</div>
+      Key Decisions Made
+    </div>
+    <div class="chart-card full-width">
+      <ul class="decisions-list">
+        <li class="decision-item">
+          <div class="decision-num">1</div>
+          <div class="decision-text"><strong>GitHub-first is the product layer</strong> &mdash; not database, not Slack. The brain repo is the source of truth for all coordination.</div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-num">2</div>
+          <div class="decision-text"><strong>Per-agent handoff files</strong> &mdash; structured markdown, not YAML. Each agent reads/writes its own handoff state.</div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-num">3</div>
+          <div class="decision-text"><strong>STATUS.md is generated</strong> &mdash; compile_status.sh builds it. Never hand-edited, always deterministic.</div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-num">4</div>
+          <div class="decision-text"><strong>safe_push.sh</strong> &mdash; pull --rebase, abort on conflict, no auto-stash. Prevents silent merge disasters.</div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-num">5</div>
+          <div class="decision-text"><strong>&ldquo;Town Hall&rdquo; replaces &ldquo;Council&rdquo;</strong> for multi-model deliberation sessions.</div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-num">6</div>
+          <div class="decision-text"><strong>Data sensitivity posture encoded</strong> &mdash; API keys acceptable in vault, bank/SSN never stored.</div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-num">7</div>
+          <div class="decision-text"><strong>Claude Relay over Slack triggers</strong> &mdash; full interactive sessions via PWA, not webhook pings.</div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-num">8</div>
+          <div class="decision-text"><strong>Slack demoted to broadcast-only</strong> &mdash; brain repo is canonical. Slack is notification surface only.</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ARCHITECTURE DIAGRAMS ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(6,182,212,0.12);">&#129517;</div>
+      Architecture Diagrams
+    </div>
+
+    <div class="chart-card full-width">
+      <div class="architecture-intro">
+        Friday&rsquo;s biggest output was <strong>architecture</strong>. The decisions above are easier to audit visually than as bullets, so the diagrams below show the <strong>current GitHub-native operating model</strong> that this day locked in. This is the lightweight version meant to work for real teams and eventually for small businesses that can operate on GitHub before a heavier database/event layer arrives.<br><br>
+        These diagrams are the <strong>current-state reference</strong>, not the future-state database design. The maintained source is <a href="../docs/current-state-architecture.md">docs/current-state-architecture.md</a>.
+      </div>
+
+      <div class="architecture-callouts">
+        <div class="architecture-callout warning"><strong>Important:</strong> this is the <strong>current-state</strong> architecture. The future database/event layer comes next and is intentionally not mixed into this section.</div>
+        <div class="architecture-callout info"><strong>Also important:</strong> a few notes reflect Saturday QA context where that clarified Friday&rsquo;s architectural decisions, especially the real <code>safe_push.sh</code> bug that Moe found by actually running the save flow.</div>
+      </div>
+    </div>
+
+    <div class="chart-card full-width architecture-card">
+      <div class="chart-title">
+        1. Platform Entry Points
+        <div class="architecture-badges">
+          <span class="architecture-badge partial">Messy Today</span>
+        </div>
+      </div>
+      <pre class="mermaid architecture-mermaid">
+flowchart TB
+    Scott["Scott / operator"] --> Invoke["Invoke agent / redirect work / wake session"]
+
+    Invoke --> Claude["Claude Code sessions<br/>platform wrapper / startup file"]
+    Invoke --> Codex["Codex sessions<br/>explicit prompt / shared startup skill / current thread context"]
+    Invoke --> Gemini["Gemini CLI sessions<br/>wrapper instructions / CLI prompt"]
+
+    Claude --> Identity["Identity anchoring<br/>who am I / what role am I in"]
+    Codex --> Identity
+    Gemini --> Identity
+
+    Identity --> Shared["Shared brain contract begins<br/>git pull -> STARTUP.md -> AGENTS.md -> decisions.md -> STATUS.md -> relevant state"]
+      </pre>
+      <div class="architecture-note">
+        All runtimes are supposed to converge into the same shared contract, but they do not enter it in exactly the same way yet. Claude and Gemini have cleaner wrapper mechanics than Codex today. That mess is real current state, not a mistake in the drawing.
+      </div>
+      <div class="architecture-links">
+        <span>Links:</span>
+        <a href="../STARTUP.md">STARTUP.md</a>
+        <a href="../AGENTS.md">AGENTS.md</a>
+        <a href="../agents/">agents/</a>
+        <a href="../skills/">skills/</a>
+      </div>
+    </div>
+
+    <div class="chart-card full-width architecture-card">
+      <div class="chart-title">
+        2. Startup Flow
+        <div class="architecture-badges">
+          <span class="architecture-badge stable">Current Contract</span>
+          <span class="architecture-badge partial">Skills Partial</span>
+        </div>
+      </div>
+      <pre class="mermaid architecture-mermaid">
+flowchart TB
+    Entry["Agent anchored in shared brain context"] --> Pull["git pull --ff-only origin main"]
+    Pull --> Startup["Read STARTUP.md"]
+    Startup --> Agents["Read AGENTS.md"]
+    Agents --> Decisions["Read decisions.md"]
+    Decisions --> Status["Read STATUS.md"]
+    Status --> Project["Read relevant projects/*/ACTIVE.md"]
+
+    Project --> HandoffScope{"Which handoffs?"}
+    HandoffScope -->|Default agents| Relevant["Read relevant handoffs only<br/>internal + external"]
+    HandoffScope -->|Shemp sentry exception| All["Read all handoffs"]
+
+    Relevant --> Issues["Check GitHub Issues<br/>pickup / blocked / unlabeled"]
+    All --> Issues
+    Issues --> Replies["Check pending-replies.json"]
+    Replies --> ProfileCheck["Profiles on demand<br/>check profiles/human or profiles/agents when a person or agent matters"]
+    ProfileCheck --> AccessAware["Access awareness<br/>use access.moran.bot when the task needs service context"]
+    AccessAware --> SkillRefresh{"Refresh / install runtime-local skills?"}
+    SkillRefresh -->|Partially real today| LocalSkills["Local wrapper / skill sync if this runtime supports it"]
+    SkillRefresh -->|Otherwise| Work["Begin work"]
+    LocalSkills --> Work
+      </pre>
+      <div class="architecture-note">
+        Startup reads the last saved durable state, not live presence. `OBSERVATIONS.md` is intentionally <strong>not</strong> part of this waterfall. Shemp is the exception because sentry duty means reading all handoffs, not only the ones relevant to one project.
+      </div>
+      <div class="architecture-links">
+        <span>Links:</span>
+        <a href="../STARTUP.md">STARTUP.md</a>
+        <a href="../AGENTS.md">AGENTS.md</a>
+        <a href="../decisions.md">decisions.md</a>
+        <a href="../STATUS.md">STATUS.md</a>
+        <a href="../handoffs/">handoffs/</a>
+        <a href="../projects/">projects/</a>
+        <a href="/Users/scottmoran/.claude/pending-replies.json">pending-replies.json</a>
+        <a href="https://access.moran.bot">access.moran.bot</a>
+      </div>
+    </div>
+
+    <div class="chart-card full-width architecture-card">
+      <div class="chart-title">
+        3. End-of-Session Save Flow
+        <div class="architecture-badges">
+          <span class="architecture-badge stable">Current Contract</span>
+        </div>
+      </div>
+      <pre class="mermaid architecture-mermaid">
+flowchart TB
+    Stop["Stopping point / end of session"] --> Handoff["Write handoff<br/>handoffs/internal|external"]
+    Handoff --> StatusGen["Run compile_status.sh<br/>rebuild STATUS.md"]
+    StatusGen --> Done["Append relevant projects/*/DONE.md"]
+    Done --> Active["Update relevant projects/*/ACTIVE.md"]
+    Active --> Observation{"Discovered something about how the system behaves?"}
+    Observation -->|Yes| ObsWrite["Write OBSERVATIONS.md"]
+    Observation -->|No| Push["Run safe_push.sh"]
+    ObsWrite --> Push
+
+    Push --> Result{"Rebase / push outcome"}
+    Result -->|Success| Slack["Post summary to #ai-comms"]
+    Slack --> Sound["Sound notification<br/>psst.sh or done.sh"]
+
+    Result -->|Conflict / failure| Abort["Abort rebase / fail loudly"]
+    Abort --> Alert["Alert Scott / leave clear state<br/>do not hide or auto-stash work"]
+      </pre>
+      <div class="architecture-note">
+        This is where the shared memory compounds or breaks. Friday&rsquo;s architecture got stronger because Saturday QA exposed a real bug: <code>safe_push.sh</code> originally did not stage project <code>ACTIVE.md</code> / <code>DONE.md</code>. That is now fixed, and the failure path is part of the model.
+      </div>
+      <div class="architecture-links">
+        <span>Links:</span>
+        <a href="../handoffs/TEMPLATE.md">handoffs/TEMPLATE.md</a>
+        <a href="../scripts/compile_status.sh">compile_status.sh</a>
+        <a href="../scripts/safe_push.sh">safe_push.sh</a>
+        <a href="../OBSERVATIONS.md">OBSERVATIONS.md</a>
+        <a href="../projects/">projects/</a>
+      </div>
+    </div>
+
+    <div class="chart-card full-width architecture-card">
+      <div class="chart-title">
+        4. Information Routing Map
+        <div class="architecture-badges">
+          <span class="architecture-badge stable">Most Important</span>
+        </div>
+      </div>
+      <pre class="mermaid architecture-mermaid">
+flowchart LR
+    Info["New information"] --> Kind{"What kind of information is it?"}
+
+    Kind -->|Settled global rule / Scott-approved strategic decision| Decisions["decisions.md"]
+    Kind -->|Operational system learning| Observations["OBSERVATIONS.md"]
+    Kind -->|Cross-agent session continuity| Handoffs["handoffs/internal|external"]
+    Kind -->|Live project state / blockers / next steps| Active["projects/*/ACTIVE.md"]
+    Kind -->|Completed project history / why / gotchas| Done["projects/*/DONE.md"]
+    Kind -->|Pickup / blocked / owner / proposal / active design container| Issues["GitHub Issues"]
+    Kind -->|Urgent human visibility / interrupt / decision now| Slack["#ai-comms"]
+    Kind -->|Reusable capability / procedure / exact usage| Skills["skills / runbooks<br/>source-of-truth TBD (#46)"]
+    Kind -->|Service context / key / note / linked resource| Access["access.moran.bot"]
+    Kind -->|Human or agent context / relationship / preferences| People["profiles/human|agents/*.md"]
+      </pre>
+      <div class="architecture-note">
+        This is the routing logic the system needs most. It explains why `OBSERVATIONS.md` exists, why proposals can just be GitHub Issues, and why Slack is not where durable coordination belongs.
+      </div>
+      <div class="architecture-links">
+        <span>Links:</span>
+        <a href="../decisions.md">decisions.md</a>
+        <a href="../OBSERVATIONS.md">OBSERVATIONS.md</a>
+        <a href="../handoffs/">handoffs/</a>
+        <a href="../projects/">projects/</a>
+        <a href="../profiles/">profiles/</a>
+        <a href="../skills/">skills/</a>
+        <a href="https://github.com/Scottpedia0/brain/issues/46">Issue #46</a>
+      </div>
+    </div>
+
+    <div class="chart-card full-width architecture-card">
+      <div class="chart-title">
+        5. Durable vs Live Architecture
+        <div class="architecture-badges">
+          <span class="architecture-badge stable">Core Mental Model</span>
+          <span class="architecture-badge future">Future Layer Exists Only As Design</span>
+        </div>
+      </div>
+      <pre class="mermaid architecture-mermaid">
+flowchart TB
+    subgraph Humans["Humans + Agent Sessions"]
+        Scott["Scott / humans"]
+        Sessions["Larry / Moe / Curly / Shemp / external agent sessions"]
+    end
+
+    subgraph Durable["Durable shared state"]
+        Brain["~/brain repo<br/>STARTUP / AGENTS / decisions / handoffs / STATUS / ACTIVE / DONE / OBSERVATIONS"]
+        Profiles["profiles/<br/>people + agents + relationship context"]
+        Queue["GitHub Issues<br/>queue / ownership / blocked / proposals"]
+        Access["access.moran.bot<br/>service context / keys / notes"]
+    end
+
+    subgraph Local["Local-only replay / recovery"]
+        Claude["Claude session logs"]
+        Codex["Codex state_5.sqlite + rollout JSONL"]
+        Telemetry["cowork.db / transcripts / voice / Oura / local machine state"]
+        Mini["Mac Mini local state<br/>not inherently accessible from Pro"]
+    end
+
+    subgraph Broadcast["Broadcast / visibility"]
+        Slack["#ai-comms"]
+        Sound["psst.sh / done.sh"]
+    end
+
+    subgraph Future["Future live layer (not built yet)"]
+        Event["Event / heartbeat layer"]
+        WorkGraph["Live work graph / course view"]
+    end
+
+    Scott --> Sessions
+    Sessions --> Brain
+    Sessions --> Profiles
+    Sessions --> Queue
+    Sessions --> Access
+    Sessions --> Local
+    Sessions --> Slack
+    Sessions --> Sound
+
+    Sessions -. live presence should flow through .-> Event
+    Event -. powers .-> WorkGraph
+      </pre>
+      <div class="architecture-note">
+        This is the key separation: the repo tells you what happened at last save, not what is happening right now. That is why GitHub works as the first product layer for now, and why the database/event layer comes next instead of replacing this report retroactively.
+      </div>
+      <div class="architecture-links">
+        <span>Links:</span>
+        <a href="../README.md">README.md</a>
+        <a href="../STARTUP.md">STARTUP.md</a>
+        <a href="../AGENTS.md">AGENTS.md</a>
+        <a href="../decisions.md">decisions.md</a>
+        <a href="https://github.com/Scottpedia0/brain/issues/45">Issue #45</a>
+      </div>
+    </div>
+
+    <div class="chart-card full-width architecture-card">
+      <div class="chart-title">
+        6. Observability / Work Graph Visibility
+        <div class="architecture-badges">
+          <span class="architecture-badge partial">Visibility Uneven</span>
+          <span class="architecture-badge future">Design Constraint</span>
+        </div>
+      </div>
+      <pre class="mermaid architecture-mermaid">
+flowchart LR
+    subgraph Tracked["Tracked"]
+        T1["Terminal agents we spawn ourselves"]
+        T2["Managed workers we control"]
+        T3["Headless/browser workers we launch"]
+    end
+
+    subgraph Reported["Reported"]
+        R1["Top-level agents via handoffs"]
+        R2["External agents through repo updates"]
+        R3["Humans through explicit updates"]
+    end
+
+    subgraph Inferred["Inferred"]
+        I1["Human focus from telemetry"]
+        I2["Work state from git / issues / logs after the fact"]
+        I3["Possible child work from parent behavior"]
+    end
+
+    subgraph Opaque["Opaque"]
+        O1["Vendor-native hidden child agents"]
+        O2["Internal model reasoning"]
+        O3["Unlogged or unregistered sub-work"]
+    end
+
+    Tracked --> Graph["Future live work graph / course view"]
+    Reported --> Graph
+    Inferred --> Graph
+    Opaque -. limited / partial .-> Graph
+      </pre>
+      <div class="architecture-note">
+        This is why the future live work graph cannot just be Git plus polling. If you do not own the orchestrator or get structured events, a huge chunk of the system stays reported, inferred, or opaque.
+      </div>
+      <div class="architecture-links">
+        <span>Links:</span>
+        <a href="https://github.com/Scottpedia0/brain/issues/45">Issue #45</a>
+        <a href="../handoffs/">handoffs/</a>
+        <a href="eod-2026-03-20.html">this report</a>
+      </div>
+    </div>
+
+    <div class="chart-card full-width architecture-card">
+      <div class="chart-title">
+        7. Replay / EOD / Audit Input Sources
+        <div class="architecture-badges">
+          <span class="architecture-badge stable">Current Capability</span>
+          <span class="architecture-badge partial">Machine-Bound</span>
+        </div>
+      </div>
+      <pre class="mermaid architecture-mermaid">
+flowchart TB
+    Claude["Claude logs<br/>~/.claude/projects/*/*.jsonl"]
+    ClaudeSub["Claude sub-agents<br/>~/.claude/projects/*/subagents/*.jsonl"]
+    CodexDB["Codex thread metadata<br/>~/.codex/state_5.sqlite"]
+    CodexRoll["Codex rollout transcripts<br/>~/.codex/sessions/.../rollout-*.jsonl"]
+    Cowork["cowork.db telemetry"]
+    Whisper["Superwhisper voice transcripts"]
+    Meet["Meeting transcripts / operator transcripts"]
+    Oura["Oura API / biometrics"]
+    Git["Git history"]
+    Handoffs["Handoffs / STATUS"]
+    Issues["GitHub Issues"]
+
+    Claude --> Synthesis["Replay / recap / EOD / audit synthesis"]
+    ClaudeSub --> Synthesis
+    CodexDB --> Synthesis
+    CodexRoll --> Synthesis
+    Cowork --> Synthesis
+    Whisper --> Synthesis
+    Meet --> Synthesis
+    Oura --> Synthesis
+    Git --> Synthesis
+    Handoffs --> Synthesis
+    Issues --> Synthesis
+
+    Synthesis --> Reports["Reports / summaries / audits / follow-up context"]
+      </pre>
+      <div class="architecture-note">
+        This is the replay/history layer, not the live system. It matters because the team proved Codex local transcript recovery is real and because stale-session drift means old logs may describe a session accurately while still reflecting an outdated operating system.
+      </div>
+      <div class="architecture-links">
+        <span>Links:</span>
+        <a href="/Users/scottmoran/.claude/projects">Claude logs</a>
+        <a href="/Users/scottmoran/.codex/state_5.sqlite">Codex DB</a>
+        <a href="/Users/scottmoran/.codex/sessions">Codex sessions</a>
+        <a href="/Users/scottmoran/Library/Application%20Support/Cowork.ai%20Alpha/database/cowork.db">cowork.db</a>
+        <a href="/Users/scottmoran/Documents/superwhisper/recordings">Superwhisper</a>
+        <a href="/Users/scottmoran/Documents/Operator_Transcripts">Operator transcripts</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ OPEN ITEMS / BLOCKERS ═══════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon" style="background:rgba(239,68,68,0.12);">&#9888;</div>
+      Open Items &amp; Blockers
+    </div>
+    <div class="chart-card full-width">
+      <ul class="blockers-list">
+        <li class="blocker-item">
+          <div class="blocker-dot"></div>
+          <strong>April blocked</strong> &mdash; needs GitHub auth for brain repo access
+        </li>
+        <li class="blocker-item">
+          <div class="blocker-dot"></div>
+          <strong>Worst-ROI customer list</strong> &mdash; requested, no response yet
+        </li>
+        <li class="blocker-item">
+          <div class="blocker-dot"></div>
+          <strong>Olan payroll</strong> &mdash; awaiting PayPal DM to Scott
+        </li>
+        <li class="blocker-item">
+          <div class="blocker-dot"></div>
+          <strong>Juan Chacon</strong> &mdash; payout timeline question unanswered
+        </li>
+        <li class="blocker-item">
+          <div class="blocker-dot"></div>
+          <strong>Product demo video</strong> &mdash; sole blocker for Katie send flow
+        </li>
+        <li class="blocker-item">
+          <div class="blocker-dot"></div>
+          <strong>Town Hall rename</strong> &mdash; approved but not executed in codebase
+        </li>
+        <li class="blocker-item" style="background:rgba(16,185,129,0.04);border-color:rgba(16,185,129,0.12);">
+          <div class="blocker-dot" style="background:var(--accent-green);animation:none;"></div>
+          <strong style="color:var(--accent-green);">Shemp closeout push</strong> &mdash; <em>resolved</em> (commit 03af797, pushed Saturday)
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════ CLOSING QUOTE ═══════════════ -->
+  <div class="section">
+    <div class="quote-block">
+      <div class="quote-text">&ldquo;The relay is dead. All agents now have a deterministic dashboard to follow.&rdquo;</div>
+      <div class="quote-attr">&mdash; Shemp [AI], Sentry Patrol Report</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-brand"><span>Go2</span> &middot; END OF DAY BRIEF</div>
+    <div class="footer-sub">Generated from telemetry, git logs, Oura API, and agent session digests &middot; March 20, 2026</div>
+  </div>
+</footer>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    securityLevel: 'loose',
+    flowchart: { useMaxWidth: true, htmlLabels: true },
+    themeVariables: {
+      background: '#0a0e1a',
+      primaryColor: '#151d30',
+      primaryTextColor: '#e8ecf4',
+      primaryBorderColor: '#3b82f6',
+      lineColor: '#5a6580',
+      secondaryColor: '#1a1040',
+      tertiaryColor: '#0a1628',
+      clusterBkg: '#111827',
+      clusterBorder: '#2a3450',
+      fontFamily: '-apple-system, BlinkMacSystemFont, SF Pro Display, Segoe UI, system-ui, sans-serif'
+    }
+  });
+</script>
+
+</body>
+</html>

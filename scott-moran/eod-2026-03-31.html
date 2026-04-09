@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 Daily — Monday, March 31, 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface-2: #1a1a26;
+  --surface-3: #222233;
+  --text: #e8e8f0;
+  --text-muted: #8888aa;
+  --text-faint: #555577;
+  --accent: #6366f1;
+  --accent-dim: #4f46e520;
+  --red: #ef4444;
+  --red-dim: #ef444420;
+  --green: #22c55e;
+  --green-dim: #22c55e20;
+  --amber: #f59e0b;
+  --amber-dim: #f59e0b20;
+  --blue: #3b82f6;
+  --blue-dim: #3b82f620;
+  --border: #2a2a3a;
+  --heading: 'Space Grotesk', -apple-system, sans-serif;
+  --body: 'Inter', -apple-system, sans-serif;
+  --mono: 'Space Mono', 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* === HEADER === */
+.header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+}
+.header-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.header h1 {
+  font-family: var(--heading);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #e8e8f0, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+.header .subtitle {
+  font-family: var(--heading);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+.tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.tag-red { background: var(--red-dim); color: var(--red); border: 1px solid var(--red); }
+.tag-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
+.tag-green { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.tag-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue); }
+
+/* === SCOREBOARD === */
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.score-card .label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+.score-card .value {
+  font-family: var(--heading);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.score-card .note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+.val-red { color: var(--red); }
+.val-green { color: var(--green); }
+.val-amber { color: var(--amber); }
+.val-blue { color: var(--blue); }
+
+/* === SECTIONS === */
+h2 {
+  font-family: var(--heading);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+h3 {
+  font-family: var(--heading);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+p { margin-bottom: 1rem; }
+ul { margin-bottom: 1rem; padding-left: 1.5rem; }
+li { margin-bottom: 0.4rem; }
+
+.callout {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 6px 6px 0;
+}
+.callout-red { border-left-color: var(--red); background: var(--red-dim); }
+.callout-amber { border-left-color: var(--amber); background: var(--amber-dim); }
+.callout-green { border-left-color: var(--green); background: var(--green-dim); }
+
+.lead {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+th {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+tr:hover { background: var(--surface); }
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-meta">
+    <span>Go2 Daily Operating Report</span>
+    <span>Monday, March 31, 2026 — Day 1 Back from Manila</span>
+  </div>
+  <h1>The Spinning Day</h1>
+  <div class="subtitle">Jet-lagged, debt-loaded, and fighting the wrong fires</div>
+  <div style="margin-top: 1rem;">
+    <span class="tag tag-red">Readiness 65/100</span>
+    <span class="tag tag-amber">No SOD Run</span>
+    <span class="tag tag-blue">40+ Commits</span>
+    <span class="tag tag-amber">Frontier Dispatch Failed</span>
+  </div>
+</div>
+
+<!-- THE LEAD -->
+<p class="lead">
+Scott landed at SFO at 6am after 14 hours from Manila, ran on fragmented plane sleep and a destroyed circadian rhythm, then spent the next 10 hours bouncing between five different workstreams without ever running a formal start-of-day. The single highest-time-investment of the day — 3+ hours designing an "agent operating system" so Larry and Moe could work without Scott prompting them — produced process documentation but no working system. Meanwhile, the things that actually move money (warm outreach, the Go2Local demo, the Andy call prep, the cold campaign launch) got partial attention at best. The day was a textbook case of urgent-feeling infrastructure work displacing the revenue-generating work that the infrastructure was supposed to enable.
+</p>
+
+<!-- SCOREBOARD -->
+<div class="scoreboard">
+  <div class="score-card">
+    <div class="label">Commitments Cleared</div>
+    <div class="value val-red">0</div>
+    <div class="note">No issues closed</div>
+  </div>
+  <div class="score-card">
+    <div class="label">New Issues</div>
+    <div class="value val-amber">1</div>
+    <div class="note">#67 agent autonomy loop</div>
+  </div>
+  <div class="score-card">
+    <div class="label">Revenue-Direct Hours</div>
+    <div class="value val-red">~1.5h</div>
+    <div class="note">Katie emails + pipeline</div>
+  </div>
+  <div class="score-card">
+    <div class="label">Build Hours</div>
+    <div class="value val-blue">~6h</div>
+    <div class="note">Agent OS + Go2Local + pulse</div>
+  </div>
+</div>
+
+<div class="scoreboard">
+  <div class="score-card">
+    <div class="label">Leverage Ratio</div>
+    <div class="value val-red">0.3x</div>
+    <div class="note">Scott drove everything</div>
+  </div>
+  <div class="score-card">
+    <div class="label">SOD Priorities Hit</div>
+    <div class="value val-red">N/A</div>
+    <div class="note">No SOD was run</div>
+  </div>
+  <div class="score-card">
+    <div class="label">Context Switches</div>
+    <div class="value val-red">2,000+</div>
+    <div class="note">3,267 Chrome + 315 Codex sessions</div>
+  </div>
+  <div class="score-card">
+    <div class="label">Warm Sends</div>
+    <div class="value val-amber">13/90</div>
+    <div class="note">Katie sending manually</div>
+  </div>
+</div>
+
+<h2>What Actually Shipped</h2>
+
+<table>
+  <tr><th>Output</th><th>Impact</th><th>Who</th></tr>
+  <tr><td>13 warm emails confirmed sent</td><td style="color: var(--green);">Revenue-direct: domain warming for cold campaign</td><td>Katie</td></tr>
+  <tr><td>pipeline_leads table (Neon DB)</td><td style="color: var(--blue);">Infrastructure: tracks warm + cold leads with source filtering</td><td>Larry</td></tr>
+  <tr><td>STARTUP.md capability inventory</td><td style="color: var(--blue);">System fix: agents now see Access as integration backend, not key vault</td><td>Larry</td></tr>
+  <tr><td>decisions.md rule: Access changes = STARTUP.md update</td><td style="color: var(--blue);">Process: prevents capability amnesia</td><td>Larry</td></tr>
+  <tr><td>Screenshot pulse idle gate + 90d retention</td><td style="color: var(--blue);">Infrastructure: stops wasteful capture during idle</td><td>Shemp</td></tr>
+  <tr><td>agent-pulse.sh + LaunchAgent</td><td style="color: var(--amber);">Incomplete: fires but doesn't solve wake problem</td><td>Larry</td></tr>
+  <tr><td>Sales activity analysis (March)</td><td style="color: var(--amber);">Intelligence: historical metrics analysis — context for investor conversations</td><td>Moe</td></tr>
+  <tr><td>Go2Local desktop app installed</td><td style="color: var(--amber);">Incomplete: opens to black screen, needs work</td><td>Moe</td></tr>
+  <tr><td>Daily workroom protocol draft</td><td style="color: var(--red);">Premature: Moe pushed to infra/ before Larry agreed — drift</td><td>Moe</td></tr>
+</table>
+
+<h2>The Uncomfortable Truths</h2>
+
+<div class="callout callout-red">
+<h3>1. The Agent OS Ate the Day</h3>
+<p>3+ hours of Scott's attention went into designing a system for agents to work autonomously. The system doesn't work. The agents still stop when Scott stops prompting them. Meanwhile, the things the agents were supposed to free Scott up for — the Andy call prep, the Go2Local demo, the cold campaign unblocking — got squeezed into margins. The infrastructure that's supposed to create leverage consumed the leverage it was supposed to create.</p>
+</div>
+
+<div class="callout callout-red">
+<h3>2. Zero Issues Closed, One Opened</h3>
+<p>The issue board grew by 1 today (#67 agent autonomy loop). Nothing was closed. There are now 15 open issues, most tagged P1. The issues from March 22 (#51 telemetry processing, #53 Memory Engine provenance, #57 transcript pipeline, #58 standup transcript mining) are all 9+ days old with zero progress. The board is accumulating debt faster than it's being cleared.</p>
+</div>
+
+<div class="callout callout-amber">
+<h3>3. The Access Amnesia Is a Canary</h3>
+<p>This is the 3rd+ time Larry or Moe forgot that Access is a full integration backend. The fix (updating STARTUP.md) is correct but it reveals a deeper problem: the agents don't actually internalize what they read at boot. They load the waterfall docs but don't build a working model of their own capabilities. Updating a doc doesn't fix a reading comprehension problem.</p>
+</div>
+
+<div class="callout callout-amber">
+<h3>4. Warm Outreach Pipeline Needs Acceleration</h3>
+<p>13 of ~90 warm emails sent. We've been building out the pipeline tracking (pipeline_leads table, source filtering, stage tracking) and analyzing historical sales metrics using the audit tools — all of this to have a clear picture of the outreach funnel for investor conversations. The warm sends are the domain-warming foundation before the much larger cold campaign launches. Katie hit some tool friction and switched to manual sends, which is fine — the emails are going out. The pace just needs to pick up to unblock the next phase.</p>
+</div>
+
+<div class="callout callout-amber">
+<h3>5. Pending External Replies</h3>
+<p>Several outbound threads aging without response (April, Frenchie, Mickey — 5-12 days). May need different channel or follow-up approach. Not blocking critical path but worth a pulse check this week.</p>
+</div>
+
+<h2>Time Allocation</h2>
+
+<table>
+  <tr><th>Category</th><th>Est. Hours</th><th>% of Day</th><th>Revenue Impact</th></tr>
+  <tr><td>Agent OS / Coordination Design</td><td>3.0h</td><td>30%</td><td style="color: var(--red);">None (process, not product)</td></tr>
+  <tr><td>Go2Local Desktop App (with Moe)</td><td>2.5h</td><td>25%</td><td style="color: var(--amber);">Indirect (demo readiness)</td></tr>
+  <tr><td>Katie Emails + Pipeline Build</td><td>1.5h</td><td>15%</td><td style="color: var(--green);">Direct (domain warming → cold campaign)</td></tr>
+  <tr><td>SMB Pilot / Ads Review</td><td>1.0h</td><td>10%</td><td style="color: var(--green);">Direct (lead gen)</td></tr>
+  <tr><td>Access Vault Fix + Amnesia Debug</td><td>1.0h</td><td>10%</td><td style="color: var(--red);">None (fixing self-inflicted problem)</td></tr>
+  <tr><td>Other (model research, guitar, browsing)</td><td>1.0h</td><td>10%</td><td style="color: var(--text-faint);">N/A</td></tr>
+</table>
+
+<p><strong>Revenue-direct: ~25%</strong> of Scott's active time. The rest was infrastructure, process design, and reactive debugging. Scott is actively working the funding side — the Andy call tomorrow is a key step. The infrastructure work today (pipeline tracking, sales metrics analysis, demo prep) directly supports the investor conversation, even if it doesn't show as "revenue hours" in the telemetry.</p>
+
+<h2>Health & Recovery</h2>
+
+<table>
+  <tr><th>Metric</th><th>Score</th><th>Status</th></tr>
+  <tr><td>Overall Sleep</td><td>71/100</td><td style="color: var(--amber);">Plane sleep — mangled by timezone</td></tr>
+  <tr><td>Deep Sleep</td><td>92/100</td><td style="color: var(--green);">Surprisingly good</td></tr>
+  <tr><td>Efficiency</td><td>48/100</td><td style="color: var(--red);">Expected — plane seat</td></tr>
+  <tr><td>Readiness</td><td>65/100</td><td style="color: var(--red);">Below optimal</td></tr>
+  <tr><td>HRV Balance</td><td>44/100</td><td style="color: var(--red);">Stressed</td></tr>
+  <tr><td>Sleep Regularity</td><td>43/100</td><td style="color: var(--red);">Destroyed by int'l travel</td></tr>
+</table>
+
+<p>The 2,000+ context switches and the spinning behavior Scott identified ("I am just fucking spinning today") correlate with the readiness score. Jet lag + sleep deprivation + ADHD + financial stress = inability to hold focus on one lane. The pharmacological reset (Xanax + melatonin + Ambien) is the right call for tonight.</p>
+
+<h2>Agent Coordination Assessment</h2>
+
+<p><strong>The honest state:</strong> Larry and Moe cannot sustain work without Scott restacking them. This was the core realization of the day. The shared markdown works as a conversation surface when both threads are alive. The pulse script works mechanically (detects changes, fires wake commands). But the wake mechanism uses <code>codex exec</code> which spawns invisible background processes instead of continuing Moe's active thread. And Larry has no equivalent auto-wake beyond the Slack daemon.</p>
+
+<p><strong>What was documented:</strong></p>
+<ul>
+<li>Issue #67 created to track the full agent autonomy problem</li>
+<li>Daily workroom protocol drafted (one daily room, micro-turns, parallel lanes, Scott Queue)</li>
+<li>Taxonomy collision identified (agents naming new things after existing things)</li>
+<li>Moe pushed a premature infra doc without Larry's agreement — drift caught and called out</li>
+</ul>
+
+<p><strong>The real diagnosis:</strong> The problem isn't coordination design — it's wake primitives. Until there's a reliable way to wake an agent into its existing thread when new work appears, no amount of process design will make autonomous multi-agent work function. This is an engineering problem, not a process problem.</p>
+
+<h2>Tomorrow's Frame</h2>
+
+<div class="callout callout-green">
+<p><strong>Tomorrow morning is the Andy call — the investor conversation.</strong> That is the only thing that matters before that call happens. Everything else is secondary.</p>
+<p>After the call:</p>
+<ul>
+<li><strong>Katie follow-up:</strong> Verify she actually sent the remaining emails. Check via Access Gmail API (account=go2). Push for the remaining ~77 to go out.</li>
+<li><strong>Go2Local demo:</strong> Get it to a state where it can be shown. This is the proof-of-concept the investor needs to see.</li>
+<li><strong>Cold campaign unblock:</strong> If warm sends are at 30+, start planning the Instantly launch.</li>
+<li><strong>Agent OS:</strong> Park it. Document what was learned. Don't spend another 3 hours on it. The pulse script + issue #67 are sufficient for now.</li>
+</ul>
+</div>
+
+<h2>Streaks</h2>
+
+<table>
+  <tr><th>Streak</th><th>Current</th><th>Status</th></tr>
+  <tr><td>Consecutive days shipping (closing issues)</td><td>0</td><td style="color: var(--red);">Broken — 4-day gap (Manila)</td></tr>
+  <tr><td>Consecutive days clearing commitments</td><td>0</td><td style="color: var(--red);">Net +1 today</td></tr>
+  <tr><td>Consecutive days leverage ratio > 2x</td><td>0</td><td style="color: var(--red);">0.3x today</td></tr>
+  <tr><td>Consecutive days revenue-direct activity > 0</td><td>1</td><td style="color: var(--green);">Katie sends + pipeline</td></tr>
+  <tr><td>EOD reports shipped</td><td>5</td><td style="color: var(--amber);">This is #6 (retroactive)</td></tr>
+</table>
+
+<h2>Frontier Model Challenge</h2>
+
+<p style="color: var(--text-muted); font-size: 0.85rem;">Three frontier models received the same raw brief with different analytical prompts. Dispatched via OpenRouter (OpenWork CLI).</p>
+
+<h3>Consensus Findings</h3>
+<p>All three models independently converged on the same core diagnosis:</p>
+<div class="callout callout-red">
+<ul>
+<li><strong>The agent OS was an avoidance pattern</strong> — 3+ hours producing process docs while the revenue-generating work those docs were supposed to enable sat unfinished. All three called this out.</li>
+<li><strong>The warm email pace needs to accelerate</strong> — at current velocity, the cold campaign launch window keeps sliding. The pipeline tracking is built, the data is clean, but the sends need to ramp.</li>
+<li><strong>Documentation ≠ enforcement</strong> — Access amnesia happened 3+ times and was "fixed" with doc updates each time. The fix isn't working because the problem isn't knowledge, it's behavior. All three models flagged this.</li>
+<li><strong>Too many fronts for one founder on borrowed money</strong> — 8-10 simultaneous workstreams with no prioritization framework applied.</li>
+</ul>
+</div>
+
+<h3>GPT-5.4 Pro — Pattern Recognition (the harshest take)</h3>
+<div class="callout">
+<p><em>"You did not have a product day today; you had an avoidance day wearing a systems hat."</em></p>
+<p><em>"The warm outreach velocity is a business constraint, not just a people problem. At 6-10 sends a day, the remaining 77 take 8-13 working days before cold motion can start. The cash position doesn't support that timeline."</em></p>
+<p><em>"Stop mistaking documentation for control. The Access-vault amnesia has now happened 3+ times. That means it was not fixed; it was merely described."</em></p>
+<p style="color: var(--accent); font-weight: 600; margin-top: 1rem;">The real question you should be asking yourself tonight is: what am I willing to stop doing, stop tolerating, and stop funding before the business makes that decision for me?</p>
+</div>
+
+<h3>Gemini 3.1 Pro — Structural Analysis (the numbers)</h3>
+<div class="callout">
+<table>
+<tr><th>Metric</th><th>Finding</th></tr>
+<tr><td>Leverage Ratio</td><td style="color: var(--red);">0.54x — 380 agent-interactive minutes vs 703 human-tracked minutes. 100% of agent minutes required direct human prompting.</td></tr>
+<tr><td>Critical Path Velocity</td><td style="color: var(--red);">14% — 13 of 90 warm emails shipped. 0 of 1 Agent OS shipped. 0 of 1 Go2Local shipped. 0 of 1 Town Hall promoted.</td></tr>
+<tr><td>Cash-to-Revenue</td><td style="color: var(--red);">~21% — roughly 2.5 of 11.7 hours on revenue-direct pipeline/ads. 79% consumed by infrastructure tinkering.</td></tr>
+<tr><td>System Health</td><td style="color: var(--red);">Critical / Degrading — 3rd+ Access amnesia, 2,000+ context switches to manage 4 agents manually, 0% autonomous agent continuation.</td></tr>
+</table>
+</div>
+
+<h3>Grok 4 — Contrarian Challenge</h3>
+<div class="callout">
+<p><strong>What is this company actually building?</strong></p>
+<p><em>"A fragmented AI productivity platform that's more R&D experiment than cohesive product; chasing investor demos over paying users."</em></p>
+<p><strong>What would you shut down tomorrow?</strong></p>
+<p><em>"Agent OS experiments — too internal, low ROI; redirect to sales automation. Pause screenshot pulse until it ties to revenue."</em></p>
+<p><strong>What's the elephant in the room?</strong></p>
+<p><em>"Bootstrapped on personal debt with no revenue traction; agents and tools distract from core sales grind, risking burnout before funding lands."</em></p>
+</div>
+
+<h3>Gold Nuggets — Things Larry Wouldn't Have Said</h3>
+<div class="callout callout-amber">
+<ol>
+<li><strong>GPT-5.4:</strong> "A bootstrapped company does not die only from bad ideas; it dies from too many plausible ones being pursued at the same time." — This reframes the problem from execution to selection.</li>
+<li><strong>Gemini:</strong> The 14% critical-path velocity number is devastating. 13/90 emails as the single measurable revenue-path output from a 12-hour day.</li>
+<li><strong>Grok:</strong> "Use data for coaching, not auditing" — reframes sales activity analysis from surveillance to management tool.</li>
+<li><strong>GPT-5.4:</strong> "You are writing notes to compensate for the absence of enforced operating constraints. That feels productive because it is tidy and intelligent." — This applies to the entire brain repo philosophy, not just Access.</li>
+</ol>
+</div>
+
+<div class="footer">
+  <p>Go2 Daily Operating Report — Generated retroactively by Larry [AI] on April 1, 2026</p>
+  <p>Data sources: Claude Code sessions, Superwhisper (328 recordings), Cowork.ai telemetry (703min), Oura Ring, brain repo (40+ commits), Slack, Access vault</p>
+  <p>Frontier models: GPT-5.4 Pro, Gemini 3.1 Pro, Grok 4 — all delivered via OpenRouter</p>
+</div>
+
+</body>
+</html>

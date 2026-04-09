@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 Daily — Monday, March 23, 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --ink: #1a1a2e;
+    --ink-light: #2d2d44;
+    --paper: #f5f0e8;
+    --paper-warm: #efe8d8;
+    --paper-dark: #e8dfc8;
+    --rust: #c44d2b;
+    --gold: #b8860b;
+    --forest: #2e6b4f;
+    --slate: #4a5568;
+    --muted: #7a7a8c;
+    --divider: #c8bfa8;
+    --highlight: #fff3cd;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.65;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 4px solid var(--rust);
+  }
+  .masthead h1 {
+    font-size: 2.4em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .masthead .edition {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78em;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+  /* Scoreboard strip */
+  .score-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0;
+    border: 2px solid var(--ink);
+    margin: 24px 0;
+  }
+  .score-cell {
+    padding: 14px 12px;
+    text-align: center;
+    border-right: 1px solid var(--divider);
+  }
+  .score-cell:last-child { border-right: none; }
+  .score-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.6em;
+    font-weight: 700;
+  }
+  .score-lbl {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--slate);
+    margin-top: 2px;
+  }
+  .val-green { color: var(--forest); }
+  .val-rust { color: var(--rust); }
+  .val-gold { color: var(--gold); }
+
+  /* Headline */
+  .headline {
+    font-size: 1.65em;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 28px 0 8px 0;
+    color: var(--ink);
+  }
+  .subhead {
+    font-size: 1.05em;
+    color: var(--slate);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Two-column layout */
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin: 20px 0;
+  }
+  @media (max-width: 700px) {
+    .columns { grid-template-columns: 1fr; }
+  }
+
+  /* Section headers */
+  .section-head {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--rust);
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 6px;
+    margin: 32px 0 14px 0;
+  }
+
+  .section-head-alt {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--forest);
+    border-bottom: 2px solid var(--forest);
+    padding-bottom: 6px;
+    margin: 32px 0 14px 0;
+  }
+
+  /* Agent cards */
+  .agent-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+  .agent-name {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 0.85em;
+  }
+  .agent-larry { color: #2563eb; }
+  .agent-moe { color: var(--forest); }
+  .agent-curly { color: var(--rust); }
+  .agent-shemp { color: #7c3aed; }
+
+  /* Item lists */
+  ul { padding-left: 18px; margin: 6px 0; }
+  li { margin: 5px 0; font-size: 0.92em; }
+
+  /* Callout boxes */
+  .callout {
+    background: var(--highlight);
+    border-left: 4px solid var(--gold);
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-size: 0.92em;
+  }
+  .callout-red {
+    background: #fde8e8;
+    border-left-color: var(--rust);
+  }
+  .callout-green {
+    background: #e8f5e8;
+    border-left-color: var(--forest);
+  }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.88em; }
+  th {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid var(--ink);
+    color: var(--slate);
+  }
+  td { padding: 8px; border-bottom: 1px solid var(--divider); vertical-align: top; }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin: 1px 2px;
+  }
+  .tag-done { background: var(--forest); color: white; }
+  .tag-wip { background: var(--gold); color: white; }
+  .tag-blocked { background: var(--rust); color: white; }
+
+  /* Pipeline tracker */
+  .pipeline {
+    display: flex;
+    gap: 0;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+  .pipe-stage {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 0.78em;
+    position: relative;
+  }
+  .pipe-stage::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 30%;
+    height: 40%;
+    width: 2px;
+    background: var(--divider);
+  }
+  .pipe-stage:last-child::after { display: none; }
+  .pipe-num { font-family: 'Space Mono', monospace; font-size: 1.5em; font-weight: 700; }
+  .pipe-lbl { color: var(--slate); font-size: 0.85em; }
+
+  /* Oura ring */
+  .oura-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .oura-item {
+    text-align: center;
+    padding: 10px 4px;
+    background: var(--paper-warm);
+    border: 1px solid var(--divider);
+  }
+  .oura-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.5em;
+    font-weight: 700;
+  }
+  .oura-red { color: var(--rust); }
+  .oura-yellow { color: var(--gold); }
+  .oura-green { color: var(--forest); }
+  .oura-lbl { font-size: 0.72em; color: var(--slate); text-transform: uppercase; }
+
+  /* Footer */
+  .footer {
+    margin-top: 40px;
+    padding: 16px 0;
+    border-top: 2px solid var(--ink);
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75em;
+    color: var(--muted);
+  }
+
+  /* Decisions list */
+  .decision {
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--divider);
+    font-size: 0.9em;
+  }
+  .decision strong { color: var(--ink); }
+
+  /* Tomorrow block */
+  .tomorrow {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 24px;
+    margin: 24px 0;
+    border-radius: 4px;
+  }
+  .tomorrow h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rust);
+    margin-bottom: 12px;
+  }
+  .tomorrow ol { padding-left: 20px; }
+  .tomorrow li { margin: 8px 0; font-size: 0.92em; }
+  .tomorrow em { color: var(--gold); font-style: normal; }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <div class="container">
+    <h1>Go2 Daily</h1>
+    <div class="edition">Monday, March 23, 2026 &bull; Day 10 of Multi-Agent Operations &bull; EOD Closeout</div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- SCOREBOARD -->
+<div class="score-strip">
+  <div class="score-cell">
+    <div class="score-val val-green">5</div>
+    <div class="score-lbl">Issues Closed</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-val">4</div>
+    <div class="score-lbl">Opened</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-val val-green">+1</div>
+    <div class="score-lbl">Net Velocity</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-val val-gold">~4x</div>
+    <div class="score-lbl">Leverage</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-val val-gold">3/5</div>
+    <div class="score-lbl">AM Priorities</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-val val-gold">73</div>
+    <div class="score-lbl">Sleep Score</div>
+  </div>
+  <div class="score-cell">
+    <div class="score-val val-green">988</div>
+    <div class="score-lbl">Contacts Ready</div>
+  </div>
+</div>
+
+<!-- HEADLINE -->
+<div class="headline">Two new repos shipped, brain audited clean, and nearly a thousand outreach contacts sitting ready to fire.</div>
+<div class="subhead">
+  Build day. Started with a two-gate brain repo drift remediation (Larry audited, Moe executed), then Larry built
+  <strong>skill-builder</strong> (public) and <strong>agent-vault</strong> (private) from scratch. Curly ran a 7-stage
+  lead enrichment pipeline on aws-mini producing 988 outreach-ready contacts. Shemp ran his first Sentry patrol.
+  Multiple active cash conversations in the pipeline, with a significant investor call lined up for Tuesday.
+</div>
+
+<!-- WHAT SCOTT DID -->
+<div class="section-head">What Scott Worked On</div>
+
+<div class="columns">
+  <div>
+    <h3 style="margin-top:0">Morning &mdash; System Cleanup</h3>
+    <p style="font-size:0.92em">Orchestrated the two-gate drift remediation via voice. Rapid-fire direction to Moe and Larry: <em>"Don't make the changes. Give a plan."</em> Both gates passed. Memory Engine documented as live, "dispatch" killed in favor of "relay," Shemp placement corrected, AWS naming clarified.</p>
+
+    <h3>Afternoon &mdash; Product Strategy</h3>
+    <p style="font-size:0.92em">Deep product vision session. Dispatched GPT-5.4 Pro, Gemini 3.1 Pro, and Opus for independent analysis of the Go2 thesis. All three converged: Go2 is a labor-to-software conversion engine with two feedback loops (worker fast/narrow, manager slow/strategic). Product-thesis-synthesis.md written. ICP debate sharpened: in-house operators, not agency builders.</p>
+
+    <h3>Afternoon &mdash; Relay + moran.bot</h3>
+    <p style="font-size:0.92em">Directed Moe on Relay orchestration view improvements and moran.bot content buildout. Live Things feed, cleaned/published artifacts, DJ Peeper cleanup. Building out moran.bot as a presence/SEO play &mdash; not a personal brand per se, but ensuring there's a search result for Scott Moran that shows the work.</p>
+  </div>
+  <div>
+    <h3 style="margin-top:0">Evening &mdash; Build Sprint</h3>
+    <p style="font-size:0.92em">Heads-down in Claude and Codex building skill-builder and agent-vault. Light voice, heavy typing (8,119 chars in Codex, 4,776 in Claude). Council reviewed skill-builder twice (5.4/10 &rarr; 7.5/10) and agent-vault once (8/10 security audit). Both repos pushed to GitHub. Submitted skill-builder to awesome lists.</p>
+
+    <h3>Late Night &mdash; Product Call with Rustan</h3>
+    <p style="font-size:0.92em">~10pm, 70-minute call with Rustan (just the two of them). Demoed orchestration view, Access Vault, and Auto Skill Builder live. Revealed the $700 OpenWork accident. Laid out product vision: platform as OS/shell for custom AI apps with local data. Decided to remove "Chat" feature to avoid commodity positioning. Rustan has 6 action items for launch (processed data, daemon security, connectors repo, KB hiding, tracker deploy, skill-builder QA). Both working extreme hours &mdash; Rustan reported sleeping only 2 hours. <strong>Transcript now archived in brain repo.</strong></p>
+
+    <h3>Wind-down</h3>
+    <p style="font-size:0.92em">After midnight, still at keyboard but fading: <em>"I'm kind of burned out but I'll give it my computer for a bit so you can keep coding."</em> Moe continued working on moran.bot content. Larry built skill-suggester MVP and wired it into EOD.</p>
+  </div>
+</div>
+
+
+<!-- AGENT WORK -->
+<div class="section-head">Agent Output</div>
+
+<div class="agent-row">
+  <div class="agent-name agent-larry">LARRY</div>
+  <div>
+    31 sessions (25 substantive, 6 relay auth tests). Built skill-builder from scratch (CLI + React UI + Node backend, 15 hardcoded skills + LLM generation, MCP builder). Built agent-vault (AES-256-GCM encrypted credential store, MCP server mode, 12 health checks, 17 tests). Built skill-suggester MVP. Ran drift audit (Gate B). Multi-model product thesis analysis. <span class="tag tag-done">shipped</span>
+  </div>
+</div>
+<div class="agent-row">
+  <div class="agent-name agent-moe">MOE</div>
+  <div>
+    Brain repo edits (Gate A execution). Fixed Memory Engine MCP bug &mdash; memory_search and memory_context now work in Codex threads. Tracked daemons in git (infra/). Built ACCESS-CONTRACT.md + verify/sync scripts. Relay orchestration view. moran.bot: live Things feed, published artifacts, Resend contact path. <span class="tag tag-done">shipped</span>
+  </div>
+</div>
+<div class="agent-row">
+  <div class="agent-name agent-curly">CURLY</div>
+  <div>
+    7-stage lead enrichment pipeline on aws-mini: deep mine (+103 accounts) &rarr; domain resolution (50/52) &rarr; LinkedIn scraping (613 decision-makers) &rarr; email search (216 direct) &rarr; pattern learning (570 generated) &rarr; rescore &rarr; export. <strong>988 outreach-ready contacts</strong> in instantly_ready.csv. HubSpot test deals created (4 staged with pipeline stages). <span class="tag tag-done">shipped</span>
+  </div>
+</div>
+<div class="agent-row">
+  <div class="agent-name agent-shemp">SHEMP</div>
+  <div>
+    First real session. Skill format research (#46): cross-platform audit of Gemini/Claude/Codex skill environments. Universal Template v3.0 drafted. Sentry patrol: found 3+ stale larry-daemon.py backups. <span class="tag tag-blocked">blocked: no gh token</span>
+  </div>
+</div>
+
+
+<!-- LEAD PIPELINE -->
+<div class="section-head-alt">Lead Pipeline Status</div>
+
+<div class="pipeline">
+  <div class="pipe-stage" style="background: var(--paper-warm);">
+    <div class="pipe-num">12,455</div>
+    <div class="pipe-lbl">Scraped Accounts</div>
+  </div>
+  <div class="pipe-stage" style="background: var(--paper-warm);">
+    <div class="pipe-num">613</div>
+    <div class="pipe-lbl">Decision Makers</div>
+  </div>
+  <div class="pipe-stage" style="background: var(--paper-warm);">
+    <div class="pipe-num">988</div>
+    <div class="pipe-lbl">Outreach Ready</div>
+  </div>
+  <div class="pipe-stage" style="background: #e8f5e8;">
+    <div class="pipe-num" style="color:var(--forest)">0</div>
+    <div class="pipe-lbl">Imported to Instantly</div>
+  </div>
+  <div class="pipe-stage" style="background: #fde8e8;">
+    <div class="pipe-num" style="color:var(--rust)">0</div>
+    <div class="pipe-lbl">Emails Sent</div>
+  </div>
+</div>
+<p style="font-size:0.85em; color:var(--slate)">988 contacts ready on aws-mini. Apollo credits exhausted &mdash; getting Curly more credits. Meanwhile pivoting to warm strategy and direct outreach while pipeline builds.</p>
+
+
+<!-- CASH & REVENUE CONVERSATIONS -->
+<div class="section-head">Revenue &amp; Cash Conversations</div>
+
+<div class="callout-green callout">
+  <strong>Multiple active threads:</strong>
+</div>
+<ul>
+  <li><strong>Tuesday investor call:</strong> Significant meeting in ~48h. Potential for a check. Preparing materials.</li>
+  <li><strong>Concentrix client opportunity:</strong> Consulting engagement through a Concentrix connection &mdash; substantial monthly engagement. Exploring logistics around Manila travel (court dates on 30th and 15th create scheduling constraints).</li>
+  <li><strong>Siegert Dental (Jake):</strong> Post-call deliverable pipeline built and tested. Gmail draft ready (jake@siegertdental.com). Needs full transcript re-run + video embed + hosting URL.</li>
+  <li><strong>DIS Agency (Matt Obreza):</strong> Demo completed. Follow-up pending (#15).</li>
+  <li><strong>Cold pipeline:</strong> 988 contacts staged for Instantly. Warm outreach strategy being prioritized alongside cold sends.</li>
+  <li><strong>HubSpot deals staged:</strong> Trafilea ($8K), GrowthAssistant ($10K), Coalition Tech ($5K), Brivity ($6.5K) &mdash; test data for dashboard validation, but indicative of pipeline structure.</li>
+</ul>
+
+
+<!-- COSTS -->
+<div class="section-head">Costs &amp; Credits Burned</div>
+
+<div class="callout-red callout">
+  <strong>$700 OpenWork accident.</strong> One question to OpenWork on high mode spawned a swarm of agents that compared outputs across models without asking. Scott walked away, came back to a $700 bill. One question. This is on top of the intentional multi-model dispatches for product vision (GPT-5.4 Pro at $2.79+ per run, multiple deep-think passes). Total OpenRouter burn for the day was significant. Scott refilled credits separately for Curly's pipeline. <strong>Lesson: never leave OpenWork on high mode unattended.</strong>
+</div>
+
+<div class="callout">
+  <strong>Product Call with Rustan (10pm March 23rd) &mdash; Now archived.</strong> Transcript and Gemini notes pulled into brain repo. Key substance:
+  <ul style="margin:8px 0 0 16px; font-size:0.92em;">
+    <li>Demoed larry.moran.bot orchestration view &mdash; Rustan saw it live, tested a Codex session through it</li>
+    <li>Showed Access Vault + Auto Skill Builder &mdash; Rustan's reaction: "I believe it's real, but I want to understand how it's done"</li>
+    <li>$700 OpenWork bill revealed &mdash; Rustan: "What the f***? $700 one question. That's the first time ever."</li>
+    <li>Product vision: platform is an OS/shell for custom AI apps using local data. Remove "Chat" feature to avoid commodity positioning.</li>
+    <li>Rustan raised reverse-engineering concern on Access Vault &mdash; Scott explained secrets are local (vault master key + bearer token), not in code</li>
+    <li>Rustan working on data processing with Sonnet + Haiku models. Haiku insufficient for long agentic use cases.</li>
+    <li>AI automation market: $5B &rarr; $40B in 3 years. Legitimate sales opportunity for SMBs.</li>
+  </ul>
+  <strong>Rustan's action items for launch:</strong>
+  <ol style="margin:8px 0 0 16px; font-size:0.92em;">
+    <li>Share processed database directly to Scott (for client report generation)</li>
+    <li>Secure/wrap the telemetry daemon against reverse engineering</li>
+    <li>Create GitHub repo documenting data connectors for co-work ingestion</li>
+    <li>Hide Knowledge Base page (setting, don't remove functionality)</li>
+    <li>Deploy tracker online</li>
+    <li>QA the skills-builder repo</li>
+  </ol>
+</div>
+
+
+<!-- DECISIONS -->
+<div class="section-head">Decisions Made Today</div>
+
+<div class="decision"><strong>Boot order:</strong> Shemp first (Sentry) &rarr; Larry + Moe (SOD audit) &rarr; Curly + others</div>
+<div class="decision"><strong>Terminology:</strong> "custody" &rarr; "abduction." "dispatch" &rarr; "relay." Permanent.</div>
+<div class="decision"><strong>Curly compute:</strong> Max 1 local subagent, heavy compute to ssh aws-mini only</div>
+<div class="decision"><strong>Product model:</strong> Two loops &mdash; Worker (fast, skill suggestions) + Manager (slow, strategic recommendations)</div>
+<div class="decision"><strong>Go2 audience:</strong> In-house operators. Not "build an AI agency" crowd.</div>
+<div class="decision"><strong>Thread naming:</strong> Scott gives H1 as first line. Operator habit, not tooling.</div>
+<div class="decision"><strong>Transcripts:</strong> First-class artifacts. Full text in git + Memory Engine. Day boundary = sleep gap.</div>
+<div class="decision"><strong>SKILL.md:</strong> 33 platforms confirmed. AAIF does NOT govern it &mdash; that's agentskills.io.</div>
+<div class="decision"><strong>Access as product:</strong> Rustan's security concern validates productizing access.moran.bot. "It's just LastPass that uses local controls."</div>
+<div class="decision"><strong>moran.bot:</strong> Not a personal brand. It's a search-result presence and content feed for credibility.</div>
+
+
+<!-- COMPLETED vs IN FLIGHT vs BLOCKED -->
+<div class="section-head">Status Board</div>
+
+<table>
+  <tr><th>Item</th><th>Status</th><th>Detail</th></tr>
+  <tr><td>Brain drift remediation</td><td><span class="tag tag-done">done</span></td><td>Both gates passed. Clean.</td></tr>
+  <tr><td>skill-builder v2</td><td><span class="tag tag-done">done</span></td><td>Public. Submitted to awesome lists. Needs more e2e testing.</td></tr>
+  <tr><td>agent-vault</td><td><span class="tag tag-wip">wip</span></td><td>MVP done, 17 tests pass. Needs HTTPS, token expiration, more health checks.</td></tr>
+  <tr><td>skill-suggester</td><td><span class="tag tag-done">done</span></td><td>MVP in brain repo. Wired into EOD.</td></tr>
+  <tr><td>Lead pipeline (988 contacts)</td><td><span class="tag tag-done">done</span></td><td>On aws-mini. Not yet in Instantly.</td></tr>
+  <tr><td>Memory Engine MCP for Moe</td><td><span class="tag tag-done">done</span></td><td>memory_search + memory_context working in Codex.</td></tr>
+  <tr><td>Relay orchestration view</td><td><span class="tag tag-done">done</span></td><td>Demo-ready. Session bug identified (auth path).</td></tr>
+  <tr><td>moran.bot content</td><td><span class="tag tag-done">done</span></td><td>Things feed live, artifacts published.</td></tr>
+  <tr><td>Product vision doc</td><td><span class="tag tag-wip">wip</span></td><td>Synthesis exists. Final doc not shipped. Still iterating on framing.</td></tr>
+  <tr><td>Katie product video</td><td><span class="tag tag-wip">wip</span></td><td>She no-showed 1:1. Sending via Loom instead.</td></tr>
+  <tr><td>Xavier video</td><td><span class="tag tag-blocked">overdue</span></td><td>Operator intro from Xavier. Way overdue.</td></tr>
+  <tr><td>Cold email sends (#42)</td><td><span class="tag tag-wip">wip</span></td><td>Contacts ready, not imported. Apollo needs re-up.</td></tr>
+  <tr><td>Shemp #46 findings</td><td><span class="tag tag-blocked">blocked</span></td><td>Research done. Needs gh token to post.</td></tr>
+  <tr><td>April onboarding</td><td><span class="tag tag-blocked">stale</span></td><td>72h+ no response. Deprioritized.</td></tr>
+  <tr><td>Product Call transcript (Rustan)</td><td><span class="tag tag-done">done</span></td><td>10pm call on 3/23. Notes + transcript archived in brain repo. 6 Rustan action items for launch.</td></tr>
+</table>
+
+
+<!-- TELEMETRY -->
+<div class="section-head">Telemetry</div>
+
+<div class="columns">
+  <div>
+    <h3 style="margin-top:0">App Usage (by time)</h3>
+    <table>
+      <tr><th>App</th><th>Time</th><th>Keys</th></tr>
+      <tr><td>Chrome</td><td>338m</td><td>730</td></tr>
+      <tr><td>Codex (Moe)</td><td>336m</td><td>8,119</td></tr>
+      <tr><td>Claude (Larry)</td><td>245m</td><td>4,776</td></tr>
+      <tr><td>OpenWork</td><td>86m</td><td>792</td></tr>
+      <tr><td>Universal Control</td><td>43m</td><td>20</td></tr>
+    </table>
+    <p style="font-size:0.82em; color:var(--slate)">14,916 total keystrokes. Codex got 54% of typing. Chrome open as long as Codex but barely typed in &mdash; reading/research mode.</p>
+  </div>
+  <div>
+    <h3 style="margin-top:0">Work Pattern</h3>
+    <p style="font-size:0.9em">Midnight &ndash; 8am: continuous deep build (carryover). 9am &ndash; 1pm: sleep/rest gap. 1pm &ndash; midnight: second burst. Total active: ~16 hours.</p>
+    <p style="font-size:0.9em; margin-top: 8px;">Universal Control at 43min / 4,003 sessions = heavy Pro&harr;Mini switching during drift remediation and Curly's pipeline work.</p>
+    <p style="font-size:0.9em; margin-top: 8px;">388 voice recordings. Energy peaked during drift remediation and product vision brainstorm. Faded after midnight.</p>
+  </div>
+</div>
+
+
+<!-- HEALTH -->
+<div class="section-head">Recovery</div>
+
+<div class="oura-grid">
+  <div class="oura-item">
+    <div class="oura-num oura-yellow">73</div>
+    <div class="oura-lbl">Sleep*</div>
+  </div>
+  <div class="oura-item">
+    <div class="oura-num oura-yellow">74</div>
+    <div class="oura-lbl">Readiness</div>
+  </div>
+  <div class="oura-item">
+    <div class="oura-num oura-green">97</div>
+    <div class="oura-lbl">Resting HR</div>
+  </div>
+  <div class="oura-item">
+    <div class="oura-num oura-green">86</div>
+    <div class="oura-lbl">Activity</div>
+  </div>
+  <div class="oura-item">
+    <div class="oura-num oura-yellow">80</div>
+    <div class="oura-lbl">HRV Balance</div>
+  </div>
+</div>
+<p style="font-size:0.82em; color:var(--slate)">*Sleep score 73 reflects Sunday night into Monday (the day being closed out). Monday night's sleep was worse (57) due to the late build session &mdash; that hits Tuesday's readiness. Body temp deviation -0.5&deg;C, resting HR excellent at 97/100.</p>
+
+
+<!-- SKILL SUGGESTION -->
+<div class="section-head-alt">Daily Skill Suggestion</div>
+<div class="callout">
+  <strong>meeting-auto-brief</strong> &mdash; Auto-generate pre-meeting context from brain repo + Memory Engine before Google Meet calls. Signal: 9 visits to meet.google.com today. Approve at next SOD to auto-implement.
+</div>
+
+
+<!-- TOMORROW -->
+<div class="tomorrow">
+  <h3>Tuesday, March 24 &mdash; Investor Call Day</h3>
+  <ol>
+    <li><em>Investor call prep.</em> This is hours away. Make sure the product-thesis-synthesis doc and relay demo are tight. Product Call transcript archived &mdash; review Rustan's 6 action items and confirm he's tracking them.</li>
+    <li><em>Product video for Katie.</em> She no-showed the 1:1. Record via Loom and send. Also the landing page video.</li>
+    <li><em>Xavier video.</em> Overdue operator intro. Knock it out alongside Katie's.</li>
+    <li><em>Get ahold of Andy.</em></li>
+    <li><em>Import 988 contacts to Instantly.</em> Even if cold sends wait, get them staged. Get Curly more Apollo for continued scraping.</li>
+    <li><em>Product vision doc &mdash; final pass.</em> Stop iterating. Take the synthesis, edit it into 3-4 pages, done. Consider giving to Moe with strict instructions.</li>
+    <li><em>Post Shemp's #46 findings</em> to GitHub. Give him a token.</li>
+  </ol>
+  <p style="font-size:0.85em; color: var(--muted); margin-top: 12px;">
+    Investor call is the anchor. Shape everything around having that ready.
+    Let agents run parallel on pipeline + product polish while you handle videos and outreach.
+    The Concentrix consulting opportunity needs a logistics answer soon given Manila dates (30th + 15th).
+  </p>
+</div>
+
+<div class="callout-red callout">
+  <strong>Sleep:</strong> Back-to-back late nights are compounding. Tonight's sleep (into Tuesday) needs to be better than the 57/100 you're about to log. The investor call is Tuesday &mdash; get to bed and be sharp for it.
+</div>
+
+<div class="callout">
+  <strong>What's been neglected:</strong> CUA issues (#1-3, #22, #29-33) untouched for a week. Council issues (#8, #9, #17-20) aging. Cowork.ai telemetry agent (#51) has 56K sessions with zero processing. None urgent, all accumulating.
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">
+  Go2 Daily &bull; Generated by Larry [AI] at 2026-03-24 07:45 PT<br>
+  6 data sources &bull; 31 sessions &bull; 388 voice recordings &bull; 14,916 keystrokes &bull; ~68h agent compute
+</div>
+
+</div>
+</body>
+</html>

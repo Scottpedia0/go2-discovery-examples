@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 Daily — Wednesday, March 26, 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #111113;
+  --surface: #1a1a1e;
+  --surface-2: #222228;
+  --text: #e8e8ed;
+  --muted: #8888a0;
+  --dim: #55556a;
+  --red: #ff4d6a;
+  --red-dim: rgba(255,77,106,0.08);
+  --amber: #ffb347;
+  --amber-dim: rgba(255,179,71,0.08);
+  --blue: #4d9fff;
+  --blue-dim: rgba(77,159,255,0.06);
+  --green: #4dff91;
+  --green-dim: rgba(77,255,145,0.06);
+  --purple: #b380ff;
+  --purple-dim: rgba(179,128,255,0.06);
+  --border: #2a2a35;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'DM Sans', -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.6; }
+
+/* Header */
+.header {
+  padding: 2.5rem 3rem 2rem;
+  border-bottom: 2px solid var(--red);
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); }
+.header .sub { font-size: 2rem; font-weight: 700; margin-top: 0.3rem; color: var(--text); line-height: 1.2; }
+.header .meta { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); text-align: right; line-height: 1.8; }
+
+/* Lead */
+.lead {
+  padding: 2rem 3rem;
+  background: var(--red-dim);
+  border-bottom: 1px solid var(--border);
+  font-size: 1.1rem; line-height: 1.7;
+}
+.lead strong { color: var(--red); }
+
+/* Scoreboard */
+.scoreboard {
+  display: grid; grid-template-columns: repeat(8, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+.sb-cell {
+  padding: 1rem 0.6rem; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.sb-cell:last-child { border-right: none; }
+.sb-val { font-family: var(--mono); font-size: 1.6rem; font-weight: 700; }
+.sb-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 4px; }
+
+/* Section */
+.section { padding: 2rem 3rem; border-bottom: 1px solid var(--border); }
+.section-tag {
+  font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase;
+  letter-spacing: 0.15em; margin-bottom: 1rem; display: inline-block;
+  padding: 3px 10px; border-radius: 3px;
+}
+.tag-red { background: var(--red-dim); color: var(--red); }
+.tag-amber { background: var(--amber-dim); color: var(--amber); }
+.tag-blue { background: var(--blue-dim); color: var(--blue); }
+.tag-green { background: var(--green-dim); color: var(--green); }
+.tag-purple { background: var(--purple-dim); color: var(--purple); }
+
+.section h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
+.section p { font-size: 0.92rem; line-height: 1.7; margin-bottom: 0.8rem; color: var(--text); }
+.section .muted { color: var(--muted); }
+
+/* Quote block */
+.quote {
+  border-left: 3px solid var(--purple);
+  padding: 0.8rem 1.2rem;
+  margin: 1rem 0;
+  background: var(--purple-dim);
+  font-size: 0.9rem;
+}
+.quote .attr { font-family: var(--mono); font-size: 0.7rem; color: var(--dim); margin-top: 0.5rem; }
+
+.quote-red { border-color: var(--red); background: var(--red-dim); }
+.quote-amber { border-color: var(--amber); background: var(--amber-dim); }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; }
+.card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.6rem; }
+.card p, .card li { font-size: 0.85rem; line-height: 1.6; color: var(--muted); }
+.card ul { list-style: none; padding: 0; }
+.card li { padding: 3px 0; }
+.card li::before { content: '·'; margin-right: 8px; color: var(--dim); }
+
+/* Agent strip */
+.agent-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+.agent-cell { padding: 1rem; border-right: 1px solid var(--border); }
+.agent-cell:last-child { border-right: none; }
+.agent-name { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem; }
+.agent-cell p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+/* Footer */
+.footer { padding: 1.5rem 3rem; font-family: var(--mono); font-size: 0.65rem; color: var(--dim); border-top: 1px solid var(--border); }
+
+@media (max-width: 900px) {
+  .scoreboard { grid-template-columns: repeat(4, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .agent-strip { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Day Report</h1>
+    <div class="sub">The Machine Is Impressive.<br>The Machine Is Not Selling.</div>
+  </div>
+  <div class="meta">
+    WEDNESDAY, MARCH 26, 2026<br>
+    SYSTEM: LARRY + MOE + CURLY + SHEMP<br>
+    FRONTIER MODELS: GPT-5.4 + GEMINI 3.1 + GROK 4<br>
+    GENERATED: 2026-03-27 00:15 PDT
+  </div>
+</div>
+
+<!-- THE LEAD -->
+<div class="lead">
+  <strong>Day 4+ of zero outbound.</strong> With a payroll cliff 3 business days away, today was consumed by a reactive investor demo (rescheduled), an SMB page overhaul (live but untested for ROI), and a payroll crisis Slack thread. The 5 planned revenue actions &mdash; Katie sends, Instantly import, BattleBox close, Frenchie follow-up &mdash; all rolled over again. Three frontier models independently converged on the same diagnosis: <strong>the system is generating artifacts to simulate momentum while the revenue pipeline is completely frozen.</strong>
+</div>
+
+<!-- SCOREBOARD -->
+<div class="scoreboard">
+  <div class="sb-cell"><div class="sb-val" style="color:var(--red)">0</div><div class="sb-label">Issues Closed</div></div>
+  <div class="sb-cell"><div class="sb-val" style="color:var(--muted)">0</div><div class="sb-label">Issues Opened</div></div>
+  <div class="sb-cell"><div class="sb-val" style="color:var(--red)">0/5</div><div class="sb-label">SOD Targets Hit</div></div>
+  <div class="sb-cell"><div class="sb-val" style="color:var(--red)">0</div><div class="sb-label">Outbound Sent</div></div>
+  <div class="sb-cell"><div class="sb-val" style="color:var(--amber)">~90/10</div><div class="sb-label">AI/Human Ratio</div></div>
+  <div class="sb-cell"><div class="sb-val" style="color:var(--red)">0%</div><div class="sb-label">Revenue-Direct</div></div>
+  <div class="sb-cell"><div class="sb-val" style="color:var(--amber)">$113</div><div class="sb-label">Ad Spend/Day</div></div>
+  <div class="sb-cell"><div class="sb-val" style="color:var(--red)">3d</div><div class="sb-label">To Payroll Cliff</div></div>
+</div>
+
+<!-- CONSENSUS FINDINGS -->
+<div class="section">
+  <span class="section-tag tag-red">Consensus &mdash; All 3 Models Agree</span>
+  <h2>The outbound freeze is systemic, not circumstantial.</h2>
+
+  <p>Every frontier model independently identified the same core pattern: <strong>4+ consecutive days of zero outbound activity</strong> despite daily EOD reports flagging it as the #1 priority. This isn't a task that keeps getting bumped &mdash; it's an avoidance pattern that the agent system is enabling by providing endless "productive" alternatives.</p>
+
+  <div class="quote quote-red">
+    <p>"Agents are generating files (rescue packs, backup PPTXs, EOD scripts) to simulate momentum, but the core issue board is completely paralyzed."</p>
+    <div class="attr">Gemini 3.1 Pro</div>
+  </div>
+
+  <div class="quote quote-red">
+    <p>"The founder's avoidance of direct outbound sales, despite recurring EOD patterns calling it out as the bottleneck &mdash; agents can't close deals, but no action to force personal involvement."</p>
+    <div class="attr">Grok 4</div>
+  </div>
+
+  <p>Gemini calculated today's revenue-direct time at <strong>0%</strong>. The SMB landing page (15%) is revenue infrastructure, not revenue generation. Everything else was internal ops, reactive prep, or defensive comms.</p>
+</div>
+
+<!-- DIVERGENT TAKES -->
+<div class="section">
+  <span class="section-tag tag-amber">Divergent &mdash; Where Models Disagreed</span>
+  <h2>Is the multi-agent system helping or hurting?</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="color:var(--red)">Grok: Shut it down.</h3>
+      <p>"The multi-agent coordination experiment (Larry/Moe/Curly/Shemp) is causing rework and diverting from human-led sales without proven ROI."</p>
+      <p style="margin-top:0.5rem">Grok sees the agent system itself as the problem &mdash; it generates endless work to manage itself, and the founder hides behind agent management instead of doing sales.</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--amber)">Gemini: Redirect it.</h3>
+      <p>The machine produces at ~90% AI/10% human ratio. The output volume is massive. The problem isn't the system &mdash; it's that the system is pointed at internal ops instead of customer-facing work.</p>
+      <p style="margin-top:0.5rem">Gemini's fix: stop building rescue packs and EOD skills. Point every agent at revenue for one week and measure what happens.</p>
+    </div>
+  </div>
+
+  <p class="muted" style="margin-top:1rem">This is the real strategic question. The agent system IS the product demo &mdash; but it's also the biggest time sink. Both things are true simultaneously.</p>
+</div>
+
+<!-- GOLD NUGGETS -->
+<div class="section">
+  <span class="section-tag tag-purple">Gold Nuggets &mdash; Things Larry Wouldn't Have Said</span>
+
+  <div class="quote">
+    <p>"What is this company actually building? An over-engineered AI agent coordination system for internal ops and pitch materials, not a scalable workflow audit product for SMBs &mdash; time sinks into decks, pages, and agent tweaks over customer delivery."</p>
+    <div class="attr">Grok 4 &mdash; This is the mirror. Where the time goes is what you're building, regardless of what the deck says.</div>
+  </div>
+
+  <div class="quote">
+    <p>"Scott is hiding behind AI management to avoid direct sales. He acted as a QA bottleneck reviewing 18 junk drafts from Curly instead of manually sending the 20 planned emails to Katie's list."</p>
+    <div class="attr">Gemini 3.1 Pro &mdash; The draft review loop is a form of productive procrastination. 20 manually-written emails would have taken less time than reviewing 18 rejected drafts.</div>
+  </div>
+
+  <div class="quote quote-amber">
+    <p>"Building a new EOD skill on a day when payroll is 4 weeks behind is the definition of wasted founder leverage."</p>
+    <div class="attr">Gemini 3.1 Pro &mdash; This stings because it's about the thing we just built together. But it's true.</div>
+  </div>
+</div>
+
+<!-- THE UNCOMFORTABLE TRUTH -->
+<div class="section" style="background: var(--red-dim);">
+  <span class="section-tag tag-red">The Uncomfortable Truth</span>
+  <h2>You are 3 business days from a payroll cliff and you spent today building an investor deck for a meeting that got cancelled, rebuilding a landing page an agent broke, and redesigning your EOD reporting system.</h2>
+
+  <p>The investor deck was reactive (2-hour notice). The SMB page rebuild was necessary (Moe broke it). The payroll comms were unavoidable. But the EOD skill rebuild? That was a choice. And the 5 planned outbound actions that didn't happen? Those were choices too.</p>
+
+  <p>The Katie emails have been "next" for 4 days. The button is reportedly fixed. There are 20 emails ready to send. Sending them takes 30 minutes. <strong>It still didn't happen.</strong></p>
+
+  <p>Issue #42 (cold email drip) is 7 days stale. Issue #15 (email Matt Obreza) and #12 (scale install targets) are aging without action. April's onboarding is completely blocked. The issue board has had net-zero velocity today.</p>
+</div>
+
+<!-- WHAT SHIPPED -->
+<div class="section">
+  <span class="section-tag tag-green">What Actually Shipped</span>
+  <h2>Despite everything, real things moved.</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="color:var(--green)">SMB Page + Paid Acquisition</h3>
+      <ul>
+        <li>Cal.com booking live (replaced broken Calendly)</li>
+        <li>Google Ads conversion tracking firing</li>
+        <li>gclid capture forwarding to Cal.com</li>
+        <li>11 example pages polished + sticky nav</li>
+        <li>$113/day ads running &mdash; first paid acquisition channel ever</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--blue)">Investor Deck + Pricing</h3>
+      <ul>
+        <li>10-slide HTML deck built from scratch</li>
+        <li>3-page pricing strategy Word doc</li>
+        <li>Pricing model: free &rarr; tiered pilot &rarr; workflow bundles</li>
+        <li>Cannibalization narrative captured with Andy</li>
+        <li>Live Vercel URL: go2-investor-deck-preview.vercel.app</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--amber)">Mickey Rescue Pack (Moe)</h3>
+      <ul>
+        <li>Full ops audit + tools + MCP starter</li>
+        <li>Delivered directly to Mickey in Slack + DM</li>
+        <li>Challenged by Gemini + Opus critique loops</li>
+        <li>Internal ops improvement, not revenue</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--muted)">System Work</h3>
+      <ul>
+        <li>EOD skill rebuilt with frontier model engine</li>
+        <li>Shemp 2x sentry patrols (clean)</li>
+        <li>Payroll crisis comms crafted and delivered</li>
+        <li>Shemp + Larry sessions closed cleanly</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- AGENT HEALTH -->
+<div class="section">
+  <span class="section-tag tag-blue">Agent System Health</span>
+  <div class="agent-strip">
+    <div class="agent-cell">
+      <div class="agent-name" style="color:var(--blue)">LARRY</div>
+      <p>Investor deck, pricing doc, SMB page rebuild (after Moe broke it), payroll comms, EOD skill rewrite. Carried the day but on reactive work.</p>
+    </div>
+    <div class="agent-cell">
+      <div class="agent-name" style="color:var(--green)">MOE</div>
+      <p>Mickey rescue pack (strong), investor deck Vercel deploy, EP01 hosting. Broke SMB page &mdash; second agent overlap incident causing rework.</p>
+    </div>
+    <div class="agent-cell">
+      <div class="agent-name" style="color:var(--amber)">CURLY</div>
+      <p>3 rounds of cold emails, all rejected. Zero sends. 18 junk drafts in Gmail. >48h stale per Shemp. Needs redirection.</p>
+    </div>
+    <div class="agent-cell">
+      <div class="agent-name" style="color:var(--muted)">SHEMP</div>
+      <p>2x sentry patrols, both clean. G Suite research paused. Correctly flagged aging issues but system took no corrective action.</p>
+    </div>
+  </div>
+  <p class="muted" style="padding: 1rem 0 0; font-size: 0.85rem;"><strong>Coordination issue:</strong> Moe breaking the SMB page and Larry rebuilding it is the second rework incident. The agent system needs clearer lane ownership or it will keep burning cycles on collision recovery.</p>
+</div>
+
+<!-- TOMORROW -->
+<div class="section">
+  <span class="section-tag tag-green">Tomorrow</span>
+  <h2>Given everything, tomorrow should be about one thing: sends.</h2>
+
+  <p>Not "prep for sends." Not "review drafts for sends." Not "build a system that will eventually enable sends." <strong>Actual sends.</strong></p>
+
+  <p>The minimum viable Thursday:</p>
+  <div class="grid-2">
+    <div class="card" style="border-color: var(--red);">
+      <h3 style="color:var(--red)">Before 10am</h3>
+      <ul>
+        <li>Scott sends 20 Katie emails manually (30 min)</li>
+        <li>Scott sends BattleBox close email to John (10 min)</li>
+        <li>Scott sends Frenchie follow-up (5 min)</li>
+      </ul>
+      <p style="margin-top:0.5rem; color:var(--red);">Total: 45 minutes. Zero agent involvement. Do it first, before the machine spins up anything else.</p>
+    </div>
+    <div class="card">
+      <h3>After 10am</h3>
+      <ul>
+        <li>Import 988 to Instantly (Curly)</li>
+        <li>Brain repo cleanup (Scott + Larry + Moe &mdash; SMB page file mess)</li>
+        <li>Investor deck subtract pass (if energy remains)</li>
+        <li>Monday payroll deadline prep</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- TREND LINES -->
+<div class="section">
+  <span class="section-tag tag-amber">3-Day Trend</span>
+  <h2>Trend Lines</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="color:var(--red)">Degrading</h3>
+      <ul>
+        <li>Outbound velocity: 4+ days of zero sends</li>
+        <li>Issue board velocity: net 0 today (was +1 on Mar 23)</li>
+        <li>Agent coordination: 2nd rework incident this week</li>
+        <li>SOD plan completion: dropped from ~40% to 0% today</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--green)">Improving</h3>
+      <ul>
+        <li>Paid acquisition: first Google Ads campaign live</li>
+        <li>Product narrative: pricing model + investor framing crystallized</li>
+        <li>Internal ops: Mickey rescue pack delivered, Cal.com integrated</li>
+        <li>EOD quality: frontier model synthesis now in the workflow</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- STREAKS -->
+<div class="section" style="background: var(--surface);">
+  <span class="section-tag tag-amber">Streaks</span>
+  <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:1rem; text-align:center;">
+    <div>
+      <div style="font-family:var(--mono); font-size:1.5rem; font-weight:700; color:var(--red);">0</div>
+      <div style="font-size:0.7rem; color:var(--muted); text-transform:uppercase;">Days Shipping<br>(Issues Closed)</div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono); font-size:1.5rem; font-weight:700; color:var(--red);">0</div>
+      <div style="font-size:0.7rem; color:var(--muted); text-transform:uppercase;">Days Net Positive<br>on Commitments</div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono); font-size:1.5rem; font-weight:700; color:var(--amber);">?</div>
+      <div style="font-size:0.7rem; color:var(--muted); text-transform:uppercase;">Days Leverage<br>Ratio > 2x</div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono); font-size:1.5rem; font-weight:700; color:var(--red);">0</div>
+      <div style="font-size:0.7rem; color:var(--muted); text-transform:uppercase;">Days With<br>Revenue Activity</div>
+    </div>
+  </div>
+</div>
+
+<!-- GPT-5.4 LATE ARRIVAL — strongest take of the three -->
+<div class="section" style="background: var(--red-dim); border-top: 2px solid var(--red);">
+  <span class="section-tag tag-red">Late Arrival &mdash; GPT-5.4 Pro</span>
+  <h2>The Closing Question</h2>
+
+  <div class="quote quote-red">
+    <p>"You are still operating like a company with optionality, not like a company that is ~4 weeks behind payroll with a Monday cliff."</p>
+    <div class="attr">GPT-5.4 Pro</div>
+  </div>
+
+  <div class="quote quote-red">
+    <p>"You do not have a messaging problem right now; you have a willingness-to-hit-send problem. In a survival window, ugly founder outreach with real stakes beats perfect agent-crafted copy every time."</p>
+    <div class="attr">GPT-5.4 Pro</div>
+  </div>
+
+  <div class="quote quote-red">
+    <p>"A rescheduled investor meeting is not pipeline. It is deferred hope. If you are mentally spending money that has not landed, you are making operating decisions off fiction."</p>
+    <div class="attr">GPT-5.4 Pro</div>
+  </div>
+
+  <div class="quote quote-amber">
+    <p>"smbpilot.go2.io is live and you are spending $113/day on Google Ads. That is only good news if someone is obsessively watching booked calls, show rates, discovery quality, proposal conversion, and days-to-cash. If that dashboard does not exist yet, then you are buying activity, not traction."</p>
+    <div class="attr">GPT-5.4 Pro</div>
+  </div>
+
+  <div style="margin-top:1.5rem; padding: 1.5rem; background: rgba(255,77,106,0.12); border-radius: 8px; text-align:center;">
+    <p style="font-size: 1.2rem; font-weight: 700; color: var(--red); margin: 0;">
+      "If no investor money lands before Monday, what exact actions will you take tomorrow that directly produce cash instead of the feeling of progress?"
+    </p>
+    <p style="font-family: var(--mono); font-size: 0.7rem; color: var(--dim); margin-top: 0.5rem;">GPT-5.4 Pro &mdash; the question this report should end with</p>
+  </div>
+</div>
+
+<div class="footer">
+  Larry [AI] &middot; EOD Report &middot; March 26, 2026 &middot; Frontier synthesis: GPT-5.4 Pro + Gemini 3.1 Pro + Grok 4 via OpenRouter &middot; Generated 2026-03-27 00:15 PDT
+</div>
+
+</body>
+</html>

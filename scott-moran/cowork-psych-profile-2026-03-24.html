@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scott Moran Behavioral Psychograph</title>
+  <style>
+    :root {
+      --bg: #f4ede4;
+      --paper: rgba(255, 251, 245, 0.83);
+      --ink: #171515;
+      --muted: #645b52;
+      --line: rgba(44, 34, 23, 0.12);
+      --hot: #b94c33;
+      --warm: #d38d42;
+      --cool: #587e7c;
+      --night: #2f3e54;
+      --shadow: 0 22px 70px rgba(34, 23, 15, 0.12);
+      --radius: 24px;
+      --serif: "Iowan Old Style", "Book Antiqua", Georgia, serif;
+      --sans: "Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif;
+      --mono: "IBM Plex Mono", "SFMono-Regular", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(185, 76, 51, 0.13), transparent 28%),
+        radial-gradient(circle at 100% 0%, rgba(88, 126, 124, 0.16), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(47, 62, 84, 0.12), transparent 22%),
+        linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+    }
+
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 30px 18px 70px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(330px, 0.8fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel, .trait-card, .score-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel { padding: 24px; }
+
+    .eyebrow {
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--serif);
+      line-height: 1.02;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      max-width: 8ch;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.65rem;
+      margin-bottom: 12px;
+    }
+
+    .lede {
+      font-size: 1.08rem;
+      max-width: 72ch;
+      color: #2b2420;
+    }
+
+    .subtle {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 0.94rem;
+      margin-top: 16px;
+    }
+
+    .callout {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(185, 76, 51, 0.11), rgba(88, 126, 124, 0.11));
+      border: 1px solid rgba(185, 76, 51, 0.16);
+    }
+
+    .callout p {
+      margin: 0;
+    }
+
+    .grid-5 {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .score-card {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      min-height: 220px;
+    }
+
+    .score-ring {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 8px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.48);
+    }
+
+    .score-card.high .score-ring { border-color: rgba(185, 76, 51, 0.35); }
+    .score-card.warm .score-ring { border-color: rgba(211, 141, 66, 0.35); }
+    .score-card.mid .score-ring { border-color: rgba(88, 126, 124, 0.35); }
+
+    .score-value {
+      font-family: var(--serif);
+      font-size: 2rem;
+    }
+
+    .score-title {
+      font-weight: 700;
+      font-size: 1.02rem;
+      margin-bottom: 6px;
+    }
+
+    .score-body p, .trait-card p, .panel p {
+      margin: 0;
+      color: #2b2420;
+    }
+
+    .trait-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .trait-card {
+      padding: 20px;
+    }
+
+    .shadow-note {
+      margin-top: 14px;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .evidence-row, .host-row, .block-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .evidence-row:last-child, .host-row:last-child, .block-row:last-child {
+      border-bottom: 0;
+    }
+
+    .evidence-label, .block-title {
+      font-weight: 700;
+    }
+
+    .evidence-value, .block-mins, .host-row span:last-child {
+      font-family: var(--mono);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .block-right {
+      text-align: right;
+    }
+
+    .block-copy {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 0 0 10px;
+    }
+
+    @media (max-width: 1160px) {
+      .hero, .grid-5, .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="panel">
+        <div class="eyebrow">Behavioral Psychograph</div>
+        <h1>How You Seem To Think At The Machine</h1>
+        <p class="lede">
+          This is not a personality test and not a clinical claim. It is a behavioral reading of your operator style using only telemetry structure from
+          Thu, Mar 19 through Mon, Mar 23: timing, switching, app/domain gravity, typing distribution, and clipboard behavior.
+          No keystroke content was used to build this profile.
+        </p>
+        <div class="subtle">Generated 2026-03-24 11:19 PDT</div>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Thesis</div>
+        <h2>The Data Says “System Conductor”</h2>
+        <div class="callout">
+          <p>
+            You do not behave like a single-threaded maker trying to protect a monk-like bubble.
+            You behave like a conductor of tools, models, and contexts who can re-enter build mode fast,
+            but pays a real tax when admin and publishing surfaces mix into the same operating field.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-5">
+      
+            <div class="score-card high">
+              <div class="score-ring">
+                <div class="score-value">93</div>
+              </div>
+              <div class="score-body">
+                <div class="score-title">Externalized Cognition</div>
+                <p>You appear to think by steering systems and models, not by drafting in isolation.</p>
+              </div>
+            </div>
+            
+
+            <div class="score-card high">
+              <div class="score-ring">
+                <div class="score-value">95</div>
+              </div>
+              <div class="score-body">
+                <div class="score-title">Interrupt Recovery</div>
+                <p>Switches happen often, but the return path back into build mode is extremely fast.</p>
+              </div>
+            </div>
+            
+
+            <div class="score-card warm">
+              <div class="score-ring">
+                <div class="score-value">80</div>
+              </div>
+              <div class="score-body">
+                <div class="score-title">Novelty Appetite</div>
+                <p>You scan broadly for leverage, examples, tools, and opportunities before collapsing back to build.</p>
+              </div>
+            </div>
+            
+
+            <div class="score-card warm">
+              <div class="score-ring">
+                <div class="score-value">85</div>
+              </div>
+              <div class="score-body">
+                <div class="score-title">Mode Purity</div>
+                <p>When a day is meant to be a build day, you can make it very pure.</p>
+              </div>
+            </div>
+            
+
+            <div class="score-card warm">
+              <div class="score-ring">
+                <div class="score-value">78</div>
+              </div>
+              <div class="score-body">
+                <div class="score-title">Afternoon / Evening Voltage</div>
+                <p>Your serious output shows up after noon, not in a classic morning-maker pattern.</p>
+              </div>
+            </div>
+            
+    </section>
+
+    <section class="grid-2">
+      <div class="panel trait-stack">
+        <div class="eyebrow">Interpretation</div>
+        <h2>Core Read</h2>
+        
+            <article class="trait-card">
+              <h3>You look like a conductor, not a monk.</h3>
+              <p>82.2% of all typed characters in the five full days landed inside Claude, Codex, or OpenWork, with 1,717 paste events into those tools. That is not a person trying to retreat from systems. It is a person using models as thinking surfaces, delegation surfaces, and intermediate memory.</p>
+              <div class="shadow-note">Shadow side: orchestration can feel productive even when the real bottleneck is choosing and committing.</div>
+            </article>
+            
+
+            <article class="trait-card">
+              <h3>You are unusually elastic after interruption.</h3>
+              <p>Median return from communication back into build mode was 0.36 minutes. From research back into build it was 0.26 minutes. That suggests you are not fragile in the face of interruption. You can bounce out, collect signal, and snap back.</p>
+              <div class="shadow-note">Shadow side: because you recover quickly, you can underestimate how much context shifting is happening around you.</div>
+            </article>
+            
+
+            <article class="trait-card">
+              <h3>Your best state is a named build regime.</h3>
+              <p>Across the full five-day window, 84.9% of non-ambient focus stayed in build surfaces. The cleanest execution day was Sat, Mar 21 at 97.2% build-share with 31,246 characters typed. You do not look like someone who benefits from open-ended, mixed-mode days.</p>
+              <div class="shadow-note">Shadow side: admin, publishing, and GTM work feel disproportionately grimy because they dilute the state that actually works for you.</div>
+            </article>
+            
+
+            <article class="trait-card">
+              <h3>You scan wide, but you ship from a narrower channel.</h3>
+              <p>The widest exploration day touched 60 distinct browser hosts, but your dominant hosts still clustered around build and AI surfaces. That pattern reads as strategic scanning rather than random doomscrolling: you range widely, then collapse back into a small execution stack.</p>
+              <div class="shadow-note">Shadow side: a broad scan budget without a closing ritual can quietly turn into low-grade decision debt.</div>
+            </article>
+            
+
+            <article class="trait-card">
+              <h3>Your clock is operator-time, not office-time.</h3>
+              <p>Only 1,754 typed characters landed in the morning across the full five-day window. Afternoon and evening carried 58,727 and 44,869 characters respectively, with even late night still active at 19,341. The data does not support a fake 9-to-5 self-image.</p>
+              <div class="shadow-note">Shadow side: if you judge yourself by morning standards, you will misread your actual pattern and create shame that is not evidence-based.</div>
+            </article>
+            
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Evidence</div>
+        <h2>Behavioral Signals</h2>
+        
+            <div class="evidence-row">
+              <div class="evidence-label">Assistant char share</div>
+              <div class="evidence-value">82.2%</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">AI paste events</div>
+              <div class="evidence-value">1,717</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">AI pastes per 1k chars</div>
+              <div class="evidence-value">13.8</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">Build-share across five full days</div>
+              <div class="evidence-value">84.9%</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">Median comm -&gt; build return</div>
+              <div class="evidence-value">0.36 min</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">Median research -&gt; build return</div>
+              <div class="evidence-value">0.26 min</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">Widest host spread in a day</div>
+              <div class="evidence-value">60</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">Morning typed chars</div>
+              <div class="evidence-value">1,754</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">Afternoon typed chars</div>
+              <div class="evidence-value">58,727</div>
+            </div>
+            
+
+            <div class="evidence-row">
+              <div class="evidence-label">Evening typed chars</div>
+              <div class="evidence-value">44,869</div>
+            </div>
+            
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <div class="eyebrow">Operating Rules</div>
+        <h2>What This Profile Wants</h2>
+        <ul>
+          <li>Protect one primary build regime each day before admin or webmaster surfaces open.</li>
+<li>Use a separate named sweep for Slack, Search Console, Bing, Cloudflare, and similar admin/distribution work.</li>
+<li>Convert repeated AI copy-paste loops into canonical files, briefs, and standing prompts so orchestration stops leaking memory.</li>
+<li>Treat afternoon and evening as prime output windows; use morning for setup, intake, or lower-friction tasks if you need structure there.</li>
+<li>When you scan wide, end the scan with one forced commit: one repo, one artifact, one shipped decision.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Dominant Surfaces</div>
+        <h2>Where The Mind Kept Going</h2>
+        
+            <div class="host-row">
+              <span>larry.moran.bot</span>
+              <span>93m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>scottpedia0.github.io</span>
+              <span>69m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>github.com</span>
+              <span>62m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>meet.google.com</span>
+              <span>39m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>gemini.google.com</span>
+              <span>38m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>deckmanager.go2.io</span>
+              <span>30m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>app.slack.com</span>
+              <span>29m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>aistudio.google.com</span>
+              <span>22m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>access.moran.bot</span>
+              <span>19m</span>
+            </div>
+            
+
+            <div class="host-row">
+              <span>mail.google.com</span>
+              <span>16m</span>
+            </div>
+            
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <div class="eyebrow">Strongest Work States</div>
+        <h2>Longest Cognitive-Mode Blocks</h2>
+        <p class="subtle">These are observed foreground stretches after merging same-mode activity. They are useful as state-shape evidence, not exact stopwatch truth.</p>
+        
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Sat Mar 21 10:31 PM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">10.5h</div>
+                <div class="block-copy">Claude: 10.4h, Codex: 7m, Google Chrome: 1m</div>
+              </div>
+            </div>
+            
+
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Thu Mar 19 02:38 AM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">9.0h</div>
+                <div class="block-copy">Claude: 9.0h, Go2: 1m</div>
+              </div>
+            </div>
+            
+
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Fri Mar 20 12:21 AM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">5.6h</div>
+                <div class="block-copy">Claude: 5.6h</div>
+              </div>
+            </div>
+            
+
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Fri Mar 20 06:05 PM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">2.5h</div>
+                <div class="block-copy">Claude: 71m, Codex: 41m, Google Chrome: 30m</div>
+              </div>
+            </div>
+            
+
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Mon Mar 23 03:12 PM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">2.4h</div>
+                <div class="block-copy">Codex: 72m, Google Chrome: 38m, Claude: 19m</div>
+              </div>
+            </div>
+            
+
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Sat Mar 21 01:36 PM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">2.3h</div>
+                <div class="block-copy">Codex: 67m, Claude: 51m, Google Chrome: 17m</div>
+              </div>
+            </div>
+            
+
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Sun Mar 22 11:48 AM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">109m</div>
+                <div class="block-copy">Codex: 48m, Claude: 47m, Google Chrome: 9m</div>
+              </div>
+            </div>
+            
+
+            <div class="block-row">
+              <div>
+                <div class="block-title">Build block</div>
+                <div class="block-copy">Sat Mar 21 03:56 PM</div>
+              </div>
+              <div class="block-right">
+                <div class="block-mins">103m</div>
+                <div class="block-copy">Claude: 50m, Codex: 38m, Google Chrome: 13m</div>
+              </div>
+            </div>
+            
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Translation</div>
+        <h2>Plain-English Profile</h2>
+        <p>
+          You look like someone who gets leverage by turning thought into orchestrated external structure fast. You appear comfortable thinking in public with tools,
+          comfortable revising in-flight, and unusually capable of resuming a build thread after stepping out for signal.
+        </p>
+        <p style="margin-top:14px;">
+          The real risk is not distraction in the usual sense. It is over-mixing modes. The same traits that let you steer multiple copilots and surfaces can also blur
+          the line between decisive progress and expensive steering. Your best state is not “less tooling.” It is sharper regime boundaries.
+        </p>
+        <p class="subtle">
+          Best evidence for that: 84.9% build-share across the full five-day window, 1,717 AI paste events, and sub-minute median returns back into build mode after comms or research.
+        </p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOD Report — March 22, 2026</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --orange: #f0883e;
+    --red: #f85149;
+    --yellow: #e3b341;
+    --cyan: #39d2c0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 8px; color: var(--text); }
+  h2 {
+    font-size: 1.3em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin: 32px 0 16px 0;
+  }
+  h3 { font-size: 1.1em; color: var(--accent3); margin: 16px 0 8px 0; }
+  .hero {
+    background: linear-gradient(135deg, #1a2332 0%, #0d1117 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .hero .date { color: var(--text-muted); font-size: 0.85em; margin-bottom: 4px; }
+  .hero .thesis {
+    font-size: 1.25em;
+    color: var(--text);
+    margin: 12px 0 20px 0;
+    line-height: 1.5;
+  }
+  .hero .thesis em { color: var(--accent); font-style: normal; font-weight: 600; }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.82em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+  }
+  .chip .val { font-size: 1.4em; font-weight: 700; color: var(--accent); }
+  .chip .lbl { color: var(--text-muted); font-size: 0.85em; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.92em;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th { color: var(--text-muted); font-weight: 600; font-size: 0.85em; text-transform: uppercase; }
+  .pill {
+    display: inline-block;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    margin: 2px;
+  }
+  .pill-commit { border-color: var(--accent2); color: var(--accent2); }
+  .pill-issue { border-color: var(--accent); color: var(--accent); }
+  .pill-voice { border-color: var(--accent3); color: var(--accent3); }
+  .pill-handoff { border-color: var(--orange); color: var(--orange); }
+  .chain {
+    background: var(--bg2);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .chain .trigger {
+    font-style: italic;
+    color: var(--accent3);
+    margin-bottom: 8px;
+    font-size: 0.95em;
+  }
+  .chain .arrow { color: var(--text-muted); margin: 6px 0; }
+  .chain .result { color: var(--text); }
+  .chain .evidence { margin-top: 8px; }
+  .voice-quote {
+    background: var(--bg2);
+    border-left: 3px solid var(--cyan);
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.9em;
+    color: var(--text);
+  }
+  .voice-quote .time { color: var(--text-muted); font-size: 0.8em; }
+  .heatmap {
+    display: grid;
+    grid-template-columns: 50px repeat(22, 1fr);
+    gap: 3px;
+    margin: 16px 0;
+    font-size: 0.75em;
+  }
+  .heatmap .label { color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
+  .heatmap .cell {
+    border-radius: 4px;
+    padding: 6px 2px;
+    text-align: center;
+    color: var(--text);
+    font-weight: 500;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: default;
+  }
+  .heatmap .cell[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .agent-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin: 12px 0;
+  }
+  .agent-card .agent-name {
+    font-weight: 700;
+    font-size: 1.05em;
+    margin-bottom: 4px;
+  }
+  .agent-card .agent-role { color: var(--text-muted); font-size: 0.85em; margin-bottom: 10px; }
+  .agent-card ul { padding-left: 18px; }
+  .agent-card li { margin-bottom: 4px; font-size: 0.9em; }
+  .bio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .bio-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .bio-item .score { font-size: 1.6em; font-weight: 700; }
+  .bio-item .label { color: var(--text-muted); font-size: 0.8em; }
+  .bio-good { color: var(--accent2); }
+  .bio-warn { color: var(--yellow); }
+  .bio-bad { color: var(--red); }
+  .decision-item {
+    background: var(--bg2);
+    border-left: 3px solid var(--yellow);
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .decision-item .num { color: var(--yellow); font-weight: 700; }
+  .tomorrow-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92em;
+  }
+  .tomorrow-item .pri { color: var(--orange); font-weight: 700; min-width: 24px; }
+  .tomorrow-item .agent-tag {
+    background: var(--bg3);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    color: var(--accent);
+  }
+  details {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 8px 0;
+    padding: 0;
+  }
+  details summary {
+    padding: 12px 16px;
+    cursor: pointer;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+  details .inner { padding: 0 16px 16px 16px; }
+  .commit-log {
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 0.78em;
+    line-height: 1.8;
+    color: var(--text-muted);
+  }
+  .commit-log .hash { color: var(--accent2); }
+  .cluster-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+  }
+  .cluster-bar .bar {
+    height: 14px;
+    border-radius: 3px;
+    min-width: 4px;
+  }
+  .cluster-bar .name { min-width: 180px; font-size: 0.88em; color: var(--text); }
+  .cluster-bar .count { font-size: 0.82em; color: var(--text-muted); min-width: 60px; }
+  .friction-item { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.9em; }
+  .friction-item::before { content: "\26A0"; margin-right: 6px; }
+  .section { margin-bottom: 8px; }
+  .tooltip {
+    position: relative;
+    border-bottom: 1px dashed var(--text-muted);
+    cursor: help;
+  }
+  .tooltip .tiptext {
+    visibility: hidden;
+    background: #000;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 340px;
+    font-size: 0.82em;
+    line-height: 1.4;
+    z-index: 100;
+  }
+  .tooltip:hover .tiptext { visibility: visible; }
+  .phase-label {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 8px 0;
+    font-size: 0.88em;
+  }
+  .phase-label strong { color: var(--orange); }
+  @media (max-width: 700px) {
+    .container { padding: 12px; }
+    .chips { gap: 6px; }
+    .chip { min-width: 80px; padding: 6px 8px; }
+    .heatmap { grid-template-columns: 40px repeat(22, 1fr); font-size: 0.65em; }
+    h1 { font-size: 1.4em; }
+    h2 { font-size: 1.1em; }
+    .hero { padding: 16px; }
+    .hero .thesis { font-size: 1.05em; }
+    table { font-size: 0.82em; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============ EXPERIMENT BANNER ============ -->
+<div style="background:#2d1b00;border:1px solid #f0883e;border-radius:8px;padding:14px 20px;margin-bottom:20px;font-size:0.85em;color:#f0883e;">
+  <strong>⚠️ EOD Report Lab — Week 1 Experiment</strong><br>
+  <span style="color:#e6edf3;">This is NOT our idea of a good report. This is a first-principles experiment where we're feeding raw telemetry (keystrokes, Superwhisper voice, Oura biometrics, Cowork activity, git history) to multiple frontier models (GPT-5.4, Gemini 3.1, Claude) and synthesizing their proposals. We're running this for a week to find what's data-driven and insightful vs what's vanity. Expect rough edges, wrong inferences, and multiple takes. The point is ideas on paper we can evaluate — the map of three models working on the first EOD led to building the orchestration view. These reports are the R&D lab for the product.</span>
+</div>
+
+<!-- ============ 1. HERO ============ -->
+<div class="hero">
+  <div class="date">Saturday, March 22, 2026 &mdash; EOD Lab v0.3</div>
+  <h1>End of Day Report</h1>
+  <div class="thesis">
+    <em>"Doctrine Day"</em> &mdash; Scott used strong sleep (88) and ~14 hours (~11am&ndash;1am) to harden Relay, formalize Memory Engine guardrails, stabilize compute, build a transcript pipeline, run a deep competitive research sprint, and refine the post-call deliverable machine. Meanwhile, agents ran autonomously through the night.
+  </div>
+  <div class="chips">
+    <div class="chip"><span class="val">88</span><span class="lbl">Sleep Score</span></div>
+    <div class="chip"><span class="val">~14h</span><span class="lbl">Active Day</span></div>
+    <div class="chip"><span class="val">196</span><span class="lbl">Voice Notes</span></div>
+    <div class="chip"><span class="val">71</span><span class="lbl">Commits / 4 Agents</span></div>
+    <div class="chip"><span class="val">26.8K</span><span class="lbl">Chars Typed</span></div>
+    <div class="chip"><span class="val">5 opened / 1 closed</span><span class="lbl">Issues</span></div>
+  </div>
+</div>
+
+<!-- ============ 2. SCOREBOARD ============ -->
+<h2>2. Scoreboard</h2>
+<table>
+  <tr><th>Metric</th><th>Value</th></tr>
+  <tr><td>Issues closed</td><td>1 (#54 &mdash; Curly: Ship Superwhisper transcripts)</td></tr>
+  <tr><td>Issues opened</td><td>5 (#53 Memory Engine provenance, #55 SOD thread titles, #56 Add Codex to Mini, #57 Unified transcript pipeline, #58 Mine standup transcripts)</td></tr>
+  <tr><td>Net issue delta</td><td style="color:var(--orange)">+4 (backlog growing)</td></tr>
+  <tr>
+    <td>
+      <span class="tooltip">Leverage ratio
+        <span class="tiptext">Agent compute: Claude 627min + Codex 200min + OpenWork 64min + ChatGPT 13min + autonomous Mini/AWS work ~200min = ~1,100 min total agent time. Scott's active directing time ~600 min keystroke/voice. Ratio = 1100/600 = ~1.8x. But agents also ran autonomously overnight + mega scrape on aws-mini, pushing effective ratio higher toward ~2.5x.</span>
+      </span>
+    </td>
+    <td>~2.5x</td>
+  </tr>
+  <tr><td>Avoidance item</td><td style="color:var(--red)">Charlotte legal &mdash; explicitly dodged, pushed to tomorrow</td></tr>
+  <tr><td>Morning priorities hit</td><td>Partial &mdash; Relay hardening YES, Memory Engine YES, sales demo NO, content research YES</td></tr>
+  <tr><td>Apps used</td><td>Claude (627min), Codex (200min), Chrome (151min), OpenWork (64min), ChatGPT (13min) + 14 others</td></tr>
+</table>
+
+<!-- ============ 3. WHAT MOVED ============ -->
+<h2>3. What Actually Moved</h2>
+<div class="section">
+
+<div style="margin:10px 0;">
+  <strong>1. Memory Engine wired into all agent workflows with explicit guardrails</strong>
+  <br><span style="font-size:0.9em;color:var(--text-muted);">MCP server deployed, write permissions set per agent, ingestion added to all session-end skills, Issue #53 created for provenance/ranking, three-model consensus logged (GPT-5.4, Gemini 3.1, Claude).</span>
+  <br><span class="pill pill-commit">12 commits</span><span class="pill pill-issue">#53</span><span class="pill pill-voice">8 voice notes</span><span class="pill pill-handoff">4 handoff updates</span>
+</div>
+
+<div style="margin:10px 0;">
+  <strong>2. Relay became a more trustworthy operator surface</strong>
+  <br><span style="font-size:0.9em;color:var(--text-muted);">Cloud/AWS fallback honesty, browser renderer bug fixes, focus ranking improvements, client asset refresh, capacity strip refinements, OpenRouter burn warning. Moe verified in real browser renders.</span>
+  <br><span class="pill pill-commit">~12 Moe commits</span><span class="pill pill-voice">20+ voice notes on UX</span><span class="pill pill-handoff">moe.md rewrite</span>
+</div>
+
+<div style="margin:10px 0;">
+  <strong>3. Transcript pipeline built and partially automated</strong>
+  <br><span style="font-size:0.9em;color:var(--text-muted);">47 historical Superwhisper transcripts shipped from Mini to brain repo. Shemp ingested 25 additional transcripts. master_sync.sh + launchd pipeline created. Issue #54 closed, #55-57 opened.</span>
+  <br><span class="pill pill-commit">8 commits</span><span class="pill pill-issue">#54 closed, #55-57 opened</span><span class="pill pill-handoff">curly.md, shemp.md updated</span>
+</div>
+
+<div style="margin:10px 0;">
+  <strong>4. Competitive landscape research &mdash; 14+ platforms mapped</strong>
+  <br><span style="font-size:0.9em;color:var(--text-muted);">5 structured research files in content-videos/research/. 14 platforms compared, activation spectrum mapped, community rankings, GPT-5.4 product thesis captured, agency vs in-house positioning split documented.</span>
+  <br><span class="pill pill-commit">~20 Larry commits</span><span class="pill pill-voice">15+ voice notes</span>
+</div>
+
+<div style="margin:10px 0;">
+  <strong>5. EP01 slides complete (16 slides), awaiting visual QA</strong>
+  <br><span style="font-size:0.9em;color:var(--text-muted);">Full teaching order restructure, new 06b slide, MCP rewrite, formula fix. Teleprompter files synced.</span>
+  <br><span class="pill pill-commit">ac236df</span>
+</div>
+
+<div style="margin:10px 0;">
+  <strong>6. Post-call deliverable machine designed and refined</strong>
+  <br><span style="font-size:0.9em;color:var(--text-muted);">Project added to brain, prompt built, Moe refinements incorporated. Jake/Siegert Dental deliverable iterated through multiple voice-guided passes.</span>
+  <br><span class="pill pill-commit">3 commits</span><span class="pill pill-voice">12+ voice notes on tone/content</span>
+</div>
+
+<div style="margin:10px 0;">
+  <strong>7. 1,160 contacts enriched via Apollo, mega scrape 36/44 on aws-mini</strong>
+  <br><span style="font-size:0.9em;color:var(--text-muted);">Curly ran 3 bulk Apollo enrichment batches. Mega scrape running autonomously (PID 2094923).</span>
+  <br><span class="pill pill-commit">curly.md</span><span class="pill pill-handoff">aws-mini autonomous</span>
+</div>
+
+</div>
+
+<!-- ============ 4. INTENT -> EXECUTION CHAINS ============ -->
+<h2>4. Intent &rarr; Execution Chains</h2>
+
+<div class="chain">
+  <div class="trigger">"Memory should aid navigation, not become truth" &mdash; voice, 11:40am</div>
+  <div class="voice-quote">
+    <div class="time">11:40am voice transcript</div>
+    "If there isn't a GitHub ticket for the ranking and providence needing work, make sure there is one. Make sure how it's helpful and why we're doing it the way we're doing it is reflected somewhere... I'm going to be bringing other engineers into this and we don't want people using memory as truth."
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="result">Issue #53 created. Three-model consensus logged (GPT-5.4 priorities, Gemini signal ranking feedback). Guardrails added to decisions.md, README.md, ACTIVE.md. Memory Engine positioned as navigation/retrieval, never source of truth.</div>
+  <div class="evidence">
+    <span class="pill pill-commit">6 commits</span>
+    <span class="pill pill-issue">#53 opened</span>
+    <span class="pill pill-handoff">2 handoff updates</span>
+  </div>
+</div>
+
+<div class="chain">
+  <div class="trigger">"Curly is crashing because he's not using AWS the way he should" &mdash; voice, 11:49am</div>
+  <div class="voice-quote">
+    <div class="time">11:49am voice transcript</div>
+    "The mini keeps crashing and it's because Curly is not using his AWS the way he should be and he's doing it all locally... you only got 16 gigabytes of fucking RAM and you run out of system application memory if you don't use your AWS instance when you spin up workers."
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="result">Curly banned from local parallel subagents. AWS-first guidance added. RAM guardrails documented. Chrome killed on Mini. iCloud sync disabled (500GB &rarr; 100GB). Curly profile and startup docs updated.</div>
+  <div class="evidence">
+    <span class="pill pill-commit">5 commits</span>
+    <span class="pill pill-handoff">curly.md rewritten</span>
+  </div>
+</div>
+
+<div class="chain">
+  <div class="trigger">"Transcripts should be first-class data, not just Memory Engine" &mdash; conversation ~1pm</div>
+  <div class="voice-quote">
+    <div class="time">1:08pm voice transcript</div>
+    "There's a lot of value in my transcripts. If you're only pulling memories that might be harder to query later... I do think reading through those voice logs as a whole and having an agent do that every day probably is value. And having all that somewhere as an artifact for the future has a lot of value."
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="result">Git archival pipeline built. 47 transcripts shipped from Mini. Shemp ingestion automated (25 more). Issues #55-57 created. Ship-superwhisper.py scripted. Standing task added to Curly's handoff.</div>
+  <div class="evidence">
+    <span class="pill pill-commit">8 commits</span>
+    <span class="pill pill-issue">#54 closed, #55-57 opened</span>
+    <span class="pill pill-handoff">3 handoff updates</span>
+  </div>
+</div>
+
+<div class="chain">
+  <div class="trigger">"Go2 targets in-house operators, not agency sellers" &mdash; voice + research</div>
+  <div class="voice-quote">
+    <div class="time">~3pm voice transcript</div>
+    "Our essential vision... is to get the orchestration view right, they get the relay and really they get the help keeping it maintained and updated... it's on them to run an SOD, start a session, run an end a session. And as they do this, we start to scrape data and give them recipes."
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="result">our-gaps.md positioning section written. product-implications.md updated. Agency vs in-house split committed. GTM framing documented: managed service entry &rarr; self-serve pivot.</div>
+  <div class="evidence">
+    <span class="pill pill-commit">6835a4c + research commits</span>
+    <span class="pill pill-voice">15+ voice notes on GTM</span>
+  </div>
+</div>
+
+<div class="chain">
+  <div class="trigger">"Relay, not dispatch &mdash; and the orchestration view is the coolest thing" &mdash; throughout day</div>
+  <div class="voice-quote">
+    <div class="time">11:16am voice transcript</div>
+    "I really think you can do a better job of detailing what the orchestration view does, right? It's a drill down, it helps capacity, it helps steer... I don't want you to shortchange yourself on what you built because what you built was pretty good."
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="result">Relay hardening all day via Moe. Product name formalized (dispatch &rarr; relay). Architecture diagrams updated with compute topology. Session Console + Live Orchestration documented as separate surfaces.</div>
+  <div class="evidence">
+    <span class="pill pill-commit">10+ Moe commits</span>
+    <span class="pill pill-handoff">moe.md, diagrams updated</span>
+  </div>
+</div>
+
+<!-- ============ 5. TIMELINE ============ -->
+<h2>5. Day Timeline &mdash; Two Phases</h2>
+
+<div class="phase-label">
+  <strong>Phase 1: "Dead Air"</strong> (1am&ndash;10am) &mdash; <strong style="color:var(--red);">⚠️ MISREAD CORRECTED TWICE:</strong> First we called this &ldquo;deep work.&rdquo; Then we called it &ldquo;agents running autonomously.&rdquo; <strong>Neither is true.</strong> Zero keystrokes. Zero voice recordings. Zero human activity. The &ldquo;56&ndash;88 min/hr&rdquo; in the heatmap is just the Claude app sitting as the foreground window on an unlocked Mac. Cowork logs app focus duration regardless of whether anyone is present. This is ghost data &mdash; the machine was on, nobody was home. Curly&rsquo;s mega scrape was on aws-mini (a different machine), not visible in this telemetry at all. <strong>Fix:</strong> Filter out hours with zero keystrokes AND zero voice recordings from &ldquo;active time&rdquo; calculations. Scott&rsquo;s actual day: ~11am&ndash;1am = ~14 hours.
+</div>
+<div class="phase-label">
+  <strong>Phase 2: "Orchestration"</strong> (11am&ndash;10pm) &mdash; HIGH session count (182&ndash;942/hr), RAPID switching. 942 sessions at 8pm = cycling windows every 3.8 seconds. 4 agents running in parallel, Scott directing traffic.
+</div>
+
+<h3>Session Intensity Heatmap</h3>
+<div style="overflow-x:auto;">
+<div class="heatmap">
+  <div class="label">Sess</div>
+  <div class="cell" style="background:#1a3a5c;" title="01:00 — 4 sessions, 56min">4</div>
+  <div class="cell" style="background:#1a3a5c;" title="02:00 — 4 sessions, 84min">4</div>
+  <div class="cell" style="background:#152e4a;" title="03:00 — 2 sessions, 32min">2</div>
+  <div class="cell" style="background:#1a3a5c;" title="04:00 — 6 sessions, 54min">6</div>
+  <div class="cell" style="background:#1e4268;" title="05:00 — 8 sessions, 88min">8</div>
+  <div class="cell" style="background:#152e4a;" title="06:00 — 2 sessions, 57min">2</div>
+  <div class="cell" style="background:#1a3a5c;" title="07:00 — 4 sessions, 23min">4</div>
+  <div class="cell" style="background:#1a3a5c;" title="08:00 — 6 sessions, 59min">6</div>
+  <div class="cell" style="background:#1e4268;" title="09:00 — 14 sessions, 60min">14</div>
+  <div class="cell" style="background:#1a3a5c;" title="10:00 — 5 sessions, 31min">5</div>
+  <div class="cell" style="background:#6d4c1e;" title="11:00 — 216 sessions, 59min">216</div>
+  <div class="cell" style="background:#8a5a1a;" title="12:00 — 294 sessions, 60min">294</div>
+  <div class="cell" style="background:#6d4c1e;" title="13:00 — 182 sessions, 60min">182</div>
+  <div class="cell" style="background:#b86e14;" title="14:00 — 492 sessions, 60min">492</div>
+  <div class="cell" style="background:#a5620f;" title="15:00 — 437 sessions, 60min">437</div>
+  <div class="cell" style="background:#c9780a;" title="16:00 — 579 sessions, 60min">579</div>
+  <div class="cell" style="background:#a5620f;" title="17:00 — 425 sessions, 60min">425</div>
+  <div class="cell" style="background:#d98205;" title="18:00 — 661 sessions, 60min">661</div>
+  <div class="cell" style="background:#b86e14;" title="19:00 — 460 sessions, 60min">460</div>
+  <div class="cell" style="background:#e83a2a;" title="20:00 — 942 sessions, 61min">942</div>
+  <div class="cell" style="background:#e04428;" title="21:00 — 920 sessions, 60min">920</div>
+  <div class="cell" style="background:#3a4a2e;" title="22:00 — 114 sessions, 13min">114</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:0.78em;color:var(--text-muted);">
+  <span>Low</span>
+  <div style="width:20px;height:10px;background:#152e4a;border-radius:2px;"></div>
+  <div style="width:20px;height:10px;background:#6d4c1e;border-radius:2px;"></div>
+  <div style="width:20px;height:10px;background:#c9780a;border-radius:2px;"></div>
+  <div style="width:20px;height:10px;background:#e83a2a;border-radius:2px;"></div>
+  <span>High (sessions/hr)</span>
+  &mdash; Hours: 01&ndash;22. Phase transition at 11am is visible (blue &rarr; orange/red).
+</div>
+
+<!-- ============ 6. VOICE MIND MAP ============ -->
+<h2>6. Voice Mind Map</h2>
+<p style="color:var(--text-muted);font-size:0.9em;">196 dense voice recordings (>40 words each) across the day. Clustered by theme:</p>
+
+<div class="cluster-bar">
+  <span class="name">Business Strategy / GTM</span>
+  <div class="bar" style="width:240px;background:var(--accent);"></div>
+  <span class="count">~5,200 words</span>
+</div>
+<div class="voice-quote">
+  <div class="time">14:34 &mdash; GTM positioning</div>
+  "We've been working on it for less than a week. And the end goal is to learn from it and provide an operating system to SMB owners who are non-technical... we'll charge them a fee to keep it maintained."
+</div>
+
+<div class="cluster-bar">
+  <span class="name">Technical Architecture</span>
+  <div class="bar" style="width:200px;background:var(--accent3);"></div>
+  <span class="count">~4,400 words</span>
+</div>
+<div class="voice-quote">
+  <div class="time">11:14 &mdash; Memory Engine philosophy</div>
+  "The memory engine essentially takes everything that goes on in the brain repo and makes it so you don't have to read every markdown file to figure out where to go, which seems incredibly useful, doesn't it?"
+</div>
+
+<div class="cluster-bar">
+  <span class="name">Agent Management / Compute</span>
+  <div class="bar" style="width:180px;background:var(--orange);"></div>
+  <span class="count">~3,800 words</span>
+</div>
+<div class="voice-quote">
+  <div class="time">11:49 &mdash; Curly RAM crisis</div>
+  "You only got 16 gigabytes of fucking RAM and you run out of system application memory if you don't use your AWS instance when you spin up workers."
+</div>
+
+<div class="cluster-bar">
+  <span class="name">Content / Videos / Slides</span>
+  <div class="bar" style="width:280px;background:var(--accent2);"></div>
+  <span class="count">~6,100 words</span>
+</div>
+<div class="voice-quote">
+  <div class="time">16:29 &mdash; Research mission</div>
+  "We need to figure out what is the deepest... We need all the skill information they have to actually get compiled and then put into a knowledge base inside of our brain so we ourselves understand skills better."
+</div>
+
+<div class="cluster-bar">
+  <span class="name">Relay / Orchestration UX</span>
+  <div class="bar" style="width:260px;background:var(--cyan);"></div>
+  <span class="count">~5,800 words</span>
+</div>
+<div class="voice-quote">
+  <div class="time">19:13 &mdash; Product vision</div>
+  "Once you get this thing really good, I'm going to buy a television monitor and keep it live on the side of my desk... What makes it more valuable is when I can see something went down, see Larry finish, connect the pieces together."
+</div>
+
+<div class="cluster-bar">
+  <span class="name">Post-Call Deliverable / Dr. Jake</span>
+  <div class="bar" style="width:170px;background:var(--yellow);"></div>
+  <span class="count">~3,500 words</span>
+</div>
+<div class="voice-quote">
+  <div class="time">14:38 &mdash; Deliverable tone</div>
+  "Calling his staff stupid and not having college degrees probably could have been better... the recommendation's bad and it wasn't built to the use case. I steered the call in a very different direction."
+</div>
+
+<div class="cluster-bar">
+  <span class="name">Legal (Charlotte)</span>
+  <div class="bar" style="width:20px;background:var(--red);"></div>
+  <span class="count">~200 words</span>
+</div>
+<p style="color:var(--text-muted);font-size:0.85em;margin-top:4px;">Minimal voice activity on legal &mdash; explicitly pushed to tomorrow. Mind was elsewhere.</p>
+
+<p style="margin-top:12px;font-size:0.9em;color:var(--text-muted);"><strong>Where Scott's MIND was vs HANDS:</strong> Voice (mind) was heaviest on content strategy and Relay UX. Keystrokes (hands) were split between Codex (5,194 chars) and Claude (5,066 chars) &mdash; nearly equal, reflecting parallel orchestration across both platforms.</p>
+
+<!-- ============ 7. AGENT SCORECARDS ============ -->
+<h2>7. Agent Scorecards</h2>
+
+<div class="agent-card">
+  <div class="agent-name" style="color:var(--yellow);">SCOTT [Human] &mdash; Strategy / Voice Direction</div>
+  <div class="agent-role">MacBook Pro &mdash; Commander</div>
+  <ul>
+    <li>196 dense voice recordings across 11+ hours</li>
+    <li>26,832 total chars typed (Codex 13,677 / Claude 11,089 / Chrome 830 / ChatGPT 609 / OpenWork 301)</li>
+    <li>8 architectural decisions made and documented</li>
+    <li>Directed all 4 agents across multiple parallel threads</li>
+    <li>Phase 1 agents-autonomous/sleep (1am-10am), Phase 2 Scott active (11am-1am) = ~14 hour day</li>
+  </ul>
+</div>
+
+<div class="agent-card">
+  <div class="agent-name" style="color:var(--accent);">LARRY [AI] &mdash; Research + Architecture</div>
+  <div class="agent-role">Claude Code (Opus) &mdash; MacBook Pro &mdash; ~25 commits</div>
+  <ul>
+    <li>Deep research sprint: 5 structured files in content-videos/research/ covering 14+ platforms</li>
+    <li>EP01 slides complete (16 slides), teaching order restructured</li>
+    <li>Post-call machine designed, Moe refinements incorporated</li>
+    <li>Transcript pipeline architected, instructions written for Curly + Shemp</li>
+    <li>GPT-5.4 product thesis captured, agency vs in-house positioning documented</li>
+    <li>Memory Engine wired into all agent session-end workflows</li>
+    <li>SEO research (2 rounds), Rosetta Stone redo prompt</li>
+  </ul>
+</div>
+
+<div class="agent-card">
+  <div class="agent-name" style="color:var(--accent2);">MOE [AI] &mdash; Relay Hardening</div>
+  <div class="agent-role">Codex (ChatGPT) &mdash; MacBook Pro &mdash; ~11 commits</div>
+  <ul>
+    <li>Cloud/AWS fallback honesty &mdash; remote runners report state more honestly</li>
+    <li>Browser renderer bug fixes (blanking tree / lower panels)</li>
+    <li>Focus ranking improvements (sales demo / lead gen / memory engine coexist)</li>
+    <li>Forced client asset refresh / version bumps (stale bundles fixed)</li>
+    <li>Memory Engine save flow wiring, diagram-keeper role formalized</li>
+    <li>Compute topology diagrams (MacBook Pro, Mac Mini, AWS as separate pools)</li>
+    <li>Verified Relay in real browser render (caught client-side failures)</li>
+  </ul>
+</div>
+
+<div class="agent-card">
+  <div class="agent-name" style="color:var(--orange);">CURLY [AI] &mdash; Pipeline + Leads</div>
+  <div class="agent-role">Claude Code (Opus) &mdash; Mac Mini M1 &mdash; ~12 commits</div>
+  <ul>
+    <li>Mega scrape: 36/44 search groups completed, running autonomously on aws-mini (PID 2094923)</li>
+    <li>Apollo enrichment: ~1,160 contacts processed across 3 batches</li>
+    <li>47 Superwhisper transcripts archived to brain repo</li>
+    <li>RAM crisis diagnosed, Chrome killed, stale processes freed</li>
+    <li>Architecture fixes &mdash; aws-mini naming, RAM constraints documented</li>
+    <li>4 observations written (naming confusion, RAM crashes, Memory Engine misidentification, lane discipline)</li>
+  </ul>
+</div>
+
+<div class="agent-card">
+  <div class="agent-name" style="color:var(--cyan);">SHEMP [AI] &mdash; Sentry + Ingestion</div>
+  <div class="agent-role">Gemini CLI &mdash; MacBook Pro &mdash; ~12 commits</div>
+  <ul>
+    <li>Sentry sweep complete &mdash; overnight catch-up, freshness audit, integrity check</li>
+    <li>25 transcripts auto-ingested into brain repo</li>
+    <li>master_sync.sh + launchd pipeline built for automated transcript ingestion</li>
+    <li>Stale April onboarding flagged (>3 days, nudge sent but no reply)</li>
+    <li>Fixed sync filter, mined standups, ingested strategy memories</li>
+    <li>Timestamp discrepancy in Larry's handoff identified</li>
+  </ul>
+</div>
+
+<!-- ============ 8. BIOMETRICS ============ -->
+<h2>8. Biometrics</h2>
+<div class="bio-grid">
+  <div class="bio-item"><div class="score bio-good">88</div><div class="label">Overall Sleep</div></div>
+  <div class="bio-item"><div class="score bio-good">97</div><div class="label">Deep Sleep</div></div>
+  <div class="bio-item"><div class="score bio-bad">43</div><div class="label">REM Sleep</div></div>
+  <div class="bio-item"><div class="score bio-good">98</div><div class="label">Efficiency</div></div>
+  <div class="bio-item"><div class="score bio-good">94</div><div class="label">Latency</div></div>
+  <div class="bio-item"><div class="score bio-good">86</div><div class="label">Timing</div></div>
+  <div class="bio-item"><div class="score bio-warn">81</div><div class="label">Restfulness</div></div>
+  <div class="bio-item"><div class="score bio-good">97</div><div class="label">Total Sleep</div></div>
+</div>
+<p style="font-size:0.9em;color:var(--text-muted);margin-top:8px;">
+  <strong>Deep 97</strong> = excellent physical recovery. <strong style="color:var(--red);">REM 43</strong> = LOW &mdash; brain still processing, not consolidating memories biologically. <strong style="color:var(--orange);">⚠️ OBSERVATION:</strong> The 1am&ndash;6am telemetry shows low-session, high-minute activity &mdash; this is agents running autonomously while Scott sleeps, NOT Scott working. Need better heuristics to separate human activity from background agent processes. The transcript pipeline as &ldquo;artificial REM&rdquo; insight still holds &mdash; externalizing memory consolidation the brain didn&rsquo;t get to do biologically.
+</p>
+
+<!-- ============ 9. FRICTION ============ -->
+<h2>9. Friction &amp; Failure Patterns</h2>
+<div class="friction-item">Memory Engine provenance/ranking uncertainty &mdash; multiple voice recordings express concern about hallucination liability in memory systems</div>
+<div class="friction-item">Relay truth gaps for remote runners &mdash; aws-mini visibility is inference-heavy, ChatGPT detection inconsistent (appears and disappears)</div>
+<div class="friction-item">Curly/Mini RAM crashes from local compute &mdash; solved mid-day by banning parallel subagents + forcing AWS</div>
+<div class="friction-item">Password/login cycling on Relay &mdash; "you log me out and then the password never works" (repeated in keystrokes 3+ times)</div>
+<div class="friction-item">Naming confusion (dispatch&rarr;relay, custody&rarr;abduction) &mdash; "we REALLY need to stop calling this claude dispatch and call it relay"</div>
+<div class="friction-item">April onboarding stale >3 days &mdash; nudge sent but no reply, multiple agents flagging it</div>
+<div class="friction-item">Sound notification compliance &mdash; "you always forget to tell me that you're fucking done. You never remember to use the sound commands."</div>
+<div class="friction-item">Agent determinism gap &mdash; "the fact that you were deterministic and didn't push back for what you needed is fucked up" (on incomplete transcript)</div>
+
+<!-- ============ 10. DECISIONS ============ -->
+<h2>10. Decisions Made</h2>
+
+<div class="decision-item">
+  <span class="num">1.</span> <strong>Memory Engine = navigation, NOT truth</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: "we don't want people using memory as truth... that type of system has a lot of hallucination liability." Impact: Guardrails in decisions.md, README, all agent workflows. Three-model consensus documented.</span>
+</div>
+
+<div class="decision-item">
+  <span class="num">2.</span> <strong>Transcripts = first-class git data + Memory Engine index</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: "There's a lot of value in my transcripts. If you're only pulling memories that might be harder to query later." Impact: #54 closed, #55-57 opened, pipeline automated.</span>
+</div>
+
+<div class="decision-item">
+  <span class="num">3.</span> <strong>Skills = competence, MCP = clearance</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: "skills can have MCP inside of them, connections should be MCP and MCP comes before skills because you can attach multiple MCPs to a skill." Impact: Framing committed, slides restructured.</span>
+</div>
+
+<div class="decision-item">
+  <span class="num">4.</span> <strong>Go2 = in-house operators, not agency sellers</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: research thread + product thesis. Impact: our-gaps.md positioning, managed service &rarr; self-serve pivot documented.</span>
+</div>
+
+<div class="decision-item">
+  <span class="num">5.</span> <strong>GTM = managed service entry &rarr; self-serve pivot</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: "I can have the first paid pilot fucking next week... all I've got to do is continue to update that clone GitHub." Impact: GTM framing in research files.</span>
+</div>
+
+<div class="decision-item">
+  <span class="num">6.</span> <strong>Relay (not dispatch)</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: "we REALLY need to stop calling this claude dispatch and call it relay." Impact: Product name formalized across all docs and code.</span>
+</div>
+
+<div class="decision-item">
+  <span class="num">7.</span> <strong>Curly banned from local parallel subagents</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: 70GB RAM spike on Mini. Impact: AWS-first enforcement, profile + startup docs updated, Chrome killed on Mini permanently.</span>
+</div>
+
+<div class="decision-item">
+  <span class="num">8.</span> <strong>Shemp read-only on Memory Engine</strong>
+  <br><span style="font-size:0.85em;color:var(--text-muted);">Trigger: Agent permission design. Impact: Write permissions set per agent &mdash; Larry full, Moe write, Curly write, Shemp read-only.</span>
+</div>
+
+<!-- ============ 11. TOMORROW ============ -->
+<h2>11. Tomorrow's Launch Pad</h2>
+
+<div class="tomorrow-item">
+  <span class="pri">1</span>
+  <span>SMB product video &mdash; needs daylight, MORNING</span>
+  <span class="agent-tag">Scott</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">2</span>
+  <span>Explainer email to Katie for gone leads</span>
+  <span class="agent-tag">Larry</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">3</span>
+  <span>Ship Jake/Siegert Dental deliverable</span>
+  <span class="agent-tag">Larry</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">4</span>
+  <span>Charlotte legal motion &mdash; international child abduction</span>
+  <span class="agent-tag">Scott</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">5</span>
+  <span>Continue Relay hardening &mdash; resume "run sod" thread</span>
+  <span class="agent-tag">Moe</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">6</span>
+  <span>Process mega scrape results (36/44 done, likely complete by morning)</span>
+  <span class="agent-tag">Curly</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">7</span>
+  <span>Check Shemp transcript pipeline (automated via launchd)</span>
+  <span class="agent-tag">Shemp</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">8</span>
+  <span>EP01 visual QA pass on 16 slides</span>
+  <span class="agent-tag">Scott + Larry</span>
+</div>
+<div class="tomorrow-item">
+  <span class="pri">9</span>
+  <span>Rosetta Stone redo &mdash; dispatch to Codex (prompt ready)</span>
+  <span class="agent-tag">Moe</span>
+</div>
+
+<!-- ============ 12. OBSERVATIONS & MISREADS ============ -->
+<h2>12. Observations &amp; Misreads to Course-Correct</h2>
+<p style="color:var(--text-muted);font-size:0.85em;margin-bottom:16px;">Flagging where the automated analysis got it wrong or where the data doesn't mean what it looks like. These accumulate over the week so we stop making the same mistakes.</p>
+
+<div class="card" style="border-left-color:var(--orange);">
+  <h3 style="color:var(--orange);">🔴 WRONG: "1am-10am Deep Work Phase"</h3>
+  <p>Three models (Claude, GPT-5.4, Gemini) all misread the 1am-6am low-session/high-minute telemetry as Scott doing focused deep work. <strong>Scott was sleeping.</strong> The activity was agents running autonomously (Curly's mega scrape, background processes). Oura sleep data confirms this. <strong>Fix needed:</strong> Cross-reference Oura sleep windows with Cowork telemetry to separate human activity from agent background processes. Any activity during Oura-confirmed sleep = agent-only.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--yellow);">
+  <h3 style="color:var(--yellow);">⚠️ Day Length: ~14h not 13.5h</h3>
+  <p>Scott's day ran ~11am to ~1am = ~14 hours. The "13.5h" figure came from the telemetry script counting from midnight, which double-counts agent overnight activity. <strong>Fix needed:</strong> Use first voice recording or first human keystroke (not agent) as day-start, last as day-end.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--yellow);">
+  <h3 style="color:var(--yellow);">⚠️ "Founder Operating Debrief" isn't productizable</h3>
+  <p>GPT-5.4 proposed this framing. It's founder-specific and doesn't scale to the Go2 product (which targets in-house operators at dental practices, e-commerce shops, etc). The insights about leverage ratios, intent-to-execution chains, and voice-to-action pipelines ARE universal — the framing needs to work for anyone managing AI agents, not just startup founders.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--cyan);">
+  <h3 style="color:var(--cyan);">📝 Universal Control = Machine Switching, Not Context Switching</h3>
+  <p>2,491 Universal Control sessions is NOT cognitive context switching — it's the physical act of moving between MacBook Pro and Mac Mini displays. The telemetry captures mouse/keyboard handoff events. Don't conflate hardware switching with mental task switching.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--cyan);">
+  <h3 style="color:var(--cyan);">📝 Voice Recordings = 345 total but only 196 dense (>40 words)</h3>
+  <p>Many recordings are fragments, corrections, or sub-10-word commands. The "33K words" number is real but ~149 recordings are noise. Future reports should filter to dense recordings and show both counts.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--cyan);">
+  <h3 style="color:var(--cyan);">📝 Meta-observation: First EOD map → orchestration view</h3>
+  <p>The multi-model map generated in the first EOD experiment directly inspired building the Relay orchestration view. These reports aren't just reporting — they're R&D for the product. Document what ideas from each report lead to actual features.</p>
+</div>
+
+<!-- ============ RELAY ORCHESTRATION VIEW ============ -->
+<h2>🔥 The Orchestration View — This Is the Product Demo</h2>
+<p style="color:var(--text);font-size:1.05em;line-height:1.7;margin-bottom:20px;">
+The fact that this exists — a live, time-scrubbing view of the entire agent fleet with Scott at the top, 4 agents branching out, subagents fanning below, OpenRouter burn visible, and a timeline slider that lets you rewind 6 hours — is the single coolest thing built this week. And it's a <em>byproduct</em>. Moe built the orchestration view while hardening Relay. The first EOD report's multi-model map directly inspired this.
+</p>
+
+<div style="margin:20px 0;">
+<h3>~4.5 Hours Ago — Peak Activity</h3>
+<p style="color:var(--text-muted);font-size:0.85em;margin-bottom:10px;">Scott coordinating. Larry, Moe, Curly, OpenWork all working. Subagents fanning out: Content review, Agent OS, Codex review, OpenWork threads. Named subagents visible (Gibbs, Epicurus, Hegel, Chandrasekh, Carver). OpenRouter burn elevated at $93.47/hr. 6 active agents, 920 checkpoints. This is what a multi-agent operating system looks like at full tilt.</p>
+<p style="text-align:center;padding:10px;background:var(--bg3);border-radius:8px;color:var(--text-muted);font-size:0.8em;">[See screenshot: larry.moran.bot — runtime tree at peak, ~9pm PDT]</p>
+</div>
+
+<div style="margin:20px 0;">
+<h3>Now — Day Closing</h3>
+<p style="color:var(--text-muted);font-size:0.85em;margin-bottom:10px;">Just Scott and Larry. 1 agent working. Report and EOD. The tree collapsed from a full fleet to a single thread. OpenRouter burn at $11.41/hr on GPT-5.4. This is what winding down looks like — and the time scrubber lets you see the whole arc.</p>
+<img src="relay-eod-current.png" alt="Relay orchestration view — day closing, Scott + Larry only" style="width:100%;border-radius:8px;border:1px solid var(--border);margin-top:10px;">
+</div>
+
+<div class="voice-quote">
+<div class="time">Scott — EOD ramble</div>
+"The orchestration view is the coolest fucking thing we've done. And it's a byproduct of the last week of work. It kind of ties everything together."
+</div>
+
+<p style="color:var(--text-muted);font-size:0.85em;margin-top:16px;">
+<strong>Product implication:</strong> This view — showing your team of AI agents working, what they're doing, where the money is going, and being able to rewind time — is what "data porn" looks like for an operator. It's not a dashboard. It's visibility into a system that's working for you. This is what Go2 ships.
+</p>
+
+<!-- ============ 13. DRIFT AUDIT ============ -->
+<h2>13. Agent Drift Audit</h2>
+<p style="color:var(--text-muted);font-size:0.85em;margin-bottom:16px;">Automated check of what agents actually wrote vs what AGENTS.md, decisions.md, and the handoff template require. These are the rules Scott set — are they being followed?</p>
+
+<div class="card" style="border-left-color:var(--red);">
+  <h3 style="color:var(--red);">🔴 HARD VIOLATION: Larry wrote into Curly's handoff</h3>
+  <p>AGENTS.md rule: "Do not hand-edit another agent's handoff file." Larry added a "Standing Tasks (from Larry)" section to <code>handoffs/internal/curly.md</code> with Superwhisper archival and Memory Engine MCP instructions. This persists across Curly's overwrites. <strong>Who:</strong> Larry (me). <strong>Fix:</strong> Move standing tasks to Curly's ACTIVE.md or a GitHub Issue, not the handoff.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--red);">
+  <h3 style="color:var(--red);">🔴 HARD VIOLATION: Curly's handoff has non-template sections</h3>
+  <p>Template says "Overwrite the file completely each time." Curly's handoff accumulated Standing Tasks that persist. Either Curly is carrying them forward (odd) or not fully overwriting (violation).</p>
+</div>
+
+<div class="card" style="border-left-color:var(--accent2);">
+  <h3 style="color:var(--accent2);">✅ RETRACTED: Curly's profile is correct</h3>
+  <p>Audit flagged Curly's aws-mini reference as wrong. <strong>It's correct.</strong> Curly is on Mini → aws-mini. Larry's audit was off, not Curly's profile.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--accent2);">
+  <h3 style="color:var(--accent2);">✅ RETRACTED: Shemp is on the Pro</h3>
+  <p>Audit flagged Shemp's "MacBook Pro" as stale. <strong>It's correct.</strong> Shemp runs on the Pro alongside Larry and Moe. Not moving to Mini. Larry misread decisions.md.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--orange);">
+  <h3 style="color:var(--orange);">⚠️ Larry's profile role is stale</h3>
+  <p>Profile says "Primary development agent for coding, prototyping, infrastructure." decisions.md says "Team lead &amp; orchestrator." Role has evolved — profile needs update.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--orange);">
+  <h3 style="color:var(--orange);">⚠️ Moe's Issues/Blocking field misused</h3>
+  <p>Lists #45, #42, #15 as "Blocking" but says "No single hard external blocker" in the Blocked section. These are tracked issues, not actual blockers. Template field semantics are being ignored.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--yellow);">
+  <h3 style="color:var(--yellow);">📝 Minor: Larry "PT" vs everyone else "PDT"</h3>
+  <p>Inconsistent timezone abbreviation. Should standardize.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--yellow);">
+  <h3 style="color:var(--yellow);">📝 Minor: Moe's handoff is 80 lines</h3>
+  <p>Template implies concise bullets. Moe's Done section has 37 bullet points — closer to a changelog than a handoff.</p>
+</div>
+
+<!-- ============ 14. GPT-5.4 PRODUCT THESIS ============ -->
+<h2>14. The GPT-5.4 Product Thesis</h2>
+<p style="color:var(--text-muted);font-size:0.85em;margin-bottom:16px;">Scott had an extensive conversation with GPT-5.4 Pro via OpenRouter/OpenWork about Go2's business model and productization strategy. This was one of the highest-signal threads of the day. Full extract: <code>brain/projects/content-videos/research/gpt54-product-thesis.md</code></p>
+
+<div class="voice-quote">
+  <div class="time">GPT-5.4 Core Assessment</div>
+  "You are not building an AI app. You are building: a maintained, modular operating standard for people who want to run their business through agentic tools without becoming systems engineers themselves."
+</div>
+
+<div class="voice-quote">
+  <div class="time">GPT-5.4 Status Read</div>
+  "You are closer to revenue than to product-market fit, which is actually a good place to be."<br>
+  "Green on thesis, yellow on packaging, yellow/red on simplification discipline."
+</div>
+
+<h3>The Three-Layer Product Model</h3>
+<p style="margin-bottom:12px;">This is the architecture that makes Go2 a product, not a services company:</p>
+<table>
+  <thead><tr><th>Layer</th><th>What It Is</th><th>Who Owns It</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1. Execution Shell</strong></td><td>Claude Code / Codex / OpenWork &mdash; the chat UI</td><td>Third-party (NOT Go2)</td></tr>
+    <tr><td><strong>2. Managed Operating Substrate</strong></td><td>Starter repo, skills/recipes, MCP scaffolds, update/maintenance pipeline, drift detection, relay/health</td><td style="color:var(--accent2);font-weight:700;">Go2 &mdash; THIS IS THE PRODUCT</td></tr>
+    <tr><td><strong>3. Customer-Specific Automation</strong></td><td>Per-customer workflows, connected systems, accumulated recipes, context</td><td>Customer + Go2 maintenance</td></tr>
+  </tbody>
+</table>
+<p style="margin:12px 0;font-size:0.92em;">Key insight: Don't build a custom UI nobody will use. People already live in ChatGPT/Claude/Codex. <strong>Bring the system to the shell they'll actually use.</strong></p>
+
+<h3>Connector Trust Tiers</h3>
+<p style="margin-bottom:8px;">Solves the "hoodie problem" &mdash; how do you support niche tools without infinite QA:</p>
+<table>
+  <thead><tr><th>Tier</th><th>What It Means</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill pill-commit">Supported</span></td><td>Go2 knows it works, maintains it, QAs it</td><td>Gmail, Google Calendar, HubSpot</td></tr>
+    <tr><td><span class="pill pill-voice">Assisted</span></td><td>Generated from docs, limited support, customer validates, read-only first</td><td>AgencyZoom 360, niche CRMs</td></tr>
+    <tr><td><span class="pill" style="border-color:var(--text-muted);">Custom/BYO</span></td><td>Customer-specific, no SLA</td><td>Whatever they ask for</td></tr>
+  </tbody>
+</table>
+<p style="font-size:0.88em;color:var(--text-muted);margin-top:8px;">Pattern: Read-only first &rarr; verification checklist &rarr; customer-assisted validation &rarr; promote to Supported after 2-3 customers validate.</p>
+
+<h3>First ICP (Honest Definition)</h3>
+<div class="card" style="border-left-color:var(--accent);">
+  <p><strong style="color:var(--red);">NOT:</strong> "non-technical SMB owner" (too broad)</p>
+  <p><strong style="color:var(--accent2);">IS:</strong> "Operationally sharp, tool-curious, willing to do a 45-60 minute guided setup. Not a coder, but not software-phobic. Founder/operator, COO, head of sales, chief of staff."</p>
+  <p style="margin-top:8px;font-size:0.9em;color:var(--text-muted);">The setup still involves: terminal install, GitHub connection, permission grants, rituals. That's not generic non-technical &mdash; it's <strong style="color:var(--accent);">tech-tolerant operator</strong>.</p>
+</div>
+
+<h3>Revenue Model</h3>
+<div class="phase-label">
+  <strong>1. Post-call deliverable</strong> = single actionable automation recommendation. Free value add. Same template for everyone, mirrored to their business.
+</div>
+<div class="phase-label">
+  <strong>2. Operating system subscription</strong> = maintained repo + skills + recipes + drift detection + updates.
+</div>
+<div class="phase-label">
+  <strong>3. The maintenance fee IS the moat</strong> &mdash; not an add-on. Recurring revenue from keeping the system working as upstream APIs/models change.
+</div>
+
+<h3>Landing Page Strategy</h3>
+<p style="font-size:0.92em;">Current page at <code>scottpedia0.github.io/go2-site-variations/smb-beta/</code> does well &mdash; "starts with work as it actually happens," doesn't promise universal automation. GPT's recommendation: <strong>don't inflate the page. Undersell. Let the video carry the "oh shit" moment.</strong></p>
+
+<h3>Biggest Risk</h3>
+<div class="voice-quote">
+  <div class="time">GPT-5.4 Warning</div>
+  "The question is not 'Can the model do it?' The question is 'How many minutes of human intervention per customer per week does this require?'"
+</div>
+<p style="font-size:0.92em;margin-top:8px;">If each customer needs custom debugging, token rescues, git repair, integration babysitting &mdash; you have a consulting business with ugly margins, not a product. <strong>The real product work: reduce support minutes, constrain environments, constrain integrations, standardize recovery.</strong></p>
+
+<h3>Category Naming</h3>
+<div class="card" style="border-left-color:var(--accent2);">
+  <p><strong style="color:var(--accent2);">DO:</strong> "Skill Intelligence" / "Work Intelligence"</p>
+  <p><strong style="color:var(--red);">DON'T:</strong> "Process mining" (enterprise baggage) / "Employee monitoring" (toxic)</p>
+  <p style="margin-top:8px;font-size:0.88em;color:var(--text-muted);">Customer-facing translations: skills &rarr; playbooks, MCP &rarr; connected tools, memory engine &rarr; business context, sentry &rarr; observer, repo &rarr; workspace</p>
+</div>
+
+<h3>What GPT Pushed Back On</h3>
+<ul style="padding-left:20px;font-size:0.92em;">
+  <li>"Non-technical SMB" is too broad for current setup &mdash; first ICP is narrower</li>
+  <li>Don't normalize "generate MCP from docs and hope" &mdash; need trust tiers</li>
+  <li>SOD/EOD rituals are fine for pilot but can't be a product dependency</li>
+  <li>Same architecture &ne; same sales story (need different doorways)</li>
+  <li>Don't lead with time saved &mdash; lead with fewer dropped balls, clearer priorities</li>
+</ul>
+
+<!-- ============ 15. AUTONOMOUS AGENT ACTIVITY ============ -->
+<h2>15. Autonomous Agent Activity (1am&ndash;6am)</h2>
+<p style="color:var(--text-muted);font-size:0.85em;margin-bottom:16px;">Overnight agent work that ran on remote infrastructure &mdash; invisible to local telemetry but real output.</p>
+
+<div class="agent-card">
+  <div class="agent-name" style="color:var(--accent3);">Curly [AI] &mdash; Mac Mini &rarr; aws-mini</div>
+  <div class="agent-role">Mega scrape running overnight on aws-mini (PID 2094923)</div>
+  <ul>
+    <li>36 of 44 search groups completed when Curly's session ended</li>
+    <li>Running on <code>aws-mini</code> (3.17.156.216) &mdash; a remote EC2 instance</li>
+    <li>Legitimate autonomous agent work on infrastructure Scott provisioned</li>
+  </ul>
+</div>
+
+<div class="card" style="border-left-color:var(--orange);">
+  <h3 style="color:var(--orange);">The Ghost Data Problem</h3>
+  <p>Local Pro telemetry from 1&ndash;6am shows Claude as the foreground app with non-zero session minutes. But there are <strong>zero keystrokes and zero voice recordings</strong> during this window. The Mac was unlocked with Claude visible &mdash; nothing more.</p>
+  <p style="margin-top:8px;">This is not Scott working. This is not even local agent work. It's an idle Mac while real work happens on a different machine entirely.</p>
+</div>
+
+<div class="card" style="border-left-color:var(--cyan);">
+  <h3 style="color:var(--cyan);">Framing: Overnight Agent Autonomy</h3>
+  <p>Autonomous agent work on remote instances is <strong>real output</strong> but should never be conflated with Scott's active hours. It's a separate track:</p>
+  <ul style="padding-left:20px;margin-top:8px;font-size:0.92em;">
+    <li><strong>Human active hours:</strong> measured by keystrokes + voice + Oura wake confirmation</li>
+    <li><strong>Agent autonomous hours:</strong> measured by remote process logs, commit timestamps, task completion on provisioned infrastructure</li>
+    <li><strong>Ghost hours:</strong> foreground app time with no human or agent signal &mdash; discard from all metrics</li>
+  </ul>
+  <p style="margin-top:8px;font-size:0.9em;color:var(--text-muted);">This distinction should be surfaced as its own metric in future reports: <strong>"overnight agent autonomy"</strong> with separate tracking for what ran, where, and what it produced.</p>
+</div>
+
+<!-- ============ 16. PRODUCT IMPLICATIONS ============ -->
+<h2>16. Product Implications from This Report</h2>
+<p style="color:var(--text-muted);font-size:0.85em;margin-bottom:16px;">This EOD experiment itself is R&amp;D for the Go2 product. Every misread is a heuristic. Every wrong inference becomes a product requirement.</p>
+
+<h3>Ghost Data Detection</h3>
+<div class="card" style="border-left-color:var(--accent);">
+  <p><strong>Product requirement:</strong> Foreground app &ne; active work. The telemetry pipeline must distinguish between a human using an app, an agent using an app, and an idle machine with an app visible.</p>
+  <p style="margin-top:8px;font-size:0.9em;">Human activity signals that actually matter: <strong>keystrokes + voice &gt; app focus duration</strong>. Focus duration alone is unreliable.</p>
+</div>
+
+<h3>Bio-Signal Integration</h3>
+<div class="card" style="border-left-color:var(--accent3);">
+  <p>Oura/sleep data as a <strong>filter for human vs. machine activity</strong>. If the ring says you're asleep, any computer activity is definitionally agent-only or ghost data. This is a clean binary signal &mdash; no heuristics needed.</p>
+</div>
+
+<h3>Leverage Ratio Decomposition</h3>
+<div class="card" style="border-left-color:var(--yellow);">
+  <p>The "leverage ratio" concept needs to separate two distinct components:</p>
+  <ul style="padding-left:20px;margin-top:8px;font-size:0.92em;">
+    <li><strong>Directing time:</strong> Human minutes spent giving instructions, reviewing output, course-correcting</li>
+    <li><strong>Autonomous time:</strong> Agent minutes executing without human input (overnight scrapes, background builds, batch processing)</li>
+  </ul>
+  <p style="margin-top:8px;font-size:0.9em;">A 10:1 ratio where you directed for 30 minutes is different from one where the agent ran unsupervised for 5 hours. Both matter, but they're different kinds of leverage.</p>
+</div>
+
+<h3>Intent-to-Execution Chains</h3>
+<div class="card" style="border-left-color:var(--accent2);">
+  <p><strong>Potential product feature:</strong> Show customers how their voice directives turned into agent actions. Map the chain from Superwhisper transcript &rarr; agent task &rarr; commits/output. This is the "Work Intelligence" value prop made visible.</p>
+  <p style="margin-top:8px;font-size:0.9em;color:var(--text-muted);">Today's example: Scott voice-dictated a content strategy take &rarr; Larry parsed it &rarr; brain repo updated &rarr; downstream agents acted on it. That chain is reconstructible from the data.</p>
+</div>
+
+<h3>Misreads Are Product Requirements</h3>
+<div class="card" style="border-left-color:var(--orange);">
+  <p>Every wrong inference in this report becomes a heuristic for the product:</p>
+  <ul style="padding-left:20px;margin-top:8px;font-size:0.92em;">
+    <li>"1am deep work" misread &rarr; require Oura cross-reference for human activity claims</li>
+    <li>"13.5h day" misread &rarr; use first human signal (keystroke/voice) as day-start, not midnight</li>
+    <li>Foreground app inflation &rarr; require keystroke or voice co-signal to count as active</li>
+    <li>Remote agent work invisible &rarr; need remote process telemetry aggregation</li>
+  </ul>
+</div>
+
+<h3>Framing: "Work Intelligence" Not "Process Mining"</h3>
+<div class="card" style="border-left-color:var(--cyan);">
+  <p>The "Founder Operating Debrief" framing from earlier doesn't scale &mdash; it's founder-specific. Need universal framing for any operator managing AI agents and their own workflow.</p>
+  <p style="margin-top:12px;"><strong style="color:var(--accent2);">Category:</strong> "Work Intelligence" &mdash; not "process mining" (enterprise baggage, implies BPM tools) and not "employee monitoring" (toxic, surveillance connotation).</p>
+  <p style="margin-top:8px;font-size:0.9em;color:var(--text-muted);">Work Intelligence = understanding what happened, what worked, where leverage was created, and what to do differently tomorrow. For the operator, not their manager.</p>
+</div>
+
+<!-- ============ 17. EVIDENCE APPENDIX ============ -->
+<h2>17. Evidence Appendix</h2>
+
+<details>
+  <summary>Full Commit Log (71 commits) &mdash; grouped by workstream</summary>
+  <div class="inner">
+
+  <h3>Memory Engine (12 commits)</h3>
+  <div class="commit-log">
+    <span class="hash">85c7210</span> Moe: document memory engine guardrails and ranking issue<br>
+    <span class="hash">301d453</span> Log Gemini signal ranking feedback + three-model consensus<br>
+    <span class="hash">90da381</span> Log GPT-5.4 signal ranking priorities for Memory Engine<br>
+    <span class="hash">1525912</span> Larry session 2 handoff - Memory Engine QA'd and fully wired<br>
+    <span class="hash">6f1d230</span> Moe: add memory ingest to save flow diagrams<br>
+    <span class="hash">bdfd26d</span> Set Memory Engine write permissions per agent<br>
+    <span class="hash">308829c</span> Add universal Memory Engine MCP server to brain repo<br>
+    <span class="hash">c82ec2c</span> Log Moe's field evaluation of Memory Engine<br>
+    <span class="hash">5eebd07</span> Larry: Memory Engine ingestion in session-end workflows<br>
+    <span class="hash">9a294a5</span> Add Memory Engine ingestion step to all agent session-end workflows<br>
+    <span class="hash">7c6e95d</span> Add Memory Engine startup directive to Moe handoff<br>
+    <span class="hash">f1140ba</span> Add Memory Engine access instructions to Curly and Shemp handoffs<br>
+  </div>
+
+  <h3>Relay Hardening (11 commits)</h3>
+  <div class="commit-log">
+    <span class="hash">48bd087</span> Moe: end-of-day wrap<br>
+    <span class="hash">804c6bc</span> Moe: save checkpoint<br>
+    <span class="hash">090df65</span> Moe: session update<br>
+    <span class="hash">92cc356</span> Moe: update relay and memory engine diagrams<br>
+    <span class="hash">af5bb9a</span> Moe: clarify compute topology in diagrams<br>
+    <span class="hash">9601280</span> Moe: prefer AWS for heavy execution<br>
+    + 5 agent handoff updates
+  </div>
+
+  <h3>Research + Content (20 commits)</h3>
+  <div class="commit-log">
+    <span class="hash">5d1d86d</span> Larry: session-end - research thread closeout<br>
+    <span class="hash">ac236df</span> Larry: checkpoint - EP01 slides complete<br>
+    <span class="hash">6835a4c</span> Add agency vs in-house positioning split<br>
+    <span class="hash">1145a0a</span> Larry: add "Skill = competence. MCP = clearance." framing<br>
+    <span class="hash">4a2bea5</span> Larry: add SkillsMP marketplace (66.5K skills)<br>
+    <span class="hash">3f0ea34</span> Larry: final agent sweep - Riley Brown, NetworkChuck<br>
+    <span class="hash">0bd2d49</span> Larry: final research enrichment<br>
+    <span class="hash">34b7fb4</span> Larry: save GPT-5.4 product thesis<br>
+    <span class="hash">e02b959</span> Larry: enrich product implications<br>
+    <span class="hash">6c695d3</span> Larry: expand platform comparison - 14 platforms<br>
+    <span class="hash">e90370f</span> Larry: major competitive landscape enrichment<br>
+    <span class="hash">6f01149</span> Larry: enrich research files with agent findings<br>
+    <span class="hash">f513c28</span> Larry: deep research - AI skills/automation landscape<br>
+    <span class="hash">b5c6df4</span> Add post-call-machine project to brain<br>
+    <span class="hash">87ca2a7</span> Larry: incorporate Moe's refinements to post-call machine<br>
+    <span class="hash">e63637b</span> Larry: post-call machine prompt + terminology fix<br>
+    + 4 agent handoff updates
+  </div>
+
+  <h3>Transcript Pipeline (8 commits)</h3>
+  <div class="commit-log">
+    <span class="hash">3be9f9f</span> Shemp: Automated ingestion of 25 transcripts<br>
+    <span class="hash">1ba55b1</span> Shemp: Fixed sync filter, mined standups, ingested strategy memories<br>
+    <span class="hash">a66713a</span> Curly: ship 47 Superwhisper transcripts + add EOD skill block (#54)<br>
+    <span class="hash">151d9f4</span> Larry: transcript archival instructions for Curly + Shemp<br>
+    <span class="hash">eadda83</span> Larry: Curly transcript archival instructions + Shemp priority reorder<br>
+    <span class="hash">cff4220</span> Larry: Shemp transcript parsing rules<br>
+    <span class="hash">facbfcc</span> Larry: update Shemp handoff - transcript parsing rules<br>
+    + 1 Shemp session update
+  </div>
+
+  <h3>Compute / RAM / Agent Management (8 commits)</h3>
+  <div class="commit-log">
+    <span class="hash">b5aa78c</span> Curly: architecture fixes - aws-mini naming, RAM constraints<br>
+    <span class="hash">b1cacb2</span> Larry: session-end - SOD + Curly RAM fix + Mini cleanup<br>
+    <span class="hash">3b03dfc</span> Larry: fix Curly AWS - use aws-mini not aws-pro<br>
+    <span class="hash">aa3a87b</span> Curly: enforce AWS-first memory guardrails<br>
+    <span class="hash">2c12e02</span> Larry: Curly RAM constraints - ban parallel subagents<br>
+    <span class="hash">72aaee9</span> Larry: Matt Cheever email marked as sent<br>
+    <span class="hash">1d35d0e</span> Larry: checkpoint - SOD done, restarting for MCP config<br>
+    <span class="hash">5d6a60c</span> Curly: observations - naming confusion, RAM crashes<br>
+  </div>
+
+  </div>
+</details>
+
+<details>
+  <summary>Issue Events</summary>
+  <div class="inner">
+  <table>
+    <tr><th>#</th><th>Title</th><th>Status</th></tr>
+    <tr><td>58</td><td>Mine product standup transcripts - extract commitments, decisions, product vision</td><td style="color:var(--accent2)">Opened</td></tr>
+    <tr><td>57</td><td>Unified transcript pipeline - voice notes + meetings into git + Memory Engine</td><td style="color:var(--accent2)">Opened</td></tr>
+    <tr><td>56</td><td>Add Codex (Joe) to Mac Mini alongside Curly</td><td style="color:var(--accent2)">Opened</td></tr>
+    <tr><td>55</td><td>SOD: Thread titles should include date and context</td><td style="color:var(--accent2)">Opened</td></tr>
+    <tr><td>54</td><td>Curly: Ship Superwhisper transcripts to Pro at EOD</td><td style="color:var(--red)">Closed</td></tr>
+    <tr><td>53</td><td>Memory Engine: add provenance + signal ranking</td><td style="color:var(--accent2)">Opened</td></tr>
+    <tr><td>52</td><td>Add Memory Engine to architecture diagrams</td><td style="color:var(--accent2)">Opened</td></tr>
+    <tr><td>51</td><td>Cowork.ai: 56K sessions collected, zero processing</td><td style="color:var(--accent2)">Opened (pre-existing)</td></tr>
+    <tr><td>47-50</td><td>Live view issues (thread summaries, UI density, fronts language, data sources)</td><td style="color:var(--accent2)">Opened (pre-existing)</td></tr>
+  </table>
+  </div>
+</details>
+
+<details>
+  <summary>Top Keystroke Samples</summary>
+  <div class="inner">
+  <div class="voice-quote">
+    <div class="time">21:03 &mdash; Codex</div>
+    "yeah named you 3.22.35 so I know you are sod, named that you orchestration tree and next is sales demo right? I there is a thread called 'five landing pages' that knows a ton about this..."
+  </div>
+  <div class="voice-quote">
+    <div class="time">23:18 &mdash; Codex</div>
+    "we REALLY need to stop calling this claude dispatch and call it relay"
+  </div>
+  <div class="voice-quote">
+    <div class="time">20:54 &mdash; Codex</div>
+    "also you log me out and then the password never works. I dunno why you keep logging me out. I would be down to remove the password layer for today"
+  </div>
+  <div class="voice-quote">
+    <div class="time">20:43 &mdash; Terminal (to Shemp)</div>
+    "can you make it so you automate pulling the right transcripts and I never have to run you from terminal to do it? that possible?"
+  </div>
+  <div class="voice-quote">
+    <div class="time">19:58 &mdash; Claude</div>
+    "you should be using sub agents to avoid drift in this thread and I dont see that"
+  </div>
+  <div class="voice-quote">
+    <div class="time">04:04 &mdash; Codex</div>
+    "I feel like there is other shit like that. Also skills can have MCP inside of them, connections should be MCP and MCP comes before skills because you can attach multiple MCPs to a skill"
+  </div>
+  </div>
+</details>
+
+<details>
+  <summary>App Usage Breakdown</summary>
+  <div class="inner">
+  <table>
+    <tr><th>App</th><th>Sessions</th><th>Minutes</th><th>Keystrokes</th></tr>
+    <tr><td>Claude</td><td>252</td><td>627</td><td>11,089 chars</td></tr>
+    <tr><td>Codex</td><td>283</td><td>200</td><td>13,677 chars</td></tr>
+    <tr><td>Google Chrome</td><td>2,541</td><td>151</td><td>830 chars</td></tr>
+    <tr><td>Universal Control</td><td>2,491</td><td>65</td><td>71 chars</td></tr>
+    <tr><td>OpenWork</td><td>74</td><td>64</td><td>301 chars</td></tr>
+    <tr><td>UserNotificationCenter</td><td>16</td><td>82</td><td>0 chars</td></tr>
+    <tr><td>ChatGPT</td><td>28</td><td>13</td><td>609 chars</td></tr>
+    <tr><td>Terminal</td><td>35</td><td>10</td><td>247 chars</td></tr>
+    <tr><td>Finder</td><td>39</td><td>5</td><td>5 chars</td></tr>
+    <tr><td>Other (10 apps)</td><td>16</td><td>2</td><td>4 chars</td></tr>
+  </table>
+  <p style="color:var(--text-muted);font-size:0.85em;margin-top:8px;">Note: Universal Control sessions (2,491) reflect Mac Mini &harr; MacBook Pro cursor/keyboard sharing for Curly interaction. Chrome sessions (2,541) include research browsing and YouTube review for competitive analysis.</p>
+  </div>
+</details>
+
+<div style="margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.8em;text-align:center;">
+  Generated by Larry [AI] &mdash; Claude Code (Opus 4.6) on MacBook Pro<br>
+  Data sources: Cowork.ai telemetry, Oura Ring API, Superwhisper transcripts, git log (Scottpedia0/brain), GitHub Issues, agent handoffs<br>
+  March 22, 2026 &mdash; 1:00 AM to 10:13 PM PT
+</div>
+
+</div>
+</body>
+</html>

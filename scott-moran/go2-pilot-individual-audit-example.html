@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2 Pilot Example - Operator Mode Audit</title>
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --bg: #091019;
+    --bg-elev: rgba(15, 23, 35, 0.88);
+    --bg-card: rgba(17, 26, 39, 0.94);
+    --bg-soft: rgba(255, 255, 255, 0.035);
+    --border: rgba(148, 163, 184, 0.16);
+    --border-strong: rgba(148, 163, 184, 0.28);
+    --text: #e7eef8;
+    --muted: #9daaba;
+    --dim: #718092;
+    --accent: #5fd0ff;
+    --accent-2: #ff9750;
+    --green: #46cf82;
+    --yellow: #f4c95d;
+    --red: #ff7461;
+    --purple: #ac8dff;
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    --radius: 18px;
+    --radius-sm: 12px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: "Avenir Next", "SF Pro Display", "Helvetica Neue", sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(95, 208, 255, 0.10), transparent 28%),
+      radial-gradient(circle at top right, rgba(255, 151, 80, 0.12), transparent 24%),
+      linear-gradient(180deg, #081019 0%, #0b1118 100%);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 18px 80px;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 34px;
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    background:
+      linear-gradient(135deg, rgba(95, 208, 255, 0.08), rgba(255, 151, 80, 0.10)),
+      var(--bg-card);
+    box-shadow: var(--shadow);
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    right: -90px;
+    bottom: -90px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(95, 208, 255, 0.14), transparent 70%);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: clamp(34px, 5vw, 54px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+
+  .subtitle {
+    max-width: 860px;
+    font-size: 18px;
+    color: #d7e2f0;
+    margin-bottom: 18px;
+  }
+
+  .hero-grid,
+  .stats,
+  .card-grid,
+  .role-grid,
+  .deliverable-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1.2fr 0.95fr;
+    margin-top: 20px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(6, 1fr);
+    margin: 18px 0 28px;
+  }
+
+  .card-grid,
+  .deliverable-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .role-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 18px 0 26px;
+  }
+
+  .nav a,
+  .badge,
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .section,
+  .stat,
+  .card,
+  .role-card,
+  .deliverable,
+  details.finding {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+  }
+
+  .section {
+    padding: 24px;
+    margin-bottom: 18px;
+  }
+
+  .section h2 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+
+  .section p:last-child { margin-bottom: 0; }
+
+  .stat {
+    padding: 18px 16px;
+  }
+
+  .stat .num {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 6px;
+  }
+
+  .stat .label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .stat .meta {
+    font-size: 14px;
+    color: var(--dim);
+  }
+
+  .callout {
+    padding: 16px 18px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+  }
+
+  .callout strong { color: #fff; }
+
+  .callout.good {
+    border-color: rgba(70, 207, 130, 0.28);
+    background: rgba(70, 207, 130, 0.08);
+  }
+
+  .callout.warn {
+    border-color: rgba(244, 201, 93, 0.30);
+    background: rgba(244, 201, 93, 0.08);
+  }
+
+  .callout.info {
+    border-color: rgba(95, 208, 255, 0.28);
+    background: rgba(95, 208, 255, 0.08);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 920px;
+    font-size: 14px;
+  }
+
+  th,
+  td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  th {
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .confidence {
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  .confidence.high { color: var(--green); }
+  .confidence.med { color: var(--yellow); }
+
+  details.finding {
+    overflow: hidden;
+  }
+
+  details.finding summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  details.finding summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details.finding[open] summary {
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .finding-body {
+    padding: 18px 20px 20px;
+  }
+
+  .finding-body p:first-child { margin-top: 0; }
+  .finding-body p:last-child { margin-bottom: 0; }
+
+  .pill.high {
+    color: var(--green);
+    border-color: rgba(70, 207, 130, 0.28);
+    background: rgba(70, 207, 130, 0.08);
+  }
+
+  .pill.med {
+    color: var(--yellow);
+    border-color: rgba(244, 201, 93, 0.32);
+    background: rgba(244, 201, 93, 0.08);
+  }
+
+  .card,
+  .role-card,
+  .deliverable {
+    padding: 18px;
+  }
+
+  .card h3,
+  .role-card h3,
+  .deliverable h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+  }
+
+  .role-card .role-tag {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    margin-bottom: 8px;
+  }
+
+  ul,
+  ol {
+    margin: 10px 0 0;
+    padding-left: 22px;
+  }
+
+  li + li { margin-top: 8px; }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.92em;
+  }
+
+  .foot {
+    padding-top: 10px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 13px;
+  }
+
+  @media (max-width: 1100px) {
+    .stats { grid-template-columns: repeat(3, 1fr); }
+    .role-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 860px) {
+    .hero-grid,
+    .card-grid,
+    .deliverable-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 18px 14px 56px; }
+    .hero { padding: 24px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .role-grid { grid-template-columns: 1fr; }
+    .section h2 { font-size: 24px; }
+    h1 { font-size: 34px; }
+  }
+
+  @media (max-width: 480px) {
+    .stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Public Example · Go2 Pilot</div>
+      <h1>Operator Mode Audit</h1>
+      <p class="subtitle">
+        A two-week secure workflow audit for one person inside a team.
+        This is a mode report, not a time tracker: it shows where work actually goes,
+        what pressure it creates, and which automations should get installed first.
+      </p>
+
+      <div class="badge-row">
+        <span class="badge">Mode report, not surveillance</span>
+        <span class="badge">Private by default</span>
+        <span class="badge">Role-specific insights</span>
+        <span class="badge">Automation recommendations</span>
+        <span class="badge">Edited for confidentiality</span>
+      </div>
+
+      <div class="hero-grid">
+        <div class="callout good">
+          <strong>What the buyer should feel.</strong> "If you ran this on me or one of my people,
+          I would finally see why the week feels overloaded, what is creating drag,
+          and which two or three installs would make an immediate difference."
+        </div>
+        <div class="callout info">
+          <strong>What this is not.</strong> It is not surveillance theater, not a generic dashboard,
+          and not a dump of private internals. It is a tightly scoped operator mirror with recommendations,
+          quick wins, and implementation-ready automation ideas.
+        </div>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <a href="#summary">Summary</a>
+      <a href="#surface">What It Surfaces</a>
+      <a href="#table">Automation Table</a>
+      <a href="#findings">Findings</a>
+      <a href="#recommendations">Recommendations</a>
+      <a href="#roles">Other Roles</a>
+      <a href="#deliverables">What The Customer Gets</a>
+      <a href="#privacy">Privacy</a>
+    </nav>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="num">2 weeks</div>
+        <div class="label">Pilot window</div>
+        <div class="meta">Short enough to start fast, long enough to see real patterns.</div>
+      </div>
+      <div class="stat">
+        <div class="num">61.4%</div>
+        <div class="label">Build-stack share</div>
+        <div class="meta">Non-ambient work that stayed in build surfaces across the full pilot.</div>
+      </div>
+      <div class="stat">
+        <div class="num">90.4%</div>
+        <div class="label">Cleanest build day</div>
+        <div class="meta">The strongest single-mode day in the window.</div>
+      </div>
+      <div class="stat">
+        <div class="num">2,805</div>
+        <div class="label">AI handoff load</div>
+        <div class="meta">Useful output, but also a sign that context is still moving manually.</div>
+      </div>
+      <div class="stat">
+        <div class="num">10.2h</div>
+        <div class="label">Meeting footprint</div>
+        <div class="meta">Enough to shape the role. Too much to leave under-automated.</div>
+      </div>
+      <div class="stat">
+        <div class="num">219m</div>
+        <div class="label">Peak admin pull</div>
+        <div class="meta">A full-day signal that comms, search, and cleanup can swallow the role.</div>
+      </div>
+    </section>
+
+    <section class="section" id="summary">
+      <div class="eyebrow">Executive Summary</div>
+      <h2>The real drag is mode collision, not motivation.</h2>
+      <p>
+        This pilot surfaced a high-agency operator who behaves more like a system conductor than a single-threaded maker.
+        The strongest output appeared when one mode stayed dominant long enough to compound: build, prep, synthesis, or decision-making.
+        The biggest drag showed up when build, comms, publishing, revenue work, and admin all shared the same operating surface.
+      </p>
+      <p>
+        The second major pattern was rubric drift. Once this person knows what "good" looks like, they move extremely fast.
+        When evaluation criteria live only in their head, time gets burned across models, tabs, and revisions.
+        That makes rubric capture, decision capture, and follow-through support more valuable than another dashboard or more raw prompt volume.
+      </p>
+      <div class="callout warn">
+        <strong>High-level read.</strong> This person is already building the system they need.
+        The job of the audit is to name the pattern, show where it breaks down, and install the first few pieces that let judgment compound instead of restarting every day.
+      </div>
+    </section>
+
+    <section class="section" id="surface">
+      <div class="eyebrow">What This Pilot Surfaces</div>
+      <h2>Useful insights, not vanity metrics</h2>
+      <div class="card-grid">
+        <article class="card">
+          <h3>Mode Mix</h3>
+          <p>How much of the week was real creation, meetings, admin, sales motion, follow-up, and context recovery. The goal is to see whether the role stayed true to its intended mode, not to count hours like a bossware product.</p>
+        </article>
+        <article class="card">
+          <h3>Pressure Map</h3>
+          <p>Where the role is carrying load that should be shared or systematized: repeated prep, fragmented knowledge lookup, meeting carryover, inbox debt, approval lag, and mode-switching friction.</p>
+        </article>
+        <article class="card">
+          <h3>Rubric Drift</h3>
+          <p>Where quality criteria are implicit instead of reusable. This is often the hidden tax in AI-heavy teams: the person can judge good work, but the standard is not captured well enough to reuse across tools or teammates.</p>
+        </article>
+        <article class="card">
+          <h3>Automation-Ready Loops</h3>
+          <p>The repeatable loops that are good candidates for AI assistance or automation: meeting prep, follow-up drafting, knowledge retrieval, exception handling, queue triage, recurring summaries, and decision capture.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="table">
+      <div class="eyebrow">Automation Table</div>
+      <h2>What we would recommend first</h2>
+      <p>
+        These are the kinds of automations this pilot is meant to surface. They are specific enough to feel real,
+        but written in a public-safe way that does not expose any one customer's internal setup.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Automation</th>
+              <th>What It Fixes</th>
+              <th>What The Customer Gets</th>
+              <th>Estimated Lift</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Rubric Capture and Reuse</strong></td>
+              <td>Good judgment exists, but evaluation criteria are living in one person's head and getting rebuilt across tools.</td>
+              <td>Reusable criteria, example-backed review prompts, auto-suggested briefs, and a shared definition of "good" for recurring work.</td>
+              <td>3-6 hours/week plus faster convergence.</td>
+              <td class="confidence high">95%</td>
+            </tr>
+            <tr>
+              <td><strong>Meeting Brief and Decision Capture</strong></td>
+              <td>Too much time spent reloading context before calls, then losing decisions after the call.</td>
+              <td>Auto-generated pre-read, live note structure, extracted decisions, assigned next steps, and a clean follow-up draft.</td>
+              <td>3-5 hours/week plus fewer dropped decisions.</td>
+              <td class="confidence high">93%</td>
+            </tr>
+            <tr>
+              <td><strong>Mode Guardrails and Admin Sweeps</strong></td>
+              <td>Creation work and admin work are happening in the same surface, which makes the day look busy but feel scattered.</td>
+              <td>Named work modes, cleaner start-of-day rhythm, scheduled admin sweeps, and less random pull into comms during the core execution block.</td>
+              <td>4-6 hours/week of cleaner deep work.</td>
+              <td class="confidence high">91%</td>
+            </tr>
+            <tr>
+              <td><strong>Canonical Brief and Context Router</strong></td>
+              <td>Heavy AI usage is productive, but continuity between tools and people is still too manual and brittle.</td>
+              <td>Standard brief format, source-linked context cards, persistent handoff files, and less value trapped in manual handoff hops.</td>
+              <td>2-5 hours/week and less context loss.</td>
+              <td class="confidence high">90%</td>
+            </tr>
+            <tr>
+              <td><strong>Follow-Through and Closure Layer</strong></td>
+              <td>Important replies, introductions, approvals, and next actions age quietly unless somebody remembers them.</td>
+              <td>Daily open-loop sweep, aging alerts, meeting-to-task capture, and draft nudges for the highest-value stalled items.</td>
+              <td>2-4 hours/week plus better consistency.</td>
+              <td class="confidence high">92%</td>
+            </tr>
+            <tr>
+              <td><strong>Role-Specific Queue Automation</strong></td>
+              <td>One-by-one handling, repeated explanations, and exception hunting are stealing time from higher-value judgment.</td>
+              <td>Triage queues, approval layers, knowledge lookup, and exception feeds tailored to the person's actual role.</td>
+              <td>3-8 hours/week depending on role.</td>
+              <td class="confidence med">86%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="findings">
+      <div class="eyebrow">Core Findings</div>
+      <h2>The kind of things a customer should learn from this report</h2>
+
+      <details class="finding" open>
+        <summary>
+          <span>1. Mode collision is the real drag, not lack of effort.</span>
+          <span class="pill high">High confidence</span>
+        </summary>
+        <div class="finding-body">
+          <p><strong>What we saw.</strong> The same person repeatedly switched between creation, meetings, revenue work, admin, and coordination. The week was not short on output. It was expensive because multiple jobs were sharing the same operating surface.</p>
+          <p><strong>Why it matters.</strong> Customers usually describe this as "too many tabs" or "constant interruptions," but the deeper issue is over-mixing modes. This is partly a behavior fix and partly an automation fix: protect a pure execution block, then route admin into a named sweep.</p>
+        </div>
+      </details>
+
+      <details class="finding" open>
+        <summary>
+          <span>2. This person is a system conductor, not a single-threaded maker.</span>
+          <span class="pill high">High confidence</span>
+        </summary>
+        <div class="finding-body">
+          <p><strong>What we saw.</strong> The person thinks by steering tools, models, and people in parallel. That is a real strength. It is also why generic productivity advice misses: the role is orchestration-heavy by design.</p>
+          <p><strong>Why it matters.</strong> Orchestration can feel productive even when the real bottleneck is choosing and committing. The right recommendation is not "be less ambitious." It is "end exploration blocks with one explicit shipped decision."</p>
+        </div>
+      </details>
+
+      <details class="finding" open>
+        <summary>
+          <span>3. Rubric drift is a bigger AI tax than prompt quality.</span>
+          <span class="pill high">High confidence</span>
+        </summary>
+        <div class="finding-body">
+          <p><strong>What we saw.</strong> Once this person knows what "good" looks like, they can use AI extremely well. When the rubric is fuzzy, time gets burned across multiple models, tabs, and drafts.</p>
+          <p><strong>Why it matters.</strong> The highest-leverage install is usually rubric capture and reuse, not more prompt traffic. This is mostly an automation fix with a little operating discipline wrapped around it.</p>
+        </div>
+      </details>
+
+      <details class="finding" open>
+        <summary>
+          <span>4. Fast interruption recovery hides how much context shifting is happening.</span>
+          <span class="pill high">High confidence</span>
+        </summary>
+        <div class="finding-body">
+          <p><strong>What we saw.</strong> The person can bounce out, collect signal, and snap back quickly. That resilience is real, but it can mask the cost of mode churn because re-entry feels easy.</p>
+          <p><strong>Why it matters.</strong> Recovering fast is not the same as switching cheaply. This is a behavior fix and a reporting fix: track mode churn, not just total output.</p>
+        </div>
+      </details>
+
+      <details class="finding" open>
+        <summary>
+          <span>5. Wide scanning becomes decision debt without a closing ritual.</span>
+          <span class="pill high">High confidence</span>
+        </summary>
+        <div class="finding-body">
+          <p><strong>What we saw.</strong> Broad scanning was often strategic, not random. The drag appeared when a wide scan did not collapse into one commit, one artifact, or one next step.</p>
+          <p><strong>Why it matters.</strong> A broad scan budget without a closing ritual turns into low-grade decision debt. This is partly coaching and partly a closure-layer installation.</p>
+        </div>
+      </details>
+
+      <details class="finding" open>
+        <summary>
+          <span>6. System-building can become safer than uncomfortable external loops.</span>
+          <span class="pill high">High confidence</span>
+        </summary>
+        <div class="finding-body">
+          <p><strong>What we saw.</strong> High-agency operators will sometimes keep improving systems when the harder move is sending the follow-up, asking for the decision, or closing the human loop.</p>
+          <p><strong>Why it matters.</strong> The audit should never reward elegant avoidance. Good automation reduces friction around external execution; it should not become a prettier hiding place.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="section" id="recommendations">
+      <div class="eyebrow">First Recommendations</div>
+      <h2>How we would help this person move faster in the next 14 days</h2>
+      <div class="card-grid">
+        <article class="card">
+          <h3>Capture three recurring rubrics</h3>
+          <p>Pick the three judgments that repeat most often in the role, save the criteria, attach one or two good examples, and make those rubrics reusable across AI tools and teammates.</p>
+        </article>
+        <article class="card">
+          <h3>Protect one named build block</h3>
+          <p>Keep the first serious execution block out of inboxes, search consoles, and chat surfaces. Admin still gets done, but it gets its own sweep and its own stop time.</p>
+        </article>
+        <article class="card">
+          <h3>Turn every meeting into decisions and owners</h3>
+          <p>Install a simple pre-brief plus post-meeting extraction flow so prep, recap, and next-step assignment stop depending on memory and goodwill.</p>
+        </article>
+        <article class="card">
+          <h3>Add a ruthless closure sweep</h3>
+          <p>Run one daily pass that surfaces stalled replies, open approvals, aging handoffs, and unresolved decisions. The point is fewer quiet drops, not more guilt.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="roles">
+      <div class="eyebrow">Other Role Examples</div>
+      <h2>Same pilot, different person</h2>
+      <p>
+        This is where the example starts feeling real to a prospect. The same audit format can adapt to different roles without changing the core promise.
+      </p>
+
+      <div class="role-grid">
+        <article class="role-card">
+          <div class="role-tag">Founder / Operator</div>
+          <h3>Mode collision, rubric drift, and follow-through debt</h3>
+          <p><strong>Typical pressure:</strong> build, comms, sales, and admin all compete on the same surface; broad scanning outpaces closure; judgment is strong but not always captured.</p>
+          <p><strong>Likely installs:</strong> mode guardrails, rubric memory, meeting-to-task capture, closure sweep.</p>
+        </article>
+
+        <article class="role-card">
+          <div class="role-tag">Customer Service Agent</div>
+          <h3>Queue pressure, lookup drag, and escalation lag</h3>
+          <p><strong>Typical pressure:</strong> one-at-a-time inbox handling, repeated policy or order lookups, manual approvals, and the same explanations written over and over.</p>
+          <p><strong>Likely installs:</strong> triage and draft assistant, knowledge copilot, approval queue, escalation routing.</p>
+        </article>
+
+        <article class="role-card">
+          <div class="role-tag">Sales Rep / AE</div>
+          <h3>Prep-to-live-selling ratio, post-call lag, and CRM debt</h3>
+          <p><strong>Typical pressure:</strong> scattered account context, too much manual prep, delayed follow-up, and next steps that stall between inbox, notes, and CRM.</p>
+          <p><strong>Likely installs:</strong> account brief generator, recap to follow-up to CRM workflow, next-step tracker.</p>
+        </article>
+
+        <article class="role-card">
+          <div class="role-tag">Ops Manager</div>
+          <h3>Status chasing, reconciliation, and exception hunting</h3>
+          <p><strong>Typical pressure:</strong> manual reporting between systems, spreadsheet hopping, hidden coverage gaps, and too much issue detection by search instead of queue.</p>
+          <p><strong>Likely installs:</strong> KPI refresh, exception feed, action tracker, recurring workflow routing.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="deliverables">
+      <div class="eyebrow">Customer Deliverables</div>
+      <h2>What the pilot should hand back</h2>
+
+      <div class="deliverable-grid">
+        <article class="deliverable">
+          <h3>Individual audit report</h3>
+          <p>A clean read on mode mix, pressure points, behavioral adjustments, and automation opportunities for one role.</p>
+        </article>
+        <article class="deliverable">
+          <h3>Automation shortlist</h3>
+          <p>A prioritized list of the first 3-6 automations worth implementing, with enough specificity to feel actionable and enough restraint to stay public-safe.</p>
+        </article>
+        <article class="deliverable">
+          <h3>Quick wins</h3>
+          <p>Simple process changes that improve the week immediately even before any software gets built: better mode separation, better closing rituals, better follow-through hygiene.</p>
+        </article>
+        <article class="deliverable">
+          <h3>Optional implementation path</h3>
+          <p>If the customer wants it, we can move from audit to implementation support. If not, the report still stands on its own and still makes the week more understandable.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="privacy">
+      <div class="eyebrow">Privacy and Positioning</div>
+      <h2>What stays private, and what this example leaves out on purpose</h2>
+      <ul>
+        <li>No customer names, no sensitive workflow details, no proprietary implementation architecture.</li>
+        <li>No public disclosure of how quickly internal systems are built or what specific internal tools power the delivery.</li>
+        <li>No raw internal transcripts or customer IP embedded in the example.</li>
+        <li>Only the useful product promise remains: private analysis, useful insight, and automation recommendations that feel specific to the role.</li>
+      </ul>
+
+      <div class="callout info" style="margin-top: 16px;">
+        <strong>Public-safe framing.</strong> This example is intentionally written to be impressive without being reckless.
+        It shows the value of the pilot, not the internals of how every part works.
+      </div>
+    </section>
+
+    <div class="foot">
+      Go2 Pilot Example - Operator Mode Audit<br>
+      Public example edited for confidentiality
+    </div>
+  </div>
+</body>
+</html>
