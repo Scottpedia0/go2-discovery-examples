@@ -810,11 +810,17 @@ Whenever you want to come back to these options, just say "menu." And if you eve
 
     <h2>Copy and paste these into Claude Code when you need them</h2>
 
-    <p style="font-size:14px;color:var(--ink-muted);margin-bottom:24px;">These are the exact prompts we use internally. Drop them into a new Claude Code conversation when you want to run that operation. You don't need to modify them &mdash; just paste and go.</p>
+    <div style="background:var(--surface-alt, #f0faf7);border:1px solid var(--teal, #2dd4bf);border-radius:8px;padding:16px;margin-bottom:24px;">
+      <p style="font-size:14px;color:var(--ink, #1a1a2e);margin:0;"><strong>These are also installed as slash commands.</strong> Instead of copy-pasting, you can just type <code>/audit-client</code>, <code>/team-health</code>, <code>/dea-draft</code>, <code>/batch-pr</code>, <code>/check-person</code>, or <code>/scan-client</code> in Claude Code and it runs automatically.</p>
+    </div>
+
+    <p style="font-size:14px;color:var(--ink-muted);margin-bottom:24px;">These are the exact prompts we use internally. Drop them into a new Claude Code conversation when you want to run that operation. You don't need to modify them &mdash; just paste and go. Or use the slash commands above &mdash; same thing, less typing.</p>
 
     <h3 style="font-size:16px;margin:24px 0 8px;">Run an audit on a client account</h3>
     <p style="font-size:14px;color:var(--ink-secondary);margin-bottom:8px;">This runs the full discovery pipeline &mdash; extracts data, analyzes each person, finds automations, builds a report and tools. Takes 30-60 minutes of compute depending on team size.</p>
     <div class="paste-block"><button class="copy-btn" onclick="copyBlock(this)"><span class="copy-icon">Copy</span><span class="check-icon">Copied</span></button>Run a client-facing operational audit for [CLIENT NAME].
+
+Connection string is in ~/.go2-env. BigQuery project is cosmos-331917, dataset go2_data_warehouse. Key tables: rpt_agent_bi_app_and_web (every app/URL visited), rpt_agent_bi_keystroke (what they typed), rpt_agent_bi_session (login/logout times). Parse every URL — the page titles reveal exactly what they're doing.
 
 First, find the division: SELECT id, name FROM go2_division WHERE name ILIKE '%[CLIENT NAME]%'
 
@@ -830,11 +836,15 @@ This is a CLIENT audit:
 - Build per-person tools for the biggest opportunities
 - The audience is the client's leadership and me (Frenchie)
 
-Run the full pipeline: extract → split per person → parallel analysis → deep investigation → QA → synthesis + report. Build working tools for every automation you find. Verify the final report through Open Router before showing me.</div>
+Run the full pipeline: extract → split per person → parallel analysis → deep investigation → QA → synthesis + report. Build working tools for every automation you find.
+
+Before presenting results, verify this output through Open Router (use the verify-output skill). Send to openai/gpt-5.4-pro or google/gemini-3.1-pro-preview. Do not skip verification.</div>
 
     <h3 style="font-size:16px;margin:24px 0 8px;">Quick team health check</h3>
     <p style="font-size:14px;color:var(--ink-secondary);margin-bottom:8px;">Morning check &mdash; who's active, who filed reports, any red flags.</p>
     <div class="paste-block"><button class="copy-btn" onclick="copyBlock(this)"><span class="copy-icon">Copy</span><span class="check-icon">Copied</span></button>Pull today's team status for Engage (division_id 19883).
+
+Query reporting_report WHERE division_id = 19883. The data JSONB field contains: feeling_selected (mood 1-4, but 2 is usually the default — real signal is in free text), need_help ('yes'/'no'), plans, headlines, common_issues. Cross-reference with go2_schedules_schedule for who was supposed to work.
 
 Show me:
 1. Who filed an SOD today and who didn't
@@ -842,7 +852,9 @@ Show me:
 3. Anyone with feeling_selected = 1 or need_help = "yes" in their last 3 reports
 4. Anyone who hasn't logged a session in the last 48 hours when they were scheduled
 
-Format as a clean table. Flag anything I should worry about.</div>
+Format as a clean table. Flag anything I should worry about.
+
+Before presenting results, verify this output through Open Router (use the verify-output skill). Send to openai/gpt-5.4-pro or google/gemini-3.1-pro-preview. Do not skip verification.</div>
 
     <h3 style="font-size:16px;margin:24px 0 8px;">Draft DEA observations from a transcript</h3>
     <p style="font-size:14px;color:var(--ink-secondary);margin-bottom:8px;">Paste a call transcript and get structured observation notes. Saves 20-30 minutes per audit.</p>
@@ -862,6 +874,10 @@ After the observations, give me:
 - Top 2-3 areas for improvement
 - One thing the EM did well
 
+After drafting, verify through Open Router — send the observations to openai/gpt-5.4-pro and ask it to check for unsupported inferences, missing context, and whether observations are framed as observations not judgments.
+
+Before presenting results, verify this output through Open Router (use the verify-output skill). Send to openai/gpt-5.4-pro or google/gemini-3.1-pro-preview. Do not skip verification.
+
 Here's the transcript:
 [PASTE TRANSCRIPT HERE]</div>
 
@@ -875,6 +891,8 @@ Pull from the database:
 3. Their worklog hours by task for the last 90 days
 4. Their session data (attendance pattern)
 
+Use go2_time_tracker_worklog joined through task→project to get hours. Use reporting_report for EOD text.
+
 For each teammate, draft a PR template with:
 - Name, role, partner, tenure
 - Attendance summary (days active, avg hours)
@@ -882,7 +900,11 @@ For each teammate, draft a PR template with:
 - Top 2 areas for improvement (from recurring "common issues" or missed goals)
 - Recommended coaching focus for next quarter
 
-Format each one as a separate section I can copy-paste into BambooHR.</div>
+Format each one as a separate section I can copy-paste into BambooHR.
+
+After generating all templates, verify the batch through Open Router before presenting.
+
+Before presenting results, verify this output through Open Router (use the verify-output skill). Send to openai/gpt-5.4-pro or google/gemini-3.1-pro-preview. Do not skip verification.</div>
 
     <h3 style="font-size:16px;margin:24px 0 8px;">Check on a specific person</h3>
     <p style="font-size:14px;color:var(--ink-secondary);margin-bottom:8px;">Deep dive on one EM or teammate &mdash; what they're doing, how they're feeling, any flags.</p>
@@ -893,12 +915,18 @@ Pull their last 14 days of:
 - Session data (when they logged in/out, total hours)
 - Any need_help = "yes" or feeling_selected below their average
 
+Find them: SELECT * FROM go2_staff WHERE first_name ILIKE '%name%' OR last_name ILIKE '%name%'. Get their reports: SELECT * FROM reporting_report WHERE submitted_by_id = (their user id from users_user).
+
 Tell me:
 - Are they on track or struggling?
 - Anything unusual in their patterns?
 - What are they complaining about or celebrating in their reports?
 
-Keep it to one page. I want to know if I need to intervene.</div>
+Keep it to one page. I want to know if I need to intervene.
+
+After compiling the check, verify through Open Router.
+
+Before presenting results, verify this output through Open Router (use the verify-output skill). Send to openai/gpt-5.4-pro or google/gemini-3.1-pro-preview. Do not skip verification.</div>
 
     <h3 style="font-size:16px;margin:24px 0 8px;">Scan any client's team</h3>
     <p style="font-size:14px;color:var(--ink-secondary);margin-bottom:8px;">You have access to every Go2 client's data. Quick scan before a meeting or check-in.</p>
@@ -907,12 +935,18 @@ Keep it to one page. I want to know if I need to intervene.</div>
 Find the division: SELECT id, name FROM go2_division WHERE name ILIKE '%[CLIENT NAME]%'
 Get staff: SELECT first_name, last_name, email, is_active FROM go2_staff WHERE division_id = [ID]
 
+The go2_staff table has division_id. Cross-reference session data in BigQuery: rpt_agent_bi_session filtered by member_name.
+
 For each active person, show me:
 - Last SOD/EOD filed (date and any flags)
 - Hours logged this week vs last week
 - Any session gaps (scheduled but didn't log in)
 
-Format as a table. I need this for a meeting in 10 minutes.</div>
+Format as a table. I need this for a meeting in 10 minutes.
+
+Verify output before presenting.
+
+Before presenting results, verify this output through Open Router (use the verify-output skill). Send to openai/gpt-5.4-pro or google/gemini-3.1-pro-preview. Do not skip verification.</div>
 
   </section>
 
