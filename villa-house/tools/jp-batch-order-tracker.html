@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batch Order Tracker &amp; Claims Form | Villa &amp; House</title>
+<style>
+:root {
+  --bg:#0a0a0a;--bg-card:#111113;--bg-input:#1a1a1d;--border:#2a2a2e;
+  --text:#e4e4e7;--text-dim:#a1a1aa;--text-muted:#71717a;
+  --accent:#5eead4;--accent-bg:rgba(94,234,212,0.08);
+  --green:#4ade80;--green-bg:rgba(74,222,128,0.12);
+  --yellow:#facc15;--yellow-bg:rgba(250,204,21,0.12);
+  --orange:#fb923c;--orange-bg:rgba(251,146,60,0.12);
+  --red:#f87171;--red-bg:rgba(248,113,113,0.08);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.12);
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:'SF Mono','Fira Code',Menlo,Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;font-size:14px;}
+.header{text-align:center;padding:32px 16px 16px;border-bottom:1px solid var(--border);}
+.header h1{color:var(--accent);font-size:22px;}
+.header p{color:var(--text-muted);font-size:12px;margin-top:4px;}
+
+/* Mode toggle */
+.mode-toggle{display:flex;justify-content:center;gap:8px;padding:16px;}
+.mode-btn{
+  padding:8px 24px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);background:var(--bg-input);color:var(--text-muted);
+}
+.mode-btn.active-epacs{background:var(--green-bg);color:var(--green);border-color:rgba(74,222,128,0.3);}
+.mode-btn.active-claims{background:var(--blue-bg);color:var(--blue);border-color:rgba(96,165,250,0.3);}
+
+.container{max-width:1100px;margin:0 auto;padding:16px;}
+
+/* EPACS Mode */
+#epacs-mode .grid{display:grid;grid-template-columns:340px 1fr;gap:16px;}
+@media(max-width:800px){#epacs-mode .grid{grid-template-columns:1fr;}}
+.panel{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.panel h2{font-size:16px;color:var(--accent);margin-bottom:12px;}
+label{display:block;font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
+input,select,textarea{
+  width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);padding:8px 12px;font-size:13px;font-family:var(--font);
+  outline:none;margin-bottom:10px;
+}
+input:focus,select:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:60px;font-family:var(--mono);font-size:12px;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+button{
+  background:var(--accent);color:#000;border:none;padding:8px 16px;
+  border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;margin:4px 4px 4px 0;
+}
+button:hover{opacity:0.9;}
+button.secondary{background:var(--bg-input);color:var(--text);border:1px solid var(--border);}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.badge-orange{background:var(--orange-bg);color:var(--orange);}
+.badge-blue{background:var(--blue-bg);color:var(--blue);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+
+/* Batch list */
+.batch-item{
+  background:var(--bg-input);border:1px solid var(--border);border-radius:8px;
+  padding:12px;margin:8px 0;cursor:pointer;transition:border-color 0.15s;
+}
+.batch-item:hover{border-color:var(--accent);}
+.batch-item.selected{border-color:var(--accent);background:var(--accent-bg);}
+.batch-header{display:flex;justify-content:space-between;align-items:center;}
+.batch-header h3{font-size:13px;color:var(--text);margin:0;}
+.batch-orders{margin-top:8px;font-size:12px;color:var(--text-dim);}
+.order-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid rgba(42,42,46,0.5);
+}
+.order-row:last-child{border-bottom:none;}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap;}
+.stat-pill{
+  background:var(--bg-input);border:1px solid var(--border);border-radius:6px;
+  padding:8px 14px;text-align:center;
+}
+.stat-pill .val{font-size:18px;font-weight:700;color:var(--accent);}
+.stat-pill .lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;}
+
+/* Claims form */
+.claim-output{
+  background:var(--bg-input);border:1px solid var(--border);border-radius:8px;
+  padding:16px;font-family:var(--mono);font-size:12px;line-height:1.5;
+  color:var(--text-dim);white-space:pre-wrap;min-height:200px;position:relative;
+}
+.copy-btn{
+  position:absolute;top:8px;right:8px;background:var(--border);color:var(--text-dim);
+  border:none;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;
+}
+.copy-btn:hover{background:var(--accent);color:#000;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Batch Order Tracker &amp; Claims Form</h1>
+  <p>Built for JP Maquilang &middot; Replaces Notepad batch files (*2 RZ through *18 RZ) &middot; Dual-mode: EPACS + Claims</p>
+</div>
+
+<div class="mode-toggle">
+  <div class="mode-btn active-epacs" id="btn-epacs" onclick="switchMode('epacs')">Mon-Wed: EPACS</div>
+  <div class="mode-btn" id="btn-claims" onclick="switchMode('claims')">Thu-Fri: Claims</div>
+</div>
+
+<div class="container">
+
+<!-- ====== EPACS MODE ====== -->
+<div id="epacs-mode">
+  <div class="stats-bar">
+    <div class="stat-pill"><div class="val" id="stat-batches">0</div><div class="lbl">Batches</div></div>
+    <div class="stat-pill"><div class="val" id="stat-orders">0</div><div class="lbl">Orders</div></div>
+    <div class="stat-pill"><div class="val" id="stat-proofed">0</div><div class="lbl">Proofed</div></div>
+    <div class="stat-pill"><div class="val" id="stat-shipped">0</div><div class="lbl">Shipped</div></div>
+    <div class="stat-pill"><div class="val" id="stat-pending">0</div><div class="lbl">Pending</div></div>
+  </div>
+
+  <div class="grid">
+    <!-- Left: Batch list -->
+    <div>
+      <div class="panel">
+        <h2>Order Batches</h2>
+        <div class="row">
+          <div><label>Source</label>
+          <select id="newBatchSource">
+            <option value="RZ">RZ - Repzio</option>
+            <option value="BW">BW - Bungalow 5</option>
+            <option value="MT">MT - MarketTime</option>
+            <option value="WB">WB - Web</option>
+          </select></div>
+          <div><label>Period</label>
+          <select id="newBatchPeriod">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select></div>
+        </div>
+        <button onclick="addBatch()">+ New Batch</button>
+        <div id="batchList"></div>
+      </div>
+    </div>
+
+    <!-- Right: Batch detail -->
+    <div>
+      <div class="panel" id="batchDetail">
+        <h2>Batch Detail</h2>
+        <p style="color:var(--text-muted);font-size:13px;">Select a batch from the left to view and manage its orders.</p>
+        <div id="batchDetailContent"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Add Order to Selected Batch</h2>
+        <div class="row">
+          <div><label>Order #</label><input type="text" id="newOrderNum" placeholder="e.g., 30770661"></div>
+          <div><label>Customer</label><input type="text" id="newOrderCust" placeholder="Customer name"></div>
+        </div>
+        <div class="row">
+          <div><label>Items</label><input type="text" id="newOrderItems" placeholder="Item codes, comma-sep"></div>
+          <div><label>Total</label><input type="number" id="newOrderTotal" step="0.01" placeholder="0.00"></div>
+        </div>
+        <button onclick="addOrderToBatch()">Add Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== CLAIMS MODE ====== -->
+<div id="claims-mode" style="display:none;">
+  <div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="panel">
+      <h2>Carrier Claim Form</h2>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Pre-fill carrier claim data. Replaces manual Notepad assembly.</p>
+
+      <label>Carrier</label>
+      <select id="claimCarrier">
+        <option value="FedEx">FedEx</option>
+        <option value="Zenith">Zenith Global Logistics</option>
+        <option value="Brooks">Brooks Furniture Express</option>
+        <option value="BlueTruck">BlueTruck Logistics</option>
+        <option value="TFX">TFX / ShipTFX</option>
+        <option value="JBHunt">J.B. Hunt</option>
+        <option value="CPU">CPU</option>
+        <option value="Accokeek">Accokeek Express</option>
+        <option value="Western">Western Logistics</option>
+        <option value="BFX">BFX</option>
+      </select>
+
+      <label>Tracking Number</label>
+      <input type="text" id="claimTracking" placeholder="Tracking #">
+
+      <label>Invoice Number</label>
+      <input type="text" id="claimInvoice" placeholder="INV-XXXXX">
+
+      <div class="row">
+        <div><label>Sales Order</label><input type="text" id="claimSO" placeholder="SO XXXXX"></div>
+        <div><label>Case Number</label><input type="text" id="claimCase" placeholder="020XXX"></div>
+      </div>
+
+      <label>Customer Name</label>
+      <input type="text" id="claimCustomer" placeholder="Customer name">
+
+      <label>Bill of Lading / Waybill</label>
+      <input type="text" id="claimBOL" placeholder="BW #">
+
+      <div class="row">
+        <div><label>Damage Type</label>
+        <select id="claimDamageType">
+          <option value="Shipping damage">Shipping Damage</option>
+          <option value="Mishandling">Mishandling</option>
+          <option value="Missing parts">Missing Parts</option>
+          <option value="QC defect">QC / Manufacturing Defect</option>
+          <option value="Other">Other</option>
+        </select></div>
+        <div><label>Claim Amount</label><input type="number" id="claimAmount" step="0.01" placeholder="$0.00"></div>
+      </div>
+
+      <label>Damage Description</label>
+      <textarea id="claimDescription" placeholder="Describe the damage in detail"></textarea>
+
+      <label>Product Details</label>
+      <input type="text" id="claimProduct" placeholder="Product name and item code">
+
+      <div class="row">
+        <div><label>Ship Date</label><input type="date" id="claimShipDate"></div>
+        <div><label>Claim Date</label><input type="date" id="claimDate" value=""></div>
+      </div>
+
+      <button onclick="generateClaim()">Generate Claim Document</button>
+      <button class="secondary" onclick="clearClaim()">Clear</button>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Formatted Claim Output</h2>
+        <p style="font-size:12px;color:var(--text-muted);">Ready to paste into Eclaims, Zenith, TFX, or Notepad carrier log.</p>
+        <div class="claim-output" id="claimOutput">
+          <span class="copy-btn" onclick="copyClaim()">Copy</span>
+          <span style="color:var(--text-muted);">Fill out the form and click Generate to see formatted output.</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Recent Claims</h2>
+        <div id="recentClaims">
+          <p style="color:var(--text-muted);font-size:12px;">Generated claims will appear here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// State
+let batches = [];
+let selectedBatchIdx = -1;
+let recentClaims = [];
+
+// Auto-detect day
+const today = new Date().getDay();
+if (today >= 4) { // Thu=4, Fri=5
+  switchMode('claims');
+}
+document.getElementById('claimDate').value = new Date().toISOString().split('T')[0];
+
+function switchMode(mode) {
+  document.getElementById('epacs-mode').style.display = mode === 'epacs' ? 'block' : 'none';
+  document.getElementById('claims-mode').style.display = mode === 'claims' ? 'block' : 'none';
+  const btnE = document.getElementById('btn-epacs');
+  const btnC = document.getElementById('btn-claims');
+  btnE.className = mode === 'epacs' ? 'mode-btn active-epacs' : 'mode-btn';
+  btnC.className = mode === 'claims' ? 'mode-btn active-claims' : 'mode-btn';
+}
+
+function addBatch() {
+  const source = document.getElementById('newBatchSource').value;
+  const period = document.getElementById('newBatchPeriod').value;
+  const date = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  batches.push({
+    id: batches.length + 1,
+    name: `*${batches.length + 1} ${source}`,
+    source, period, date,
+    orders: []
+  });
+  renderBatches();
+}
+
+function renderBatches() {
+  const list = document.getElementById('batchList');
+  let totalOrders = 0, totalProofed = 0, totalShipped = 0, totalPending = 0;
+
+  list.innerHTML = batches.map((b, i) => {
+    const proofed = b.orders.filter(o => o.status === 'proofed' || o.status === 'shipped').length;
+    const shipped = b.orders.filter(o => o.status === 'shipped').length;
+    const pending = b.orders.filter(o => o.status === 'pending').length;
+    totalOrders += b.orders.length;
+    totalProofed += proofed;
+    totalShipped += shipped;
+    totalPending += pending;
+
+    return `<div class="batch-item ${i === selectedBatchIdx ? 'selected' : ''}" onclick="selectBatch(${i})">
+      <div class="batch-header">
+        <h3>${b.name} ${b.period}</h3>
+        <span class="badge badge-${b.orders.length === 0 ? 'orange' : (pending === 0 ? 'green' : 'yellow')}">${b.orders.length} orders</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">${b.date} &middot; ${b.source} &middot; ${proofed}/${b.orders.length} proofed</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('stat-batches').textContent = batches.length;
+  document.getElementById('stat-orders').textContent = totalOrders;
+  document.getElementById('stat-proofed').textContent = totalProofed;
+  document.getElementById('stat-shipped').textContent = totalShipped;
+  document.getElementById('stat-pending').textContent = totalPending;
+}
+
+function selectBatch(idx) {
+  selectedBatchIdx = idx;
+  renderBatches();
+  renderBatchDetail();
+}
+
+function renderBatchDetail() {
+  const content = document.getElementById('batchDetailContent');
+  if (selectedBatchIdx < 0 || selectedBatchIdx >= batches.length) {
+    content.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No batch selected.</p>';
+    return;
+  }
+  const b = batches[selectedBatchIdx];
+  if (b.orders.length === 0) {
+    content.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No orders yet. Add orders below.</p>';
+    return;
+  }
+  content.innerHTML = b.orders.map((o, i) => `
+    <div class="order-row">
+      <div>
+        <strong>${o.num}</strong>
+        <span style="color:var(--text-muted);font-size:11px;margin-left:8px;">${o.customer}</span>
+        <span style="color:var(--text-muted);font-size:11px;margin-left:8px;">${o.items}</span>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <span style="font-size:12px;">$${o.total.toFixed(2)}</span>
+        <select style="width:auto;margin:0;padding:2px 6px;font-size:11px;" onchange="updateOrderStatus(${i},this.value)">
+          <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+          <option value="proofed" ${o.status==='proofed'?'selected':''}>Proofed</option>
+          <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
+          <option value="hold" ${o.status==='hold'?'selected':''}>Hold</option>
+        </select>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addOrderToBatch() {
+  if (selectedBatchIdx < 0) { alert('Select a batch first.'); return; }
+  const num = document.getElementById('newOrderNum').value.trim();
+  const customer = document.getElementById('newOrderCust').value.trim();
+  const items = document.getElementById('newOrderItems').value.trim();
+  const total = parseFloat(document.getElementById('newOrderTotal').value) || 0;
+  if (!num) return;
+  batches[selectedBatchIdx].orders.push({ num, customer, items, total, status: 'pending' });
+  document.getElementById('newOrderNum').value = '';
+  document.getElementById('newOrderCust').value = '';
+  document.getElementById('newOrderItems').value = '';
+  document.getElementById('newOrderTotal').value = '';
+  renderBatches();
+  renderBatchDetail();
+}
+
+function updateOrderStatus(orderIdx, status) {
+  batches[selectedBatchIdx].orders[orderIdx].status = status;
+  renderBatches();
+}
+
+// Claims
+function generateClaim() {
+  const carrier = document.getElementById('claimCarrier').value;
+  const tracking = document.getElementById('claimTracking').value;
+  const invoice = document.getElementById('claimInvoice').value;
+  const so = document.getElementById('claimSO').value;
+  const caseNum = document.getElementById('claimCase').value;
+  const customer = document.getElementById('claimCustomer').value;
+  const bol = document.getElementById('claimBOL').value;
+  const damageType = document.getElementById('claimDamageType').value;
+  const amount = document.getElementById('claimAmount').value;
+  const description = document.getElementById('claimDescription').value;
+  const product = document.getElementById('claimProduct').value;
+  const shipDate = document.getElementById('claimShipDate').value;
+  const claimDate = document.getElementById('claimDate').value;
+
+  let out = `-----------------------\n`;
+  out += `${carrier} ${tracking}\n`;
+  out += `inv: ${invoice}\n`;
+  out += `SO ${so}\n`;
+  out += `Case: ${caseNum}\n`;
+  out += `BW ${bol}\n`;
+  out += `Customer: ${customer}\n`;
+  out += `Product: ${product}\n`;
+  out += `Damage: ${damageType}\n`;
+  out += `Description: ${description}\n`;
+  out += `Ship Date: ${shipDate}\n`;
+  out += `Claim Date: ${claimDate}\n`;
+  out += `Amount: $${parseFloat(amount || 0).toFixed(2)}\n`;
+  out += `Filed by: JP Maquilang, Villa and House\n`;
+  out += `Email: claims@vandh.com\n`;
+  out += `-----------------------\n`;
+
+  document.getElementById('claimOutput').textContent = out;
+
+  recentClaims.unshift({ carrier, tracking, caseNum, amount, date: claimDate });
+  renderRecentClaims();
+}
+
+function renderRecentClaims() {
+  const el = document.getElementById('recentClaims');
+  el.innerHTML = recentClaims.slice(0, 10).map(c => `
+    <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin:4px 0;font-size:12px;display:flex;justify-content:space-between;">
+      <span><strong>${c.carrier}</strong> &middot; ${c.tracking || 'No tracking'} &middot; Case ${c.caseNum || '--'}</span>
+      <span>$${parseFloat(c.amount || 0).toFixed(2)}</span>
+    </div>
+  `).join('');
+}
+
+function copyClaim() {
+  const text = document.getElementById('claimOutput').textContent;
+  navigator.clipboard.writeText(text);
+  document.querySelector('#claims-mode .copy-btn').textContent = 'Copied!';
+  setTimeout(() => document.querySelector('#claims-mode .copy-btn').textContent = 'Copy', 1500);
+}
+
+function clearClaim() {
+  document.querySelectorAll('#claims-mode input, #claims-mode textarea').forEach(el => {
+    if (el.type !== 'date') el.value = '';
+  });
+  document.getElementById('claimOutput').textContent = 'Fill out the form and click Generate to see formatted output.';
+}
+</script>
+</body>
+</html>
