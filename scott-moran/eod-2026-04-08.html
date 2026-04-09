@@ -3,673 +3,282 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Go2 — April 8, 2026 — Situation Report</title>
+<title>April 8 — Frenchie Saw the Machine</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg: #0c0c0f;
-  --surface: #16161a;
-  --surface-2: #1e1e24;
-  --surface-3: #26262e;
-  --text: #e8e6e3;
-  --text-muted: #8b8994;
-  --text-faint: #5c5a66;
-  --accent: #f97316;
-  --accent-dim: #f9731618;
-  --red: #ef4444;
-  --red-dim: #ef444415;
-  --green: #22c55e;
-  --green-dim: #22c55e15;
-  --amber: #eab308;
-  --amber-dim: #eab30815;
-  --blue: #3b82f6;
-  --blue-dim: #3b82f615;
-  --purple: #a855f7;
-  --purple-dim: #a855f715;
-  --border: #2a2a33;
-  --heading: 'Space Grotesk', -apple-system, sans-serif;
-  --body: 'Inter', -apple-system, sans-serif;
-  --mono: 'Space Mono', monospace;
+  --ink: #111;
+  --paper: #fff;
+  --wash: #f6f4f0;
+  --rule: #ccc;
+  --faint: #999;
+  --note: #666;
+  --hit: #b91c1c;
+  --go: #15803d;
+  --hold: #a16207;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  font-family: var(--body);
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
-  padding: 2rem 1.5rem;
-  max-width: 960px;
+  font: 400 17px/1.75 'Newsreader', Georgia, serif;
+  color: var(--ink);
+  background: var(--paper);
+  max-width: 640px;
   margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
 }
 
-/* === HEADER === */
-.header {
-  padding-bottom: 2rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid var(--border);
-}
-.header-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  color: var(--text-faint);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-}
-.header-meta .live {
-  color: var(--red);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.header-meta .live::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--red);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-.header h1 {
-  font-family: var(--heading);
-  font-size: 2.4rem;
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--text);
-  margin-bottom: 0.75rem;
-  letter-spacing: -0.02em;
-}
-.header h1 span {
-  color: var(--accent);
-}
-.header .subtitle {
-  font-size: 1rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  max-width: 700px;
-}
+/* running head */
+.running { font: 500 10px/1 'IBM Plex Mono', monospace; letter-spacing: .15em; text-transform: uppercase; color: var(--faint); margin-bottom: 2.5rem; display: flex; justify-content: space-between; }
 
-/* === STATUS GRID === */
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 2rem 0;
-}
-.status-cell {
-  background: var(--surface);
-  padding: 1.25rem 1rem;
-}
-.status-cell .metric-label {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-faint);
-  margin-bottom: 0.5rem;
-}
-.status-cell .metric-value {
-  font-family: var(--heading);
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1;
-}
-.status-cell .metric-value.critical { color: var(--red); }
-.status-cell .metric-value.warning { color: var(--amber); }
-.status-cell .metric-value.good { color: var(--green); }
-.status-cell .metric-value.highlight { color: var(--accent); }
-.status-cell .metric-note {
-  font-size: 0.65rem;
-  color: var(--text-faint);
-  margin-top: 0.3rem;
-}
+h1 { font: 300 38px/1.15 'Newsreader', Georgia, serif; margin-bottom: .75rem; }
+.lede { font: 400 italic 20px/1.5 'Newsreader', Georgia, serif; color: var(--note); margin-bottom: 2.5rem; }
 
-/* === SECTIONS === */
-.section {
-  margin: 3rem 0;
-}
-.section-tag {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  padding: 0.25rem 0.75rem;
-  border: 1px solid var(--accent);
-  border-radius: 100px;
-  margin-bottom: 1rem;
-}
-h2 {
-  font-family: var(--heading);
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-h3 {
-  font-family: var(--heading);
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 1.5rem 0 0.5rem;
-  color: var(--text);
-}
-p, li {
-  font-size: 0.9rem;
-  margin-bottom: 0.6rem;
-  color: var(--text-muted);
-}
-ul { padding-left: 1.2rem; }
-li { margin-bottom: 0.4rem; }
-strong { color: var(--text); font-weight: 600; }
+hr { border: none; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
 
-/* === LANE CARDS === */
-.lane-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+h2 { font: 500 13px/1 'IBM Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--hit); margin-bottom: 1.25rem; }
+h3 { font: 500 17px/1.4 'Newsreader', Georgia, serif; margin: 1.5rem 0 .5rem; }
+
+p { margin-bottom: 1rem; }
+ul { padding-left: 1.25rem; margin-bottom: 1rem; }
+li { margin-bottom: .4rem; }
+
+/* the call block */
+.call-block {
+  background: var(--wash);
+  padding: 2rem;
+  margin: 2rem -1.5rem;
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+.call-block h3 { margin-top: 0; font-size: 22px; }
+.call-block .meta { font: 400 13px/1.6 'IBM Plex Mono', monospace; color: var(--note); margin-bottom: 1rem; }
+
+/* commitment table */
+table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 1rem 0 1.5rem; }
+th { font: 500 10px/1 'IBM Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); text-align: left; padding: .5rem 0; border-bottom: 2px solid var(--ink); }
+td { padding: .5rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td:first-child { padding-right: 1rem; }
+
+/* status pills */
+.pill { font: 500 10px/1 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; white-space: nowrap; }
+.pill-pending { background: #fef3c7; color: var(--hold); }
+.pill-done { background: #dcfce7; color: var(--go); }
+.pill-miss { background: #fee2e2; color: var(--hit); }
+
+/* the body gauge */
+.gauge { display: flex; gap: 2rem; margin: 1rem 0 1.5rem; flex-wrap: wrap; }
+.gauge-item { flex: 1; min-width: 120px; }
+.gauge-item .num { font: 300 42px/1 'Newsreader', Georgia, serif; }
+.gauge-item .num.bad { color: var(--hit); }
+.gauge-item .lbl { font: 400 11px/1.4 'IBM Plex Mono', monospace; color: var(--faint); text-transform: uppercase; letter-spacing: .1em; }
+
+/* aside box */
+aside {
+  border-left: 3px solid var(--rule);
+  padding-left: 1.25rem;
   margin: 1.5rem 0;
-}
-.lane-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.25rem;
-  position: relative;
-  overflow: hidden;
-}
-.lane-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-}
-.lane-card.lane-larry::before { background: var(--blue); }
-.lane-card.lane-moe::before { background: var(--purple); }
-.lane-card.lane-shemp::before { background: var(--amber); }
-.lane-card.lane-scott::before { background: var(--accent); }
-.lane-card.lane-frenchie::before { background: var(--green); }
-.lane-card .lane-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-.lane-card .lane-name {
-  font-family: var(--heading);
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text);
-}
-.lane-card .lane-time {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--text-faint);
-}
-.lane-card .lane-status {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.15rem 0.5rem;
-  border-radius: 100px;
-  display: inline-block;
-  margin-bottom: 0.5rem;
-}
-.lane-card .lane-status.in-flight { background: var(--amber-dim); color: var(--amber); }
-.lane-card .lane-status.shipped { background: var(--green-dim); color: var(--green); }
-.lane-card .lane-status.new { background: var(--blue-dim); color: var(--blue); }
-.lane-card .lane-status.idle { background: var(--surface-3); color: var(--text-faint); }
-.lane-card ul {
-  padding-left: 1rem;
-  margin-top: 0.5rem;
-}
-.lane-card li {
-  font-size: 0.8rem;
-  margin-bottom: 0.3rem;
-  color: var(--text-muted);
+  font-style: italic;
+  color: var(--note);
 }
 
-/* === SIGNAL BLOCKS === */
-.signal-block {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.25rem 1.5rem;
-  margin: 1rem 0;
-}
-.signal-block.signal-green { border-left: 3px solid var(--green); }
-.signal-block.signal-amber { border-left: 3px solid var(--amber); }
-.signal-block.signal-red { border-left: 3px solid var(--red); }
-.signal-block.signal-blue { border-left: 3px solid var(--blue); }
-.signal-block .signal-label {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: 0.5rem;
-}
-.signal-block.signal-green .signal-label { color: var(--green); }
-.signal-block.signal-amber .signal-label { color: var(--amber); }
-.signal-block.signal-red .signal-label { color: var(--red); }
-.signal-block.signal-blue .signal-label { color: var(--blue); }
-.signal-block p { color: var(--text); margin-bottom: 0.5rem; }
-
-/* === TIMELINE BAR === */
-.timeline-bar {
-  display: flex;
-  height: 40px;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  margin: 1rem 0;
-}
-.timeline-bar .seg {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--mono);
-  font-size: 0.5rem;
-  color: rgba(255,255,255,0.8);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition: opacity 0.2s;
-}
-.timeline-bar .seg:hover { opacity: 0.8; }
-.timeline-labels {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  color: var(--text-faint);
-  margin-top: 0.3rem;
-  padding: 0 0.25rem;
-}
-
-/* === BODY SCORE === */
-.body-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-.body-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.25rem;
-  text-align: center;
-}
-.body-card .body-score {
-  font-family: var(--heading);
-  font-size: 2.5rem;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 0.25rem;
-}
-.body-card .body-label {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-faint);
-}
-.body-card .body-detail {
-  font-size: 0.7rem;
-  color: var(--text-faint);
-  margin-top: 0.5rem;
-}
-
-/* === MISS BLOCK === */
-.miss-block {
-  background: var(--red-dim);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-}
-.miss-block h3 {
-  color: var(--red);
-  margin: 0 0 0.75rem;
-  font-size: 0.9rem;
-}
-.miss-block p {
-  color: var(--text);
-  font-size: 0.85rem;
-}
-
-/* === FOOTER === */
-.footer {
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--text-faint);
-  text-align: center;
-  line-height: 1.8;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 700px) {
-  .status-grid { grid-template-columns: repeat(2, 1fr); }
-  .lane-grid { grid-template-columns: 1fr; }
-  .body-grid { grid-template-columns: 1fr; }
-  .header h1 { font-size: 1.8rem; }
-}
+.footnote { font: 400 12px/1.6 'IBM Plex Mono', monospace; color: var(--faint); margin-top: 3rem; text-align: center; }
 </style>
 </head>
 <body>
 
-<!-- === HEADER === -->
-<div class="header">
-  <div class="header-meta">
-    <span>Go2 Situation Report &mdash; April 8, 2026</span>
-    <span class="live">Sessions still active</span>
-  </div>
-  <h1>Mid-Restructure. <span>Not Done Yet.</span></h1>
-  <p class="subtitle">Fifteen-plus hours. Frenchie onboarded. AIEA became real infrastructure. The operating contract got rewritten under live load. Moe reshaped the discovery factory while Larry built the reporting archive. Five agents working, nothing cleanly closed, everything moving. This is what a system-level refactor looks like from inside.</p>
+<div class="running">
+  <span>Go2 &mdash; April 8, 2026</span>
+  <span>Filed 1:45am Apr 9 by Larry [AI]</span>
 </div>
 
-<!-- === STATUS GRID === -->
-<div class="status-grid">
-  <div class="status-cell">
-    <div class="metric-label">Tracked Hours</div>
-    <div class="metric-value highlight">12.7+</div>
-    <div class="metric-note">10am &rarr; 1:45am+</div>
-  </div>
-  <div class="status-cell">
-    <div class="metric-label">Voice Output</div>
-    <div class="metric-value">27.3K</div>
-    <div class="metric-note">299 recordings</div>
-  </div>
-  <div class="status-cell">
-    <div class="metric-label">Agents Active</div>
-    <div class="metric-value good">5</div>
-    <div class="metric-note">Larry, Moe, Shemp, Frenchie, Scott</div>
-  </div>
-  <div class="status-cell">
-    <div class="metric-label">Sessions Closed</div>
-    <div class="metric-value critical">0</div>
-    <div class="metric-note">All still open</div>
-  </div>
-  <div class="status-cell">
-    <div class="metric-label">Sleep Score</div>
-    <div class="metric-value critical">57</div>
-    <div class="metric-note">REM: 10/100</div>
-  </div>
-  <div class="status-cell">
-    <div class="metric-label">Readiness</div>
-    <div class="metric-value critical">52</div>
-    <div class="metric-note">HRV Balance: 24</div>
-  </div>
-  <div class="status-cell">
-    <div class="metric-label">Keystrokes</div>
-    <div class="metric-value">16K</div>
-    <div class="metric-note">Codex 5.9K, Msgs 4K</div>
-  </div>
-  <div class="status-cell">
-    <div class="metric-label">Git Commits</div>
-    <div class="metric-value">5</div>
-    <div class="metric-note">+ dirty worktree</div>
-  </div>
+<h1>The Factory Ran Twice.</h1>
+<p class="lede">Two different orgs. Four deliverables. One afternoon, one evening. The 3i Members Discovery Brief dropped at 4:34 PM. Then at 10 PM the factory ran again on Villa House and produced an operational audit, implementation playbook, and internal capacity report in 55 minutes. Then at 10:30 Frenchie got on Zoom, watched the machine, and said yes. The product works.</p>
+
+<hr>
+
+<!-- ===================== THE FACTORY ===================== -->
+
+<h2>The Factory Runs</h2>
+
+<div class="call-block">
+  <h3>Run 1 — 3i Members Discovery Brief</h3>
+  <div class="meta">4:34 PM &bull; 25KB &bull; ~/Desktop/3i-members-deliverable.html</div>
+  <p>The discovery factory produced a full Discovery Brief for 3i Members. One org, one run, one deliverable. This is the product doing what it's supposed to do &mdash; taking an organization's data and generating actionable discovery output without manual assembly.</p>
 </div>
 
-<!-- === WHAT THE DAY LOOKED LIKE === -->
-<div class="section">
-  <div class="section-tag">Timeline</div>
-  <h2>The Shape of the Day</h2>
-  <div class="timeline-bar">
-    <div class="seg" style="width:10%; background:#3b82f6;" title="10-11:30am — Morning Ramp">Ramp</div>
-    <div class="seg" style="width:15%; background:#a855f7;" title="11:30am-1:30pm — Codex + Chrome">Codex</div>
-    <div class="seg" style="width:10%; background:#f97316;" title="1:30-3pm — Peak Voice (6.7K words)">Voice Dump</div>
-    <div class="seg" style="width:15%; background:#a855f7;" title="3-5pm — Codex + Calendar">Codex + Cal</div>
-    <div class="seg" style="width:4%; background:#26262e;" title="5-6pm — Gap">Gap</div>
-    <div class="seg" style="width:22%; background:#a855f7;" title="6-9pm — Evening Sprint">Evening Sprint</div>
-    <div class="seg" style="width:14%; background:#3b82f6;" title="9pm-midnight — Reports + Cleanup">Reports</div>
-    <div class="seg" style="width:10%; background:#ef4444;" title="midnight-1:45am+ — Still Working">Still On</div>
-  </div>
-  <div class="timeline-labels">
-    <span>10am</span>
-    <span>1pm</span>
-    <span>3pm</span>
-    <span>6pm</span>
-    <span>9pm</span>
-    <span>12am</span>
-    <span>1:45am</span>
-  </div>
-  <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-faint);">Cowork.ai tracked 12.7h across 19 apps / 916 sessions. Real work continued past midnight into April 9 but is attributed to April 8. Top apps: Codex 4.7h, Chrome 3.8h, Claude 2.4h, Messages 1h, Zoom 19m.</p>
+<div class="call-block">
+  <h3>Run 2 — Villa House Triple Report</h3>
+  <div class="meta">10:00 PM &ndash; 10:55 PM &bull; 153KB total &bull; 3 reports in 55 minutes</div>
+  <p>The factory ran again on Villa House and produced three deliverables:</p>
+  <ul style="margin: .75rem 0;">
+    <li><strong>Operational Audit</strong> (65KB) &mdash; 10:00 PM</li>
+    <li><strong>Implementation Playbook</strong> (29KB) &mdash; 10:14 PM</li>
+    <li><strong>Internal Capacity Report</strong> (59KB) &mdash; 10:55 PM</li>
+  </ul>
+  <p>Three reports. Different org than run 1. Under an hour. The factory that took weeks to build ran twice in one day on two different organizations and produced real, sendable deliverables both times.</p>
 </div>
 
-<!-- === AGENT LANES === -->
-<div class="section">
-  <div class="section-tag">Agent Lanes</div>
-  <h2>Who Did What</h2>
+<hr>
 
-  <div class="lane-grid">
-    <!-- MOE -->
-    <div class="lane-card lane-moe">
-      <div class="lane-header">
-        <span class="lane-name">Moe (Codex)</span>
-        <span class="lane-time">4.7h / 5,915 keys</span>
-      </div>
-      <span class="lane-status in-flight">In Flight</span>
-      <ul>
-        <li><strong>AIEA materially advanced</strong> &mdash; contracts, terminology, session-model, build/runtime scaffolding now exist as real infrastructure</li>
-        <li><strong>Contract/lifecycle cleanup:</strong> hot AGENTS.md changes, access/infra AGENTS split, session-start rewritten as blocking routing gate</li>
-        <li><strong>SOD/session-start de-noised</strong> &mdash; no longer post presence noise</li>
-        <li><strong>Discovery factory:</strong> portable Go2 workflow-discovery/automation-discovery factory created; first org-wide Go2 crew discovery package with polished surfaces/tools</li>
-        <li><strong>Sales lane kept alive:</strong> warm pipeline active, review/send stack live, manual follow-ups pending</li>
-        <li><strong>Council/Town Hall:</strong> fixed preview exists, production alias still stale</li>
-        <li><strong>Governance warnings:</strong> stronger restructure-period doc-creation warnings landed</li>
-      </ul>
-      <p style="font-size: 0.75rem; color: var(--text-faint); margin-top: 0.75rem;">Moe's pass tonight was intentionally read-only. No durable writes, no Slack post, no fake EOD close. The truthful state is messy and open.</p>
-    </div>
+<!-- ===================== THE CALL ===================== -->
 
-    <!-- LARRY -->
-    <div class="lane-card lane-larry">
-      <div class="lane-header">
-        <span class="lane-name">Larry (Claude Code)</span>
-        <span class="lane-time">2.4h / 3,263 keys</span>
-      </div>
-      <span class="lane-status shipped">Shipped</span>
-      <ul>
-        <li><strong>Interim report generated</strong> &mdash; Apr 3-7 gap documented: 66.6h, 155K words, 94+ commits, 29 open loops</li>
-        <li><strong>Report index page built</strong> &mdash; all 19+ reports now browsable from single URL</li>
-        <li>telemetry-digest.py browser data fix</li>
-        <li>HTML version of interim report for in-browser viewing</li>
-        <li>This EOD report (retroactive, post-midnight)</li>
-      </ul>
-    </div>
+<div class="call-block">
+  <h3>The Frenchie Call</h3>
+  <div class="meta">~10:30 PM &bull; ~30 minutes &bull; Zoom (recorded) &bull; Scott + Frenchie Evangelista</div>
 
-    <!-- FRENCHIE -->
-    <div class="lane-card lane-frenchie">
-      <div class="lane-header">
-        <span class="lane-name">Frenchie (New)</span>
-        <span class="lane-time">Onboarded today</span>
-      </div>
-      <span class="lane-status new">Onboarded</span>
-      <ul>
-        <li>New agent brought into the system</li>
-        <li>Onboarding completed during the restructure period</li>
-        <li>First day in the operating environment</li>
-      </ul>
-    </div>
+  <p>Frenchie Evangelista is Go2's first internal operator. Not an engineer. Not a technical hire. An engagement manager from Engage who Scott put in front of the system and walked through everything: the activity tracking, the reports, the skills, the MCPs, the folder structure, Claude Code, the 59-person single-run report, Mickey's auto-generated ops tools, and Frenchie's own profile in the system.</p>
 
-    <!-- SHEMP -->
-    <div class="lane-card lane-shemp">
-      <div class="lane-header">
-        <span class="lane-name">Shemp (Gemini CLI)</span>
-        <span class="lane-time">Background</span>
-      </div>
-      <span class="lane-status idle">Patrol</span>
-      <ul>
-        <li>SOD + sentry sweep &mdash; two passes, both clean</li>
-        <li>Status and log updates committed</li>
-      </ul>
-    </div>
+  <p>She committed to buying Claude at $200/month. She agreed to a two-week follow-up call after real usage. She asked whether the tools the AI recommends were created by the AI itself &mdash; Scott confirmed yes, ~95% correct, never even read them before they ran. She wanted to read her own engagement managers' report.</p>
 
-    <!-- SCOTT -->
-    <div class="lane-card lane-scott" style="grid-column: 1 / -1;">
-      <div class="lane-header">
-        <span class="lane-name">Scott (Human)</span>
-        <span class="lane-time">15+ hours / 27.3K words dictated</span>
-      </div>
-      <span class="lane-status in-flight">Still Working</span>
-      <ul>
-        <li><strong>299 voice recordings</strong> &mdash; peak at 1pm (6,697 words in one hour, likely major strategy/product session feeding Moe)</li>
-        <li><strong>Frenchie onboarded</strong> &mdash; new agent brought into the system during restructure</li>
-        <li><strong>Messages:</strong> 1h, 4,039 keystrokes &mdash; pilot/sales/coordination conversations</li>
-        <li><strong>Zoom:</strong> ~19 minutes of calls</li>
-        <li><strong>Calendar:</strong> planning Friday April 10 schedule</li>
-        <li><strong>3i Members:</strong> job board research (parallel consulting/opportunity track)</li>
-        <li><strong>Go2 Mail:</strong> inbox management across multiple threads</li>
-        <li><strong>Google AI Studio:</strong> experimentation session</li>
-        <li><strong>Chrome total:</strong> 3.8h across calendar, mail, research, and AI tools</li>
-      </ul>
-    </div>
+  <p><strong>This is the first time a non-technical operator agreed to use the Go2 system independently.</strong> That's not a demo. That's an adoption signal.</p>
+</div>
+
+<h2>What Frenchie Was Promised</h2>
+
+<table>
+  <thead><tr><th>Commitment</th><th>Owner</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>Starter prompt with database access</td><td>Larry</td><td><span class="pill pill-pending">Pending</span></td></tr>
+    <tr><td>Master prompts + skill bundles</td><td>Scott</td><td><span class="pill pill-pending">Pending</span></td></tr>
+    <tr><td>Open Router access (all frontier models)</td><td>Scott</td><td><span class="pill pill-pending">Pending</span></td></tr>
+    <tr><td>Implementation playbook / example zips</td><td>Scott</td><td><span class="pill pill-done">Sent during call</span></td></tr>
+    <tr><td>Async support in thread</td><td>Scott / Larry</td><td><span class="pill pill-done">Ongoing</span></td></tr>
+  </tbody>
+</table>
+
+<table>
+  <thead><tr><th>What Frenchie will do</th><th>When</th></tr></thead>
+  <tbody>
+    <tr><td>Buy Claude $200/month</td><td>Immediately</td></tr>
+    <tr><td>Experiment with starter prompt, generate reports</td><td>This week</td></tr>
+    <tr><td>QA reports + export data for Scott to review</td><td>Within 2 weeks</td></tr>
+    <tr><td>Hook up Open Router as independent auditor</td><td>After Scott sends access</td></tr>
+    <tr><td>Schedule follow-up call</td><td>~2 weeks</td></tr>
+  </tbody>
+</table>
+
+<aside>Frenchie is not deeply technical. Had trouble sharing screen and unzipping files. But she was receptive, curious, tracked the concepts, and said yes when asked if she felt prepared to start. She wished Scott good luck on the Friday fundraising call. She's in.</aside>
+
+<hr>
+
+<!-- ===================== THE RESTRUCTURE ===================== -->
+
+<h2>The System Rebuild (Still Running)</h2>
+
+<p>April 8 was day three of a system-level restructure. Nothing was cleanly closed today. That's the point &mdash; you don't close a restructure mid-restructure. Here's what materially moved:</p>
+
+<h3>AIEA became real infrastructure</h3>
+<p>Contracts exist. Terminology and session-model work exists. Build and runtime scaffolding exists. AIEA went from "loose idea" to "session-governance system that agents are expected to read and instantiate." This is the continuity layer that prevents drift across the multi-agent system.</p>
+
+<h3>The operating contract got rewritten under live load</h3>
+<p>brain/AGENTS.md took hot changes. Access/infra got split into its own AGENTS file. session-start was rewritten as a blocking routing gate and redeployed. SOD and session-start no longer post presence noise. Stronger restructure-period warnings landed. These are the kind of changes that are invisible from outside but shape every future session.</p>
+
+<h3>The discovery factory materialized</h3>
+<p>A portable Go2 workflow-discovery / automation-discovery factory now exists. The first org-wide Go2 crew discovery package has multiple polished surfaces and tools. This is the product &mdash; not yet canonical, not yet final, but real and demonstrable. It's what Scott showed Frenchie.</p>
+
+<h3>Larry shipped the reporting archive</h3>
+<p>The interim report covered the Apr 3&ndash;7 gap (66.6 hours, 155K words, 94+ commits, 29 open loops). The report index made all 20 reports browsable from a single URL. The documentation gap is closed.</p>
+
+<h3>Shemp ran patrol</h3>
+<p>Two sentry passes, both clean. SOD + status committed. Background work, not headline work.</p>
+
+<h3>Frenchie was onboarded</h3>
+<p>See above. New agent in the system. First operator outside the core team.</p>
+
+<hr>
+
+<!-- ===================== MISSES ===================== -->
+
+<h2>What Got Missed</h2>
+
+<p><strong>AIEA sessions directory is empty.</strong> The contracts were built but never instantiated. No live, dormant, or archived session package exists under <code>~/product/aiea/sessions/</code>. If AIEA was supposed to trigger on every meaningful session start, that's an operational miss. The infrastructure was built but never used.</p>
+
+<p><strong>No clean brain commits since midnight.</strong> The worktree is dirty. The signal for what happened today is in active-state docs and modified files, not in git history. Brain is in-flight across contract cleanup, infra rewrites, memory-engine restructuring, and active-state updates.</p>
+
+<p><strong>Seventh day without a filed EOD.</strong> The system that's supposed to produce daily reports was being rebuilt instead of producing reports. This one is being filed retroactively at 1:45am.</p>
+
+<p><strong>Council/Town Hall production alias still stale.</strong> Fixed preview exists. Production promotion still needs authenticated validation.</p>
+
+<p><strong>Frenchie's pending deliverables are unfulfilled.</strong> The starter prompt, master prompts, skill bundles, and Open Router access were all promised on the call. None have been sent yet. These are the things that determine whether Frenchie actually uses the system or lets it sit.</p>
+
+<hr>
+
+<!-- ===================== TOMORROW ===================== -->
+
+<h2>Tomorrow — April 9</h2>
+
+<p><strong>12:00 PM &mdash; Fundraising call with Mark and Andy.</strong> This is the $3M conversation thread from April 2, rebooked. Morning is prep. On a Sleep 57 / REM 10 body, the cognitive window is before 2pm. The call IS the morning. Everything else is after.</p>
+
+<p><strong>After the call:</strong> Send Frenchie her deliverables (starter prompt, Open Router access). Check warm email replies from the Apr 3&ndash;7 sends. Don't try to close the restructure and prep for fundraising in the same morning.</p>
+
+<hr>
+
+<!-- ===================== BODY ===================== -->
+
+<h2>The Body</h2>
+
+<div class="gauge">
+  <div class="gauge-item">
+    <div class="num bad">57</div>
+    <div class="lbl">Sleep</div>
+  </div>
+  <div class="gauge-item">
+    <div class="num bad">52</div>
+    <div class="lbl">Readiness</div>
+  </div>
+  <div class="gauge-item">
+    <div class="num bad">10</div>
+    <div class="lbl">REM</div>
+  </div>
+  <div class="gauge-item">
+    <div class="num bad">24</div>
+    <div class="lbl">HRV Balance</div>
   </div>
 </div>
 
-<!-- === WHAT ACTUALLY MOVED === -->
-<div class="section">
-  <div class="section-tag">Signal</div>
-  <h2>What Materially Moved</h2>
+<p>REM at 10/100 means the brain is barely consolidating memory. Sleep Balance at 36/100 and Sleep Regularity at 41/100 say the Apr 3&ndash;7 debt hasn't been repaid. Resting heart rate and body temperature are fine &mdash; the body isn't broken, it's under-rested. The fix is boring: sleep before midnight, 8+ hours, several nights running. It's 1:45am.</p>
 
-  <div class="signal-block signal-green">
-    <div class="signal-label">Moved &mdash; AIEA Is Now Real Infrastructure</div>
-    <p><strong>AIEA went from "loose idea" to "real session-governance system" today.</strong> Contracts exist. Terminology and session-model work exists. Build/runtime scaffolding exists. This was treated as a serious feature lane, not an afterthought. This is the session continuity layer that prevents drift across the multi-agent system.</p>
-  </div>
+<hr>
 
-  <div class="signal-block signal-green">
-    <div class="signal-label">Moved &mdash; Operating Contract Rewritten Under Load</div>
-    <p><strong>brain/AGENTS.md took hot changes.</strong> Access/infra AGENTS split happened. session-start was rewritten as a blocking routing gate and redeployed. SOD and session-start no longer post presence noise. Stronger warnings about not creating new governed docs during the restructure were landed. This is the kind of change that's invisible from outside but shapes every future session.</p>
-  </div>
+<!-- ===================== THE DAY IN NUMBERS ===================== -->
 
-  <div class="signal-block signal-green">
-    <div class="signal-label">Moved &mdash; Discovery Product Exists</div>
-    <p><strong>A portable Go2 workflow-discovery / automation-discovery factory now exists.</strong> The first org-wide Go2 crew discovery package has multiple polished surfaces and tools. This is real progress toward the product &mdash; not just notes, but not yet canonical or final.</p>
-  </div>
+<h2>Telemetry (For the Record)</h2>
 
-  <div class="signal-block signal-blue">
-    <div class="signal-label">Moved &mdash; Reporting Archive Is Browsable</div>
-    <p><strong>19+ reports are now accessible from a single URL.</strong> The interim report closed the Apr 3-7 documentation gap. The index page makes the full archive navigable. This is both internal infrastructure and a sales demonstration artifact.</p>
-  </div>
+<p style="font-size: 15px; color: var(--note);">This is the raw data. It's here for completeness, not because it's the story.</p>
 
-  <div class="signal-block signal-amber">
-    <div class="signal-label">Alive But Untouched &mdash; Sales Pipeline</div>
-    <p><strong>70 deals still in HubSpot. 18 warm emails sent during Apr 3-7. Replies pending.</strong> The pipeline didn't advance today, but it didn't decay either. The review/send stack is still live. Manual follow-ups are pending. This is the cost of a governance day: revenue-direct work pauses.</p>
-  </div>
-</div>
+<table>
+  <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Tracked hours (Cowork.ai)</td><td>12.71h &mdash; 10am to midnight, work continued to 1:45am+</td></tr>
+    <tr><td>Apps used</td><td>19 apps, 916 sessions</td></tr>
+    <tr><td>Codex (Moe)</td><td>4.69h, 5,915 keystrokes</td></tr>
+    <tr><td>Chrome</td><td>3.76h &mdash; Calendar (2.5h), Go2 Mail, 3i Members, Google AI Studio</td></tr>
+    <tr><td>Claude (Larry)</td><td>2.37h, 3,263 keystrokes</td></tr>
+    <tr><td>Messages</td><td>1.0h, 4,039 keystrokes</td></tr>
+    <tr><td>Zoom (Frenchie call)</td><td>~30 min at 10:30 PM (19 min active-window &mdash; rest in other apps during demo)</td></tr>
+    <tr><td>Voice recordings</td><td>299 recordings, 27,296 words &mdash; peak at 1pm (6,697 words)</td></tr>
+    <tr><td>Total keystrokes</td><td>16,013 chars</td></tr>
+    <tr><td>Git commits</td><td>5 (brain repo) + dirty worktree</td></tr>
+  </tbody>
+</table>
 
-<!-- === OPERATIONAL MISSES === -->
-<div class="section">
-  <div class="section-tag">Misses</div>
-  <h2>What Got Missed</h2>
+<aside>
+  <strong>Note on Zoom duration:</strong> Cowork.ai tracks active-window time. When Scott was sharing other windows during the Zoom call, Zoom wasn't the active app. The actual call ran from 12:56 PM to ~1:30 PM (first to last Zoom timestamp). 33 minutes, not 19.
+</aside>
 
-  <div class="miss-block">
-    <h3>AIEA Sessions: No Live Package Exists</h3>
-    <p>AIEA contracts exist and the system design advanced materially. But there is no live, dormant, or archived session package under <code style="font-family: var(--mono); font-size: 0.8rem; background: var(--surface-3); padding: 0.1rem 0.4rem; border-radius: 3px;">~/product/aiea/sessions/</code>. If AIEA was supposed to trigger on every meaningful session start, that appears to be a real operational miss. The infrastructure was built but never instantiated.</p>
-  </div>
+<aside>
+  <strong>Note on report location:</strong> EOD reports currently live in brain/reports/ and go2-discovery-examples/scott-moran/. These need to relocate to go2-discovery-product with a dedicated EOD runs folder. This is a temporary placement.
+</aside>
 
-  <div class="miss-block">
-    <h3>No Clean Brain Commits Since Midnight</h3>
-    <p>The signal for today is the dirty worktree plus active-state docs, not a neat commit history. Brain is heavily in-flight across contract cleanup, infra doc/skill rewrites, memory-engine restructuring, and active-state updates. The git history is incomplete &mdash; the work is in the working directory, not in commits.</p>
-  </div>
+<hr>
 
-  <div class="miss-block">
-    <h3>Seven Days Without a Filed EOD</h3>
-    <p>The EOD discipline established April 2 lasted one day. The interim report covers Apr 3-7 retroactively. This report covers Apr 8 retroactively. The daily reporting rhythm broke the moment the governance overhaul consumed the team's focus. The irony: the system that's supposed to produce daily reports was being rebuilt instead of producing reports.</p>
-  </div>
-
-  <div class="miss-block">
-    <h3>Council/Town Hall Production Alias Still Stale</h3>
-    <p>A fixed preview exists but the production alias needs authenticated validation and promotion. This has been sitting since at least Apr 7.</p>
-  </div>
-</div>
-
-<!-- === BODY === -->
-<div class="section">
-  <div class="section-tag">Body</div>
-  <h2>Physiological State</h2>
-
-  <div class="body-grid">
-    <div class="body-card">
-      <div class="body-score" style="color: var(--red);">57</div>
-      <div class="body-label">Sleep</div>
-      <div class="body-detail">REM: 10/100 &mdash; memory consolidation impaired</div>
-    </div>
-    <div class="body-card">
-      <div class="body-score" style="color: var(--red);">52</div>
-      <div class="body-label">Readiness</div>
-      <div class="body-detail">HRV: 24 &bull; Recovery: 45 &bull; Sleep Balance: 36</div>
-    </div>
-    <div class="body-card">
-      <div class="body-score" style="color: var(--amber);">15+</div>
-      <div class="body-label">Hours Active</div>
-      <div class="body-detail">10am &rarr; 1:45am (still going)</div>
-    </div>
-  </div>
-
-  <p>Sleep Regularity at 41/100 is the compounding factor. The body doesn't recover from one bad night in one night &mdash; it recovers from consistent sleep/wake timing over several nights. REM at 10/100 means the brain is barely getting memory consolidation cycles. The 6,697-word voice dump at 1pm was probably the last high-quality cognitive window of the day.</p>
-  <p>Resting Heart Rate (90/100) and Body Temperature (89/100) are fine. The body isn't broken, it's under-rested. The fix hasn't changed: sleep before midnight, 8+ hours, multiple nights running.</p>
-</div>
-
-<!-- === TOMORROW === -->
-<div class="section">
-  <div class="section-tag">Tomorrow</div>
-  <h2>April 9 — What Matters</h2>
-
-  <div class="signal-block signal-red">
-    <div class="signal-label">Priority &mdash; 12:00pm Fundraising Call</div>
-    <p><strong>Call with Mark (rebooked from previous week) and Andy at noon.</strong> This is the $3M conversation thread that started April 2. Morning must be dedicated to prep &mdash; numbers, narrative, ask, and positioning need to be sharp. On a Sleep 57 / REM 10 body, the cognitive window is before 2pm. This call IS the morning.</p>
-  </div>
-
-  <div class="signal-block signal-amber">
-    <div class="signal-label">After the Call</div>
-    <p>Pipeline follow-ups. Warm email replies from Apr 3-7 sends. Session cleanup if bandwidth exists. Don't try to finish the restructure and prep for fundraising in the same morning &mdash; pick the call.</p>
-  </div>
-</div>
-
-<!-- === THE HONEST STATE === -->
-<div class="section">
-  <div class="section-tag">Truth</div>
-  <h2>The Honest State</h2>
-
-  <div class="signal-block signal-red">
-    <div class="signal-label">Situation Assessment</div>
-    <p><strong>This was a lot of real work, but not the kind of day that ends in a clean "done."</strong></p>
-    <p>The system is being rebuilt while it's running. The operating contract got rewritten under live load. AIEA went from concept to infrastructure. A new agent was onboarded. The discovery product advanced. The sales pipeline held. The reporting archive became browsable.</p>
-    <p>But nothing was cleanly closed. The worktree is dirty. The sessions are all still open. The EOD discipline is being filed retroactively at 1:45am. The AIEA sessions directory is empty despite the contracts being built. And the body is running on a Sleep 57 / REM 10 / HRV 24 stack that's been accumulating debt since April 2.</p>
-    <p>This is what a system-level refactor looks like from inside: everything moves, nothing finishes, and the only way through is through.</p>
-  </div>
-</div>
-
-<!-- === FOOTER === -->
-<div class="footer">
-  Go2 Situation Report &mdash; April 8, 2026<br>
-  Generated by Larry [AI] at ~1:45am Apr 9 from Cowork.ai telemetry, SuperWhisper voice data, Oura Ring biometrics, git history, and Moe's lane report<br>
-  Report: ~/brain/reports/eod-2026-04-08.html
-</div>
+<p class="footnote">
+  Go2 &mdash; April 8, 2026<br>
+  Generated by Larry [AI] from Cowork.ai telemetry, SuperWhisper voice data, Oura Ring biometrics, git history, Moe's lane report, and Frenchie call deliverables<br>
+  ~/brain/reports/eod-2026-04-08.html
+</p>
 
 </body>
 </html>
