@@ -482,8 +482,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 
     <ul style="list-style:none;padding:0;margin:16px 0;">
       <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">You have Claude Code on your Mac</strong> &mdash; it is an AI that can write code, query databases, build tools, and automate workflows</li>
-      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">We pre-loaded it with access to Go2's production database</strong> &mdash; every team member's sessions, reports, worklogs, and behavioral data</li>
-      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">We gave it 5 skills</strong> &mdash; data access, operational discovery, output verification, daily monitoring automations, and a support scraper</li>
+      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">We built a starter bundle for it</strong> &mdash; once the local install is finished, it can use Go2's production database, BigQuery, Google tools, and your team data</li>
+      <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">The bundle includes 13 starter skills</strong> &mdash; 7 foundation/system skills and 6 shortcut skills for the most common things you'll ask it to do</li>
       <li style="font-size:14px;color:var(--ink-secondary);line-height:1.8;padding-left:20px;position:relative;margin-bottom:10px;"><span style="position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal);opacity:0.4;display:block;"></span><strong style="color:var(--ink)">When you describe what you want in plain language, it figures out how to build it</strong> &mdash; you do not need to know how to code</li>
     </ul>
 
@@ -541,8 +541,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
         <span class="label">Operational history</span>
       </div>
       <div class="stat">
-        <span class="val">5</span>
-        <span class="label">Pre-loaded skills</span>
+        <span class="val">13</span>
+        <span class="label">Starter skills</span>
       </div>
       <div class="stat">
         <span class="val">2</span>
@@ -554,7 +554,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
       </div>
     </div>
 
-    <p>The five skills cover <strong>data access</strong> (querying Go2's Postgres and BigQuery databases), <strong>operational discovery</strong> (profiling team members and accounts), <strong>output verification</strong> (using a second AI model to audit results), <strong>daily monitoring automations</strong> (a weekday session breathing monitor and a nightly remission/decline check), and a <strong>daily support scraper</strong> (automatically emails Scott when you hit a wall).</p>
+    <p>The bundle has <strong>7 foundation skills</strong> &mdash; data access, operational discovery, output verification, automations, daily support scraping, a session governor, and end-of-day reporting &mdash; plus <strong>6 shortcut skills</strong> you can invoke directly for audits, team checks, DEA drafts, batch PRs, person checks, and client scans.</p>
   </section>
 
   <div class="section-break"></div>
@@ -703,13 +703,16 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 
       <div class="paste-block">
 <button class="copy-btn" onclick="copyBlock(this)"><span class="copy-icon">Copy</span><span class="check-icon">Copied</span></button>
-Hi Frenchie — I'm your Claude Code instance. Scott and Larry set me up with access to Go2's production database, your team's data, and skills to help you run discoveries, monitor your team, and automate your work.
+Hi Frenchie — I'm your Claude Code instance. Scott and Larry built a starter bundle for me so I can use Go2's production data, run discoveries, monitor your team, and automate your work.
+
+First, figure out what is already installed locally on this machine and what still needs to be finished.
 
 Let me run a quick check to make sure everything is connected.
 
 **Step 1: Check configuration**
 - Verify that ~/.claude/CLAUDE.md exists and contains Frenchie's identity
-- Verify that ~/.claude/skills/ contains: go2-data-access.md, operational-discovery.md, verify-output.md, engage-automations.md, daily-support-scraper.md
+- Verify that ~/.claude/skills/ contains the core skills: go2-data-access.md, operational-discovery.md, verify-output.md, engage-automations.md, daily-support-scraper.md, session-governor.md, eod-report.md
+- Also check whether the shortcut skills exist: audit-client.md, team-health.md, dea-draft.md, batch-pr.md, check-person.md, scan-client.md
 - Report what's there and what's missing
 
 **Step 2: Test database connectivity**
