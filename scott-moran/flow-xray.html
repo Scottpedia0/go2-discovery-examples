@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Go2 Crew Flow Xray</title>
+  <style>
+    :root {
+      --bg: #f4f0e7;
+      --panel: rgba(255,255,255,0.82);
+      --panel-strong: rgba(255,252,246,0.92);
+      --ink: #201a16;
+      --muted: #6f6357;
+      --line: #d8cbba;
+      --accent: #a14d28;
+      --accent-soft: #ead7c8;
+      --warn: #a02e22;
+      --good: #23634f;
+      --gold: #8d6b14;
+      --shadow: 0 22px 70px rgba(84, 56, 24, 0.12);
+      --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(177, 122, 72, 0.18), transparent 26%),
+        linear-gradient(180deg, #faf6ef 0%, #f4ede2 44%, #efe7db 100%);
+    }
+    main {
+      width: min(1440px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 30px 0 48px;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,0.88), rgba(250,236,220,0.94));
+      border: 1px solid rgba(161,77,40,0.16);
+      border-radius: 28px;
+      padding: 28px 30px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -90px;
+      bottom: -140px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(161,77,40,0.20), transparent 70%);
+      pointer-events: none;
+    }
+    h1, h2, h3 { margin: 0; font-family: "Iowan Old Style", "Palatino Linotype", serif; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(2.2rem, 4vw, 3.8rem); line-height: 0.98; }
+    h2 { font-size: clamp(1.45rem, 2vw, 2.15rem); margin-bottom: 14px; }
+    h3 { font-size: 1.05rem; margin-bottom: 8px; }
+    p { margin: 0; line-height: 1.55; }
+    .kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .lede { max-width: 82ch; font-size: 1.05rem; margin-top: 16px; }
+    .stat-grid, .cards, .layout {
+      display: grid;
+      gap: 16px;
+    }
+    .stat-grid {
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      margin-top: 22px;
+    }
+    .stat, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 26px rgba(84, 56, 24, 0.07);
+    }
+    .stat {
+      padding: 16px 18px;
+      min-height: 94px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .stat strong {
+      font-size: 1.55rem;
+      line-height: 1;
+      font-family: "Iowan Old Style", "Palatino Linotype", serif;
+    }
+    .muted { color: var(--muted); }
+    .panel {
+      padding: 18px 20px;
+      background: var(--panel-strong);
+    }
+    .layout {
+      grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.9fr);
+      margin-top: 18px;
+      align-items: start;
+    }
+    .cards {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.78rem;
+      margin: 0 8px 8px 0;
+    }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    input, select, button {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.85);
+      color: var(--ink);
+      padding: 10px 12px;
+      font: inherit;
+    }
+    button {
+      cursor: pointer;
+    }
+    button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.72);
+    }
+    .item.active {
+      border-color: rgba(161,77,40,0.5);
+      box-shadow: inset 0 0 0 1px rgba(161,77,40,0.14), 0 10px 24px rgba(84, 56, 24, 0.08);
+    }
+    .item h3 { margin-bottom: 6px; }
+    .meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .section {
+      margin-top: 20px;
+    }
+    .evidence {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .evidence .item {
+      padding: 12px 14px;
+    }
+    .small { font-size: 0.9rem; }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    code {
+      font-family: "SFMono-Regular", "Menlo", monospace;
+      font-size: 0.9em;
+    }
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="kicker">Info Flow</div>
+      <h1>Go2 Crew Flow Xray</h1>
+      <p class="lede">This page treats the org like a routing system: it shows shadow neighborhoods, mailbox proxies, cross-lane DM clusters, and where formal ownership diverges from observed flow.</p>
+      <div class="stat-grid"><div class="stat"><span class="muted">Shadow clusters</span><strong>11</strong></div><div class="stat"><span class="muted">Ghost managers</span><strong>2</strong></div><div class="stat"><span class="muted">Invisible operators</span><strong>3</strong></div><div class="stat"><span class="muted">Ambiguous identities</span><strong>9</strong></div></div>
+    </section>
+    
+    <section class="section panel">
+      <div class="toolbar">
+        <select id="cluster-select"></select>
+      </div>
+    </section>
+    <section class="layout">
+      <div class="panel">
+        <h2>Flow neighborhoods</h2>
+        <div id="cluster-list" class="list"></div>
+      </div>
+      <div class="panel">
+        <h2 id="cluster-title">Pick a neighborhood</h2>
+        <div id="cluster-detail" class="small muted">The selected neighborhood will show how work routes across divisions, operators, and counterpart targets.</div>
+      </div>
+    </section>
+    <section class="section panel">
+      <h2>Formal vs observed</h2>
+      <div class="split">
+        <div>
+          <h3>Ghost managers</h3>
+          <div id="ghost-list" class="evidence"></div>
+        </div>
+        <div>
+          <h3>Invisible operators</h3>
+          <div id="operator-list" class="evidence"></div>
+        </div>
+      </div>
+    </section>
+    <section class="section panel">
+      <h2>Identity mapping warnings</h2>
+      <div id="identity-list" class="cards"></div>
+    </section>
+    
+  </main>
+  
+    <script>
+    const DATA = {"flow_clusters": [{"id": "cluster-5", "hub_name": "Fiona Gutierrez", "node_count": 4, "nodes": ["Aditi Singh", "Fiona Gutierrez", "Katie Yamashita", "Love Perez"], "crew_nodes": ["Aditi Singh", "Katie Yamashita", "Fiona Gutierrez", "Love Perez"], "non_crew_nodes": [], "edge_hours": 20.51, "mailbox_proxy_hours": 10.66, "top_divisions": [{"division_name": "-Sales", "hours": 14.96}, {"division_name": "-Crimping", "hours": 5.55}], "top_operators": [{"member_name": "Fiona Gutierrez", "hours": 14.96}, {"member_name": "Aditi Singh", "hours": 5.55}], "top_targets": [{"member_name": "Katie Yamashita", "hours": 12.14}, {"member_name": "Fiona Gutierrez", "hours": 4.56}, {"member_name": "Aditi Singh", "hours": 2.24}, {"member_name": "Love Perez", "hours": 1.57}], "edges": [{"actor": "Fiona Gutierrez", "target": "Katie Yamashita", "actor_division": "-Sales", "hours": 10.66, "type": "mailbox_proxy"}, {"actor": "Aditi Singh", "target": "Fiona Gutierrez", "actor_division": "-Crimping", "hours": 4.56, "type": "dm"}, {"actor": "Fiona Gutierrez", "target": "Aditi Singh", "actor_division": "-Sales", "hours": 2.24, "type": "dm"}, {"actor": "Fiona Gutierrez", "target": "Katie Yamashita", "actor_division": "-Sales", "hours": 1.48, "type": "dm"}, {"actor": "Aditi Singh", "target": "Love Perez", "actor_division": "-Crimping", "hours": 0.99, "type": "dm"}, {"actor": "Fiona Gutierrez", "target": "Love Perez", "actor_division": "-Sales", "hours": 0.58, "type": "dm"}], "topics": [{"label": "AI-Native Operations", "score": 3}, {"label": "Sales Pipeline And Follow-Up", "score": 2}, {"label": "Executive Admin And Cleanup", "score": 1}, {"label": "Onboarding And Client Setup", "score": 1}], "headline": "Fiona Gutierrez neighborhood · Aditi Singh, Katie Yamashita"}, {"id": "cluster-1", "hub_name": "Katie Yamashita", "node_count": 2, "nodes": ["Fiona Gutierrez", "Katie Yamashita"], "crew_nodes": ["Katie Yamashita", "Fiona Gutierrez"], "non_crew_nodes": [], "edge_hours": 12.14, "mailbox_proxy_hours": 10.66, "top_divisions": [{"division_name": "-Sales", "hours": 12.14}], "top_operators": [{"member_name": "Fiona Gutierrez", "hours": 12.14}], "top_targets": [{"member_name": "Katie Yamashita", "hours": 12.14}], "edges": [{"actor": "Fiona Gutierrez", "target": "Katie Yamashita", "actor_division": "-Sales", "hours": 10.66, "type": "mailbox_proxy"}, {"actor": "Fiona Gutierrez", "target": "Katie Yamashita", "actor_division": "-Sales", "hours": 1.48, "type": "dm"}], "topics": [{"label": "Sales Pipeline And Follow-Up", "score": 1}, {"label": "AI-Native Operations", "score": 1}, {"label": "Executive Admin And Cleanup", "score": 1}, {"label": "Onboarding And Client Setup", "score": 1}], "headline": "Katie Yamashita neighborhood · Fiona Gutierrez"}, {"id": "cluster-2", "hub_name": "Mickey Belande", "node_count": 9, "nodes": ["Bon Baga", "Christian V.", "Cy Roy", "Hazel Evardone - Yu", "Love Perez", "Magic Judilla", "Mickey Belande", "Pao Hernaez", "michelle"], "crew_nodes": ["Magic Judilla", "Mickey Belande", "Love Perez", "Pao Hernaez", "Bon Baga", "Hazel Evardone - Yu", "Cy Roy"], "non_crew_nodes": ["Christian V.", "michelle"], "edge_hours": 27.31, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-IT", "hours": 13.1}, {"division_name": "-Onboarding", "hours": 9.68}, {"division_name": "-Assist", "hours": 4.53}], "top_operators": [{"member_name": "Mickey Belande", "hours": 13.1}, {"member_name": "Magic Judilla", "hours": 9.68}, {"member_name": "Bon Baga", "hours": 4.53}], "top_targets": [{"member_name": "Mickey Belande", "hours": 9.76}, {"member_name": "michelle", "hours": 5.94}, {"member_name": "Hazel Evardone - Yu", "hours": 5.5}, {"member_name": "Christian V.", "hours": 3.06}, {"member_name": "Cy Roy", "hours": 1.06}, {"member_name": "Love Perez", "hours": 0.72}], "edges": [{"actor": "Mickey Belande", "target": "michelle", "actor_division": "-IT", "hours": 5.94, "type": "dm"}, {"actor": "Magic Judilla", "target": "Mickey Belande", "actor_division": "-Onboarding", "hours": 5.23, "type": "dm"}, {"actor": "Bon Baga", "target": "Mickey Belande", "actor_division": "-Assist", "hours": 4.53, "type": "dm"}, {"actor": "Magic Judilla", "target": "Hazel Evardone - Yu", "actor_division": "-Onboarding", "hours": 4.45, "type": "dm"}, {"actor": "Mickey Belande", "target": "Christian V.", "actor_division": "-IT", "hours": 3.06, "type": "dm"}, {"actor": "Mickey Belande", "target": "Cy Roy", "actor_division": "-IT", "hours": 1.06, "type": "dm"}, {"actor": "Mickey Belande", "target": "Hazel Evardone - Yu", "actor_division": "-IT", "hours": 1.05, "type": "dm"}, {"actor": "Mickey Belande", "target": "Love Perez", "actor_division": "-IT", "hours": 0.72, "type": "dm"}, {"actor": "Mickey Belande", "target": "Pao Hernaez", "actor_division": "-IT", "hours": 0.64, "type": "dm"}, {"actor": "Mickey Belande", "target": "Magic Judilla", "actor_division": "-IT", "hours": 0.63, "type": "dm"}], "topics": [{"label": "Manual Routing And Queue Glue", "score": 3}, {"label": "Attendance And AER Repair", "score": 3}, {"label": "Engage Management", "score": 2}, {"label": "Vetting And Scoring", "score": 2}], "headline": "Mickey Belande neighborhood · Magic Judilla, Bon Baga, michelle"}, {"id": "cluster-11", "hub_name": "Aditi Singh", "node_count": 7, "nodes": ["Aditi Singh", "Carmela Dee", "Fiona Gutierrez", "Jolly De Guzman", "Love Perez", "Nikki Arismendi", "Pat"], "crew_nodes": ["Carmela Dee", "Nikki Arismendi", "Aditi Singh", "Fiona Gutierrez", "Love Perez", "Jolly De Guzman"], "non_crew_nodes": ["Pat"], "edge_hours": 11.44, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-Crimping", "hours": 9.2}, {"division_name": "-Sales", "hours": 2.24}], "top_operators": [{"member_name": "Aditi Singh", "hours": 9.2}, {"member_name": "Fiona Gutierrez", "hours": 2.24}], "top_targets": [{"member_name": "Fiona Gutierrez", "hours": 4.56}, {"member_name": "Aditi Singh", "hours": 2.24}, {"member_name": "Carmela Dee", "hours": 0.99}, {"member_name": "Jolly De Guzman", "hours": 0.99}, {"member_name": "Love Perez", "hours": 0.99}, {"member_name": "Nikki Arismendi", "hours": 0.99}], "edges": [{"actor": "Aditi Singh", "target": "Fiona Gutierrez", "actor_division": "-Crimping", "hours": 4.56, "type": "dm"}, {"actor": "Fiona Gutierrez", "target": "Aditi Singh", "actor_division": "-Sales", "hours": 2.24, "type": "dm"}, {"actor": "Aditi Singh", "target": "Carmela Dee", "actor_division": "-Crimping", "hours": 0.99, "type": "dm"}, {"actor": "Aditi Singh", "target": "Jolly De Guzman", "actor_division": "-Crimping", "hours": 0.99, "type": "dm"}, {"actor": "Aditi Singh", "target": "Love Perez", "actor_division": "-Crimping", "hours": 0.99, "type": "dm"}, {"actor": "Aditi Singh", "target": "Nikki Arismendi", "actor_division": "-Crimping", "hours": 0.99, "type": "dm"}, {"actor": "Aditi Singh", "target": "Pat", "actor_division": "-Crimping", "hours": 0.68, "type": "dm"}], "topics": [{"label": "AI-Native Operations", "score": 4}, {"label": "Sales Pipeline And Follow-Up", "score": 3}, {"label": "Reprofile And Recovery Work", "score": 2}, {"label": "Sourcing Pipeline", "score": 1}], "headline": "Aditi Singh neighborhood · Fiona Gutierrez, Carmela Dee"}, {"id": "cluster-4", "hub_name": "Hazel Evardone - Yu", "node_count": 3, "nodes": ["Hazel Evardone - Yu", "Magic Judilla", "Mickey Belande"], "crew_nodes": ["Magic Judilla", "Hazel Evardone - Yu", "Mickey Belande"], "non_crew_nodes": [], "edge_hours": 10.73, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-Onboarding", "hours": 9.68}, {"division_name": "-IT", "hours": 1.05}], "top_operators": [{"member_name": "Magic Judilla", "hours": 9.68}, {"member_name": "Mickey Belande", "hours": 1.05}], "top_targets": [{"member_name": "Hazel Evardone - Yu", "hours": 5.5}, {"member_name": "Mickey Belande", "hours": 5.23}], "edges": [{"actor": "Magic Judilla", "target": "Mickey Belande", "actor_division": "-Onboarding", "hours": 5.23, "type": "dm"}, {"actor": "Magic Judilla", "target": "Hazel Evardone - Yu", "actor_division": "-Onboarding", "hours": 4.45, "type": "dm"}, {"actor": "Mickey Belande", "target": "Hazel Evardone - Yu", "actor_division": "-IT", "hours": 1.05, "type": "dm"}], "topics": [{"label": "Manual Routing And Queue Glue", "score": 2}, {"label": "Onboarding And Client Setup", "score": 2}, {"label": "Reprofile And Recovery Work", "score": 2}, {"label": "Engage Management", "score": 1}], "headline": "Hazel Evardone - Yu neighborhood · Magic Judilla, Mickey Belande"}, {"id": "cluster-9", "hub_name": "Love Perez", "node_count": 4, "nodes": ["Aditi Singh", "Fiona Gutierrez", "Love Perez", "Mickey Belande"], "crew_nodes": ["Aditi Singh", "Fiona Gutierrez", "Love Perez", "Mickey Belande"], "non_crew_nodes": [], "edge_hours": 9.09, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-Crimping", "hours": 5.55}, {"division_name": "-Sales", "hours": 2.82}, {"division_name": "-IT", "hours": 0.72}], "top_operators": [{"member_name": "Aditi Singh", "hours": 5.55}, {"member_name": "Fiona Gutierrez", "hours": 2.82}, {"member_name": "Mickey Belande", "hours": 0.72}], "top_targets": [{"member_name": "Fiona Gutierrez", "hours": 4.56}, {"member_name": "Love Perez", "hours": 2.29}, {"member_name": "Aditi Singh", "hours": 2.24}], "edges": [{"actor": "Aditi Singh", "target": "Fiona Gutierrez", "actor_division": "-Crimping", "hours": 4.56, "type": "dm"}, {"actor": "Fiona Gutierrez", "target": "Aditi Singh", "actor_division": "-Sales", "hours": 2.24, "type": "dm"}, {"actor": "Aditi Singh", "target": "Love Perez", "actor_division": "-Crimping", "hours": 0.99, "type": "dm"}, {"actor": "Mickey Belande", "target": "Love Perez", "actor_division": "-IT", "hours": 0.72, "type": "dm"}, {"actor": "Fiona Gutierrez", "target": "Love Perez", "actor_division": "-Sales", "hours": 0.58, "type": "dm"}], "topics": [{"label": "AI-Native Operations", "score": 3}, {"label": "Sales Pipeline And Follow-Up", "score": 2}, {"label": "Manual Routing And Queue Glue", "score": 1}, {"label": "Executive Admin And Cleanup", "score": 1}], "headline": "Love Perez neighborhood · Aditi Singh, Fiona Gutierrez, Mickey Belande"}, {"id": "cluster-3", "hub_name": "michelle", "node_count": 3, "nodes": ["DJ Amurao", "Mickey Belande", "michelle"], "crew_nodes": ["Mickey Belande", "DJ Amurao"], "non_crew_nodes": ["michelle"], "edge_hours": 7.08, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-IT", "hours": 5.94}, {"division_name": "-Onboarding", "hours": 1.14}], "top_operators": [{"member_name": "Mickey Belande", "hours": 5.94}, {"member_name": "DJ Amurao", "hours": 1.14}], "top_targets": [{"member_name": "michelle", "hours": 7.08}], "edges": [{"actor": "Mickey Belande", "target": "michelle", "actor_division": "-IT", "hours": 5.94, "type": "dm"}, {"actor": "DJ Amurao", "target": "michelle", "actor_division": "-Onboarding", "hours": 1.14, "type": "dm"}], "topics": [{"label": "Manual Routing And Queue Glue", "score": 1}, {"label": "Engage Management", "score": 1}, {"label": "Vetting And Scoring", "score": 1}, {"label": "Sourcing Pipeline", "score": 1}], "headline": "michelle neighborhood · Mickey Belande, DJ Amurao"}, {"id": "cluster-6", "hub_name": "Kai Legaspi", "node_count": 2, "nodes": ["Kai Legaspi", "Magic Judilla"], "crew_nodes": ["Magic Judilla", "Kai Legaspi"], "non_crew_nodes": [], "edge_hours": 4.45, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-Onboarding", "hours": 4.45}], "top_operators": [{"member_name": "Magic Judilla", "hours": 4.45}], "top_targets": [{"member_name": "Kai Legaspi", "hours": 4.45}], "edges": [{"actor": "Magic Judilla", "target": "Kai Legaspi", "actor_division": "-Onboarding", "hours": 4.45, "type": "dm"}], "topics": [{"label": "Manual Routing And Queue Glue", "score": 1}, {"label": "Vetting And Scoring", "score": 1}, {"label": "Executive Admin And Cleanup", "score": 1}, {"label": "Onboarding And Client Setup", "score": 1}], "headline": "Kai Legaspi neighborhood · Magic Judilla"}, {"id": "cluster-7", "hub_name": "BC Manalaysay", "node_count": 2, "nodes": ["BC Manalaysay", "Christian Vilo"], "crew_nodes": ["Christian Vilo", "BC Manalaysay"], "non_crew_nodes": [], "edge_hours": 3.97, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-Sales", "hours": 3.97}], "top_operators": [{"member_name": "Christian Vilo", "hours": 3.97}], "top_targets": [{"member_name": "BC Manalaysay", "hours": 3.97}], "edges": [{"actor": "Christian Vilo", "target": "BC Manalaysay", "actor_division": "-Sales", "hours": 3.97, "type": "dm"}], "topics": [{"label": "Sales Pipeline And Follow-Up", "score": 1}], "headline": "BC Manalaysay neighborhood · Christian Vilo"}, {"id": "cluster-8", "hub_name": "Christian V.", "node_count": 2, "nodes": ["Christian V.", "Mickey Belande"], "crew_nodes": ["Mickey Belande"], "non_crew_nodes": ["Christian V."], "edge_hours": 3.06, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-IT", "hours": 3.06}], "top_operators": [{"member_name": "Mickey Belande", "hours": 3.06}], "top_targets": [{"member_name": "Christian V.", "hours": 3.06}], "edges": [{"actor": "Mickey Belande", "target": "Christian V.", "actor_division": "-IT", "hours": 3.06, "type": "dm"}], "topics": [{"label": "Manual Routing And Queue Glue", "score": 1}, {"label": "Attendance And AER Repair", "score": 1}], "headline": "Christian V. neighborhood · Mickey Belande"}, {"id": "cluster-10", "hub_name": "Pat", "node_count": 3, "nodes": ["Aditi Singh", "Pat", "Richard Sesbreño"], "crew_nodes": ["Richard Sesbreño", "Aditi Singh"], "non_crew_nodes": ["Pat"], "edge_hours": 2.26, "mailbox_proxy_hours": 0.0, "top_divisions": [{"division_name": "-Up for Reprofile", "hours": 1.58}, {"division_name": "-Crimping", "hours": 0.68}], "top_operators": [{"member_name": "Richard Sesbreño", "hours": 1.58}, {"member_name": "Aditi Singh", "hours": 0.68}], "top_targets": [{"member_name": "Pat", "hours": 2.26}], "edges": [{"actor": "Richard Sesbreño", "target": "Pat", "actor_division": "-Up for Reprofile", "hours": 1.58, "type": "dm"}, {"actor": "Aditi Singh", "target": "Pat", "actor_division": "-Crimping", "hours": 0.68, "type": "dm"}], "topics": [{"label": "Reprofile And Recovery Work", "score": 2}, {"label": "Sales Pipeline And Follow-Up", "score": 1}, {"label": "AI-Native Operations", "score": 1}, {"label": "Attendance And AER Repair", "score": 1}], "headline": "Pat neighborhood · Richard Sesbreño, Aditi Singh"}], "formal_overlay": {"ghost_managers": [{"manager_name": "Katie Yamashita", "division_name": "-Crimping", "direct_count": 6, "direct_recent_hours": 263.65, "inbound_hours": 12.14}, {"manager_name": "Rosanna Fajfr", "division_name": "-Finance", "direct_count": 2, "direct_recent_hours": 134.52, "inbound_hours": 0.0}], "invisible_operators": [{"member_name": "Hazel Evardone - Yu", "division_name": "-Go2", "job_title": "Executive Assistant", "inbound_hours": 5.5}, {"member_name": "Fiona Gutierrez", "division_name": "-Sales", "job_title": "SDR", "inbound_hours": 4.56}, {"member_name": "BC Manalaysay", "division_name": "-Engage", "job_title": "Engagement Manager", "inbound_hours": 3.97}]}, "identity_notes": [{"target": "michelle", "reason": "short-name / alias ambiguity", "hours": 5.94, "actor": "Mickey Belande"}, {"target": "Christian V.", "reason": "partial-name ambiguity", "hours": 3.06, "actor": "Mickey Belande"}, {"target": "Pat", "reason": "partial-name ambiguity", "hours": 1.58, "actor": "Richard Sesbreño"}, {"target": "Shane Welch", "reason": "partial-name ambiguity", "hours": 0.77, "actor": "Bea Costelo"}, {"target": "HJ", "reason": "partial-name ambiguity", "hours": 0.63, "actor": "Javi Joseph"}, {"target": "! 1on1 Bot", "reason": "automation/bot target", "hours": 0.63, "actor": "Bea Costelo"}, {"target": "Stella", "reason": "partial-name ambiguity", "hours": 0.61, "actor": "Bea Costelo"}, {"target": "! JB", "reason": "automation/bot target", "hours": 0.6, "actor": "Javi Joseph"}, {"target": "Cinthia", "reason": "partial-name ambiguity", "hours": 0.55, "actor": "Yani Pace-Balanon"}]};
+    const clusterList = document.getElementById('cluster-list');
+    const clusterSelect = document.getElementById('cluster-select');
+    const clusterTitle = document.getElementById('cluster-title');
+    const clusterDetail = document.getElementById('cluster-detail');
+    let activeClusterId = DATA.flow_clusters[0] ? DATA.flow_clusters[0].id : null;
+
+    function renderClusterControls() {
+      clusterSelect.innerHTML = DATA.flow_clusters.map((cluster) => `
+        <option value="${cluster.id}" ${cluster.id === activeClusterId ? 'selected' : ''}>
+          ${cluster.headline || cluster.id} · ${cluster.edge_hours.toFixed(1)}h
+        </option>
+      `).join('');
+      clusterSelect.addEventListener('change', () => {
+        activeClusterId = clusterSelect.value;
+        renderClusters();
+        renderClusterDetail();
+      });
+    }
+
+    function renderClusters() {
+      clusterList.innerHTML = DATA.flow_clusters.map((cluster) => `
+        <button class="item ${cluster.id === activeClusterId ? 'active' : ''}" data-id="${cluster.id}">
+          <h3>${cluster.headline || cluster.id}</h3>
+          <p class="small">${cluster.top_divisions.map((item) => item.division_name).join(' · ') || 'unmapped divisions'}</p>
+          <div class="meta">
+            <span>${cluster.edge_hours.toFixed(1)}h flow</span>
+            <span>${cluster.mailbox_proxy_hours.toFixed(1)}h proxy</span>
+            <span>${cluster.node_count} nodes</span>
+          </div>
+        </button>
+      `).join('');
+      clusterList.querySelectorAll('[data-id]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeClusterId = button.dataset.id;
+          clusterSelect.value = activeClusterId;
+          renderClusters();
+          renderClusterDetail();
+        });
+      });
+    }
+
+    function weightToStroke(weight) {
+      return Math.max(1.5, Math.min(8, weight * 0.65));
+    }
+
+    function nodeLayout(items, x, color) {
+      const gap = 62;
+      return items.map((item, index) => {
+        const y = 70 + index * gap;
+        return { ...item, x, y, color };
+      });
+    }
+
+    function flowSvg(cluster) {
+      const divisions = nodeLayout(cluster.top_divisions.slice(0, 4).map((item) => ({ label: item.division_name, weight: item.hours })), 120, '#b17f4b');
+      const operators = nodeLayout(cluster.top_operators.slice(0, 6).map((item) => ({ label: item.member_name, weight: item.hours })), 420, '#9f4a2f');
+      const targets = nodeLayout(cluster.top_targets.slice(0, 6).map((item) => ({ label: item.member_name, weight: item.hours })), 720, '#2f6d44');
+      const operatorByLabel = Object.fromEntries(operators.map((item) => [item.label, item]));
+      const divisionByLabel = Object.fromEntries(divisions.map((item) => [item.label, item]));
+      const targetByLabel = Object.fromEntries(targets.map((item) => [item.label, item]));
+      const divisionLinks = [];
+      operators.forEach((operator) => {
+        const divisionName = cluster.top_divisions.find((item) => cluster.edges.some((edge) => edge.actor === operator.label && edge.actor_division === item.division_name))?.division_name;
+        if (divisionName && divisionByLabel[divisionName]) {
+          divisionLinks.push({ from: divisionByLabel[divisionName], to: operator, weight: operator.weight });
+        }
+      });
+      const targetLinks = cluster.edges
+        .filter((edge) => operatorByLabel[edge.actor] && targetByLabel[edge.target])
+        .map((edge) => ({
+          from: operatorByLabel[edge.actor],
+          to: targetByLabel[edge.target],
+          weight: edge.hours,
+          type: edge.type,
+        }));
+
+      const linkHtml = divisionLinks.map((link) => {
+        const dx = (link.to.x - link.from.x) / 2;
+        return `<path d="M ${link.from.x} ${link.from.y} C ${link.from.x + dx} ${link.from.y}, ${link.to.x - dx} ${link.to.y}, ${link.to.x} ${link.to.y}" fill="none" stroke="rgba(177,127,75,0.35)" stroke-width="${weightToStroke(link.weight)}" />`;
+      }).join('') + targetLinks.map((link) => {
+        const dx = (link.to.x - link.from.x) / 2;
+        const color = link.type === 'mailbox_proxy' ? 'rgba(160,46,34,0.55)' : 'rgba(47,109,68,0.38)';
+        return `<path d="M ${link.from.x} ${link.from.y} C ${link.from.x + dx} ${link.from.y}, ${link.to.x - dx} ${link.to.y}, ${link.to.x} ${link.to.y}" fill="none" stroke="${color}" stroke-width="${weightToStroke(link.weight)}" />`;
+      }).join('');
+
+      const nodeHtml = [...divisions, ...operators, ...targets].map((node) => `
+        <g>
+          <rect x="${node.x - 84}" y="${node.y - 20}" width="168" height="40" rx="14" fill="white" stroke="${node.color}" />
+          <text x="${node.x}" y="${node.y - 2}" text-anchor="middle" font-size="12" fill="#201a16">${node.label.slice(0, 28)}</text>
+          <text x="${node.x}" y="${node.y + 13}" text-anchor="middle" font-size="11" fill="#6f6357">${node.weight.toFixed(1)}h</text>
+        </g>
+      `).join('');
+      return `<svg viewBox="0 0 860 520" aria-label="Flow graph">${linkHtml}${nodeHtml}</svg>`;
+    }
+
+    function renderClusterDetail() {
+      const cluster = DATA.flow_clusters.find((item) => item.id === activeClusterId);
+      if (!cluster) return;
+      clusterTitle.textContent = cluster.headline || cluster.id;
+      clusterDetail.innerHTML = `
+        <div class="meta">
+          <span>${cluster.edge_hours.toFixed(1)}h total flow</span>
+          <span>${cluster.mailbox_proxy_hours.toFixed(1)}h proxy flow</span>
+          <span>${cluster.node_count} nodes</span>
+        </div>
+        <div class="section">${flowSvg(cluster)}</div>
+        <div class="section split">
+          <div>
+            <h3>Topics touching this neighborhood</h3>
+            <div class="evidence">
+              ${cluster.topics.map((item) => `<div class="item"><strong>${item.label}</strong><div class="small">${item.score} matched nodes</div></div>`).join('') || '<div class="item small muted">No topic overlap mapped.</div>'}
+            </div>
+          </div>
+          <div>
+            <h3>Top edges</h3>
+            <div class="evidence">
+              ${cluster.edges.slice(0, 10).map((edge) => `<div class="item"><strong>${edge.actor}</strong> → ${edge.target}<div class="small">${edge.actor_division} · ${edge.type} · ${edge.hours.toFixed(1)}h</div></div>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <h3>Interpretation</h3>
+          <p class="small">${cluster.mailbox_proxy_hours > 0 ? 'This neighborhood contains explicit shared-mailbox or proxy-identity work.' : 'This neighborhood is DM-led rather than mailbox-led.'} ${cluster.non_crew_nodes.length ? 'It also touches non-crew or unresolved targets: ' + cluster.non_crew_nodes.join(', ') + '.' : 'Every node in this component maps cleanly to crew.'}</p>
+        </div>
+      `;
+    }
+
+    function renderFormalOverlay() {
+      document.getElementById('ghost-list').innerHTML = DATA.formal_overlay.ghost_managers.map((item) => `
+        <div class="item"><strong>${item.manager_name}</strong><div class="small">${item.division_name} · ${item.direct_count} directs · ${item.direct_recent_hours.toFixed(1)}h direct labor · ${item.inbound_hours.toFixed(1)}h inbound attention</div></div>
+      `).join('') || '<div class="item small muted">No ghost-manager cases met the threshold.</div>';
+      document.getElementById('operator-list').innerHTML = DATA.formal_overlay.invisible_operators.map((item) => `
+        <div class="item"><strong>${item.member_name}</strong><div class="small">${item.division_name} · ${item.job_title} · ${item.inbound_hours.toFixed(1)}h inbound shadow attention</div></div>
+      `).join('') || '<div class="item small muted">No invisible-operator cases met the threshold.</div>';
+      document.getElementById('identity-list').innerHTML = DATA.identity_notes.map((item) => `
+        <div class="item"><h3>${item.target}</h3><p class="small">${item.reason}</p><div class="meta"><span>${item.actor}</span><span>${item.hours.toFixed(1)}h</span></div></div>
+      `).join('') || '<div class="item small muted">No identity ambiguities detected.</div>';
+    }
+
+    renderClusterControls();
+    renderClusters();
+    renderClusterDetail();
+    renderFormalOverlay();
+    </script>
+    
+</body>
+</html>
