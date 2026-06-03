@@ -12,7 +12,9 @@ h1{color:var(--accent);font-size:28px;margin-bottom:8px;font-weight:600;letter-s
 .sub{color:var(--dim);font-size:15px;margin-bottom:40px}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
-.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:12px;cursor:pointer}
+.card:hover{border-color:var(--accent)}
+.card:hover a{text-decoration:underline}
 .card p{color:var(--dim);font-size:14px;margin-bottom:12px}
 </style>
 </head>
@@ -35,5 +37,23 @@ a:hover{text-decoration:underline}
 <p>Team onboarding:</p>
 <p><a href="frenchie/">Frenchie Evangelista — Engage Onboarding Brief →</a></p>
 </div>
+<script>
+document.querySelectorAll(".card").forEach(function(card) {
+  var link = card.querySelector("a[href]");
+  if (!link) return;
+  card.setAttribute("role", "link");
+  card.tabIndex = 0;
+  card.addEventListener("click", function(event) {
+    if (event.target.closest("a")) return;
+    window.location.href = link.href;
+  });
+  card.addEventListener("keydown", function(event) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      window.location.href = link.href;
+    }
+  });
+});
+</script>
 </body>
 </html>
